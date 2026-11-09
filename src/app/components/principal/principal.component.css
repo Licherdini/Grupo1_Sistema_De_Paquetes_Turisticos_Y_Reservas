@@ -1,0 +1,18 @@
+.hero-banner {
+  background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 60%, #0284c7 100%);
+}
+
+.module-card {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 16px;
+}
+
+.module-card:hover {
+  transform: translateY(-3px);
+}
+
+.module-active {
+  outline: 2.5px solid #4f46e5;
+  background-color: #eef2ff;
+}

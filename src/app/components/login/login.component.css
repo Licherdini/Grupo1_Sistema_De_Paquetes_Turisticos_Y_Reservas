@@ -1,0 +1,212 @@
+/* ==========================================================================
+   ARCHIVO: login.component.css
+   FUNCIÓN: Estilos de la tarjeta de Login, estados de error de validación y
+            adaptabilidad responsiva para móviles y tablets.
+   ========================================================================== */
+
+.login-wrapper { 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    width: 100%; 
+    min-height: 75vh; }
+
+.login-card {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: var(--card-ancho-max);
+  padding: var(--card-padding);
+  border-radius: var(--card-radio-borde);
+
+
+  border: 1.5px solid var(--card-borde-externo);
+  box-shadow:
+    inset 0 2px 4px rgba(255, 255, 255, 0.8),
+    0 22px 45px -10px var(--card-sombra-color),
+    0 12px 28px -6px var(--card-sombra-inferior);
+
+  text-align: center;
+  backdrop-filter: blur(16px);
+}
+
+.login-icon-box {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 20px;
+  background: var(--card-degradado-abajo);
+  border-radius: 18px;
+  border: 1px solid var(--card-borde-externo);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 22px var(--card-sombra-color);
+  color: var(--icono-color);
+}
+
+.icon-svg-header {
+  width: 26px;
+  height: 26px;
+}
+
+.login-title {
+  font-size: var(--titulo-tamano);
+  font-weight: 700;
+  color: var(--color-titulo);
+  letter-spacing: -0.4px;
+  margin-bottom: 8px;
+}
+
+.login-subtitle {
+  font-size: var(--subtitulo-tamano);
+  color: var(--color-subtitulo);
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  background-color: var(--input-fondo);
+  height: var(--input-altura);
+  border-radius: 12px;
+  padding: 0 14px;
+  border: 1.5px solid rgba(148, 163, 184, 0.35);
+  transition: all 0.2s ease;
+}
+
+.input-group:focus-within {
+  border-color: var(--input-borde-foco);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18);
+}
+
+/* [ESTILO DE VALIDACIÓN]: Se activa con [ngClass] cuando el campo está vacío */
+.input-group.input-error {
+  border-color: var(--color-error-borde);
+  background-color: var(--color-error-fondo);
+}
+
+/* Mensaje visual que pide ingresar Usuario o Clave */
+.alerta-validacion {
+  background-color: var(--color-error-fondo);
+  border: 1px solid var(--color-error-borde);
+  color: var(--color-error-texto);
+  font-size: 0.84rem;
+  font-weight: 600;
+  padding: 10px 12px;
+  border-radius: 10px;
+  text-align: left;
+  animation: sacudir 0.25s ease-in-out;
+}
+
+@keyframes sacudir {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+.input-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--icono-color);
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.input-group input {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  font-size: 0.95rem;
+  color: var(--color-titulo);
+  outline: none;
+}
+
+.input-group input::placeholder {
+  color: var(--color-subtitulo);
+  opacity: 0.75;
+}
+
+.toggle-password {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--icono-color);
+  display: flex;
+  align-items: center;
+  padding: 4px;
+}
+
+.toggle-password svg {
+  width: 19px;
+  height: 19px;
+}
+
+.forgot-link {
+  text-align: right;
+  margin-top: -2px;
+  margin-bottom: 4px;
+}
+
+.forgot-link a {
+  font-size: 0.82rem;
+  color: var(--color-titulo);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.btn-aceptar {
+  width: 100%;
+  height: var(--btn-altura);
+  border-radius: 12px;
+  background: linear-gradient(180deg, var(--btn-degradado-arriba) 0%, var(--btn-degradado-abajo) 100%);
+  color: var(--btn-texto-color);
+  border: none;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 8px 18px var(--card-sombra-color);
+  font-size: 0.96rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.2s ease, transform 0.1s ease;
+}
+
+.btn-aceptar:hover {
+  filter: brightness(1.12);
+}
+
+/* ---------------- DISEÑO RESPONSIVO PARA CELULARES ---------------- */
+@media (max-width: 480px) {
+  .login-card {
+    padding: 28px 20px;
+    border-radius: 22px;
+  }
+
+  .login-icon-box {
+    width: 52px;
+    height: 52px;
+    margin-bottom: 16px;
+  }
+
+  .login-title {
+    font-size: 1.35rem;
+  }
+
+  .login-subtitle {
+    font-size: 0.85rem;
+    margin-bottom: 18px;
+  }
+
+  .input-group,
+  .btn-aceptar {
+    height: 44px;
+  }
+}

@@ -1,0 +1,70 @@
+<div class="login-wrapper">
+  <div class="login-card">
+    <div class="login-icon-box">
+      <svg class="icon-svg-header" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+        <polyline points="10 17 15 12 10 7" />
+        <line x1="15" y1="12" x2="3" y2="12" />
+      </svg>
+    </div>
+
+    <h2 class="login-title">ÑokoOrmaza Airlines</h2>
+    <p class="login-subtitle">
+      Ingresa tus credenciales para acceder al sistema de paquetes turísticos y reservas.
+    </p>
+
+    <form class="login-form" (ngSubmit)="validarCredenciales()" novalidate>
+      <!-- Textbox Usuario con Two-Way Binding [(ngModel)] -->
+      <div class="input-group">
+        <svg class="input-icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.33 0-10 1.67-10 5v2h20v-2c0-3.33-6.67-5-10-5z"/>
+        </svg>
+        <input
+          type="text"
+          name="usuario"
+          placeholder="Usuario"
+          [(ngModel)]="usuario"
+          autocomplete="username"
+        />
+      </div>
+
+      <!-- Textbox Clave con Property Binding [type] y Two-Way Binding [(ngModel)] -->
+      <div class="input-group">
+        <svg class="input-icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm3 11c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
+        </svg>
+        <input
+          [type]="mostrarClave ? 'text' : 'password'"
+          name="clave"
+          placeholder="Clave"
+          [(ngModel)]="clave"
+          autocomplete="current-password"
+        />
+        <button type="button" class="toggle-password" (click)="alternarVistaClave()">
+          👁️
+        </button>
+      </div>
+
+      <!-- Mensaje dinámico según la situación (Acceso concedido o Error en credenciales) -->
+      <div
+        *ngIf="mensajeEstado"
+        class="alert py-2 px-3 small fw-semibold mb-1"
+        [ngClass]="esAccesoConcedido ? 'alert-success' : 'alert-danger'"
+      >
+        {{ mensajeEstado }}
+      </div>
+
+      <!-- Pista académica para pruebas rápidas del profesor -->
+      <div class="text-end mb-1">
+        <small class="text-muted" style="font-size: 0.78rem;">
+          Credenciales de prueba: <strong>{{ authService.usuarioValido }}</strong> / <strong>{{ authService.claveValida }}</strong>
+        </small>
+      </div>
+
+      <!-- Botón Aceptar con Event Binding (click) -->
+      <button type="button" class="btn-aceptar" (click)="validarCredenciales()">
+        Aceptar
+      </button>
+    </form>
+  </div>
+</div>

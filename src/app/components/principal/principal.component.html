@@ -1,0 +1,200 @@
+<div class="container py-4">
+  <!-- BANNER HERO DE ANDESTRAVEL UG -->
+  <div class="hero-banner p-4 p-md-5 mb-4 rounded-4 shadow-sm text-white">
+    <div class="row align-items-center">
+      <div class="col-md-8">
+        <span class="badge bg-light text-dark mb-2 px-3 py-1 fw-bold">
+          Propuesta 2A — Agencia de Viajes
+        </span>
+        <h1 class="fw-bold mb-2">Sistema Web AndesTravel UG</h1>
+        <p class="mb-0 opacity-90">
+          Bienvenido/a <strong>{{ authService.usuarioActual | uppercase }}</strong> al panel general de comercialización de paquetes turísticos, cotizaciones y reservas multidestino.
+        </p>
+      </div>
+      <div class="col-md-4 text-md-end mt-3 mt-md-0">
+        <div class="bg-white text-dark p-3 rounded-3 d-inline-block text-start shadow-sm">
+          <small class="text-muted d-block">Estado del Sistema</small>
+          <span class="fw-bold text-success">● 5 Módulos Activos</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SELECTOR DE LOS 5 MÓDULOS (UN MÓDULO POR INTEGRANTE) -->
+  <h4 class="fw-bold mb-3">Bosquejo General de Módulos del Proyecto</h4>
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-sm-6 col-lg" *ngFor="let mod of modulosGrupo">
+      <div
+        class="card h-100 module-card cursor-pointer border-0 shadow-sm"
+        [ngClass]="{ 'module-active': moduloActivo === mod.id }"
+        (click)="seleccionarModulo(mod.id)"
+      >
+        <div class="card-body p-3">
+          <div class="fs-3 mb-2">{{ mod.icono }}</div>
+          <h6 class="fw-bold mb-1">{{ mod.titulo }}</h6>
+          <span class="badge bg-secondary-subtle text-secondary-emphasis mb-2">
+            Resp: {{ mod.responsable }}
+          </span>
+          <p class="small text-muted mb-0">{{ mod.descripcion }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VISTA DEL BOSQUEJO SEGÚN EL MÓDULO SELECCIONADO (*ngIf) -->
+  <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+
+    <!-- BOSQUEJO MÓDULO 1: JHON -->
+    <div *ngIf="moduloActivo === 1">
+      <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
+        <div>
+          <h5 class="fw-bold mb-0">🔐 Módulo 1: Seguridad, Autenticación y Perfiles</h5>
+          <small class="text-muted">Responsable: <strong>Jhon Herrera</strong></small>
+        </div>
+        <span class="badge bg-success">Sesión Validada con AuthService</span>
+      </div>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <div class="p-3 bg-light rounded-3">
+            <small class="text-muted d-block">Usuario Autenticado</small>
+            <strong class="fs-5">{{ authService.usuarioActual }}</strong>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 bg-light rounded-3">
+            <small class="text-muted d-block">Rol Asignado</small>
+            <strong class="fs-5">Administrador / Agente</strong>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 bg-light rounded-3">
+            <small class="text-muted d-block">Control de Acceso</small>
+            <strong class="fs-5 text-primary">Variables Globales Service.ts</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOSQUEJO MÓDULO 2: ANGIE -->
+    <div *ngIf="moduloActivo === 2">
+      <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3 flex-wrap gap-2">
+        <div>
+          <h5 class="fw-bold mb-0">🏝️ Módulo 2: Catálogo de Destinos y Paquetes Turísticos</h5>
+          <small class="text-muted">Responsable: <strong>Angie</strong></small>
+        </div>
+        <div style="min-width: 240px;">
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            placeholder="🔍 Filtrar destino turístico..."
+            [(ngModel)]="filtroDestino"
+          />
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Código</th>
+              <th>Paquete Turístico</th>
+              <th>Región</th>
+              <th>Cupos</th>
+              <th>Tarifa Base</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of paquetesDestacados">
+              <td><span class="badge bg-dark">{{ p.codigo }}</span></td>
+              <td class="fw-semibold">{{ p.destino }}</td>
+              <td>{{ p.region }}</td>
+              <td>{{ p.cupos }} asientos</td>
+              <td class="fw-bold text-primary">${{ p.precio }}</td>
+              <td><span class="badge bg-success-subtle text-success-emphasis">{{ p.estado }}</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- BOSQUEJO MÓDULO 3: SEBASTIÁN -->
+    <div *ngIf="moduloActivo === 3">
+      <div class="border-bottom pb-3 mb-3">
+        <h5 class="fw-bold mb-0">🏨 Módulo 3: Gestión de Proveedores, Transporte y Hospedaje</h5>
+        <small class="text-muted">Responsable: <strong>Sebastián</strong></small>
+      </div>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <div class="border rounded-3 p-3">
+            <h6 class="fw-bold">✈️ Aerolíneas y Transporte</h6>
+            <p class="small text-muted mb-2">Latam Airlines, Avianca y Flota Terrestre AndesBus.</p>
+            <span class="badge bg-info-subtle text-info-emphasis">12 Convenios Activos</span>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="border rounded-3 p-3">
+            <h6 class="fw-bold">🛏️ Cadenas Hoteleras</h6>
+            <p class="small text-muted mb-2">Hotel Solymar Galápagos, Luna Volcán y EcoLodge Cuyabeno.</p>
+            <span class="badge bg-info-subtle text-info-emphasis">24 Hoteles Registrados</span>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="border rounded-3 p-3">
+            <h6 class="fw-bold">🧭 Guías Turísticos</h6>
+            <p class="small text-muted mb-2">Asignación de guías bilingües acreditados por ruta.</p>
+            <span class="badge bg-info-subtle text-info-emphasis">15 Guías Disponibles</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOSQUEJO MÓDULO 4: KENNY -->
+    <div *ngIf="moduloActivo === 4">
+      <div class="border-bottom pb-3 mb-3">
+        <h5 class="fw-bold mb-0">📅 Módulo 4: Motor de Cotizaciones y Reservas Multidestino</h5>
+        <small class="text-muted">Responsable: <strong>Kenny</strong></small>
+      </div>
+      <div class="row g-3 align-items-end">
+        <div class="col-md-4">
+          <label class="form-label small fw-semibold">Número de Pasajeros (Two-Way Binding)</label>
+          <input type="number" class="form-control" min="1" max="20" [(ngModel)]="pasajerosCotizar" />
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small fw-semibold">Precio por Pasajero (USD)</label>
+          <input type="number" class="form-control" [(ngModel)]="precioBasePaquete" />
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 bg-primary-subtle text-primary-emphasis rounded-3 text-center">
+            <small class="d-block">Total Cotización Estimada:</small>
+            <strong class="fs-4">${{ calcularTotalCotizacion(pasajerosCotizar, precioBasePaquete) }} USD</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOSQUEJO MÓDULO 5: DANNY -->
+    <div *ngIf="moduloActivo === 5">
+      <div class="border-bottom pb-3 mb-3">
+        <h5 class="fw-bold mb-0">💳 Módulo 5: Facturación, Control de Pagos y Valoraciones</h5>
+        <small class="text-muted">Responsable: <strong>Danny</strong></small>
+      </div>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="p-3 border rounded-3">
+            <h6 class="fw-bold">🧾 Emisión de Comprobantes y Vouchers</h6>
+            <p class="small text-muted mb-2">Registro de abonos parciales, pagos con tarjeta y generación de boleto electrónico PDF.</p>
+            <button type="button" class="btn btn-sm btn-outline-primary">Vista previa de Factura</button>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-3 border rounded-3">
+            <h6 class="fw-bold">⭐ Reseñas Post-Viaje de Clientes</h6>
+            <p class="small text-muted mb-2">Calificación promedio del servicio en paquetes multidestino: <strong>4.9 / 5.0</strong></p>
+            <span class="text-warning">★★★★★</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

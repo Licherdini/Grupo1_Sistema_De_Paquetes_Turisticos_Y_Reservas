@@ -1,12 +1,39 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+/* ==========================================================================
+   ARCHIVO: src/app/app.ts
+   FUNCIÓN: Componente raíz que contiene el Toolbar (Header), el contenedor
+            de vistas (<router-outlet>) y el Footer de AndesTravel UG.
+   ========================================================================== */
+
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterOutlet, Router } from '@angular/router';
+import { AuthService } from './services/auth.service';
 
 @Component({
-  imports: [RouterOutlet],
   selector: 'app-root',
-  styleUrl: './app.css',
+  standalone: true,
+  imports: [CommonModule, RouterOutlet],
   templateUrl: './app.html',
+  styleUrl: './app.css'
 })
 export class App {
-  protected readonly title = signal('Grupo1_Sistema_De_Paquetes_Turisticos_Y_Reservas');
+  // Datos institucionales del proyecto elegido (Interpolación {{ }})
+  nombreEmpresa: string = 'AndesTravel UG';
+  subtituloEmpresa: string = 'Paquetes Turísticos, Cotizaciones y Reservas Multidestino';
+  anioActual: number = new Date().getFullYear();
+
+  // Inyección de dependencias del Servicio global y del Router
+  constructor(
+    public authService: AuthService,
+    private router: Router
+  ) {}
+
+  irALogin(): void {
+    this.router.navigate(['/login']);
+  }
+
+  salirDelSistema(): void {
+    this.authService.cerrarSesion();
+    this.router.navigate(['/login']);
+  }
 }
