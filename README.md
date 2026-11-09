@@ -1,61 +1,85 @@
 # Grupo1_Sistema_De_Paquetes_Turisticos_Y_Reservas
 
-Proyecto de la materia de desarrollo web avanzado.
+Proyecto desarrollado para la materia de **Desarrollo de Aplicaciones Web Avanzado (DWA)**.
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.2.3.
+## 📖 Descripción del Proyecto
+Este proyecto corresponde al **Sistema de Paquetes Turísticos y Reservas** (Grupo 1). La aplicación está construida sobre **Angular** y diseñada para gestionar la visualización, selección y reserva de paquetes turísticos.
 
-## Development server
+---
 
-To start a local development server, run:
+## 🛠️ Tecnologías Utilizadas
+* **Framework:** [Angular](https://angular.dev/) (v22.2.3)
+* **Entorno de ejecución:** Node.js
+* **Lenguaje:** TypeScript
+* **Estilos:** CSS
+* **Pruebas unitarias:** Vitest
+
+---
+
+## 📋 Requisitos Previos
+Antes de iniciar, asegúrate de tener instalado en tu equipo:
+* [Node.js](https://nodejs.org/) (versión 20 o superior recomendada)
+* [Angular CLI](https://angular.dev/tools/cli) instalado de forma global (`npm install -g @angular/cli`)
+
+---
+
+## 🚀 Servidor de Desarrollo
+
+Para iniciar el servidor local de desarrollo, ejecuta en la terminal:
 
 ```bash
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Una vez que el servidor esté en ejecución, abre tu navegador e ingresa a `http://localhost:4200/`. La aplicación se recargará automáticamente al guardar cambios en los archivos fuente.
 
-## Code scaffolding
+---
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## 🧩 Generación de Código (Scaffolding)
 
-```bash
-ng generate component component-name
-```
+Angular CLI incluye herramientas para la generación rápida de componentes, servicios, pipes, etc.:
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+* **Crear un componente:**
+  ```bash
+  ng generate component nombre-del-componente
+  ```
 
-```bash
-ng generate --help
-```
+* **Crear un servicio:**
+  ```bash
+  ng generate service nombre-del-servicio
+  ```
 
-## Building
+* **Ver lista completa de generadores disponibles:**
+  ```bash
+  ng generate --help
+  ```
 
-To build the project run:
+---
+
+## 🏗️ Compilación para Producción
+
+Para compilar el proyecto y generar los artefactos optimizados:
 
 ```bash
 ng build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Los archivos compilados se guardarán dentro del directorio `dist/`. La compilación de producción optimiza el rendimiento y minifica los recursos.
 
-## Running unit tests
+---
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+## 🧪 Pruebas Unitarias
+
+Para ejecutar las pruebas unitarias mediante el ejecutor [Vitest](https://vitest.dev/):
 
 ```bash
 ng test
 ```
 
-## Running end-to-end tests
+---
 
-For end-to-end (e2e) testing, run:
+## 📚 Recursos y Documentación Oficial
 
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Para más información y consultar la documentación oficial de Angular:
+* [Guía oficial de Angular](https://angular.dev)
+* [Referencia de comandos de Angular CLI](https://angular.dev/tools/cli)
