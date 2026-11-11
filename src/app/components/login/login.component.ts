@@ -17,55 +17,52 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
+
 export class LoginComponent {
-  // Propiedades vinculadas con Two-way binding [(ngModel)]
+  nombreEmpresa: string = 'AndesTravel UG';
+
+  //Propiedades vinculadas con two-way data binding en el formulario de login
   usuario: string = '';
   clave: string = '';
   mostrarClave: boolean = false;
 
-  // Control de mensajes en pantalla
+  //Control de mensajes en pantalla
   mensajeEstado: string = '';
   esAccesoConcedido: boolean = false;
 
-  // Inyección del Servicio global y del Router para redireccionar
+  //Inyección del servicio globla y del router para redirección
   constructor(
     public authService: AuthService,
     private router: Router
-  ) {}
+  ){}
 
   validarCredenciales(): void {
-    // 1. Validar si dejó campos vacíos
-    if (this.usuario.trim() === '' || this.clave.trim() === '') {
+    //1. Validar si deja campos vacíos
+    if(this.usuario.trim() === '' || this.clave.trim() === ''){
       this.esAccesoConcedido = false;
-      this.mensajeEstado = 'Error en credenciales: Debe ingresar usuario y clave.';
-      alert('Error en credenciales: Debe ingresar usuario y clave.');
+      this.mensajeEstado = 'Por favor, complete todos los campos.';
       return;
     }
 
-    // 2. Validar contra las variables públicas de AuthService
+    //2. Validar credenciales contra las variables pubicas del servicio AuthService
     const accesoCorrecto = this.authService.validarAcceso(this.usuario, this.clave);
 
-    if (accesoCorrecto) {
+    if(accesoCorrecto){
       this.esAccesoConcedido = true;
-      this.mensajeEstado = '¡Acceso concedido! Redirigiendo a AndesTravel UG...';
-      alert('Acceso concedido');
-      // Redirección a la página principal de la propuesta
-      this.router.navigate(['/principal']);
-    } else {
+      this.mensajeEstado = 'Acceso concedido. Redirigiendo a AndesTravel UG';
+      //pausa breve antes de redirigir a la vista principal
+      setTimeout(() => this.router.navigate(['/principal']), 900);
+    }else{
       this.esAccesoConcedido = false;
-      this.mensajeEstado = 'Error en credenciales: Usuario o clave incorrectos.';
-      alert('Error en credenciales');
+      this.mensajeEstado = 'Acceso denegado. Usuario o clave incorrectos.';
     }
   }
 
-  /**
-   * FUNCIÓN: limpiarError()
-   * Quita el borde rojo y el mensaje de error apenas el usuario empieza a escribir.
-   */
+
   limpiarError(): void {
-    if (!this.esAccesoConcedido && this.mensajeEstado) {
-      this.mensajeEstado = '';
-    }
+   if(!this.esAccesoConcedido && this.mensajeEstado){
+    this.mensajeEstado = '';
+   }
   }
 
   alternarVistaClave(): void {
