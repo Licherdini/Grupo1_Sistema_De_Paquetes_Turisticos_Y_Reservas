@@ -9,6 +9,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { ProyectoInfoService } from '../../services/proyecto-info.service';
 
 @Component({
   selector: 'app-login',
@@ -17,52 +18,57 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
-
 export class LoginComponent {
-  nombreEmpresa: string = 'AndesTravel UG';
-
-  //Propiedades vinculadas con two-way data binding en el formulario de login
+  // Propiedades vinculadas con Two-way binding [(ngModel)]
   usuario: string = '';
   clave: string = '';
   mostrarClave: boolean = false;
 
-  //Control de mensajes en pantalla
+  // Control de mensajes en pantalla (sin diálogos emergentes)
   mensajeEstado: string = '';
   esAccesoConcedido: boolean = false;
 
-  //Inyección del servicio globla y del router para redirección
+  // Inyección de los servicios globales y del Router para redireccionar
   constructor(
     public authService: AuthService,
+    public proyectoInfo: ProyectoInfoService,
     private router: Router
-  ){}
+  ) {}
 
   validarCredenciales(): void {
-    //1. Validar si deja campos vacíos
-    if(this.usuario.trim() === '' || this.clave.trim() === ''){
+    // 1. Validar si dejó campos vacíos
+    if (this.usuario.trim() === '' || this.clave.trim() === '') {
       this.esAccesoConcedido = false;
-      this.mensajeEstado = 'Por favor, complete todos los campos.';
+      this.mensajeEstado = 'Error en credenciales: Debe ingresar usuario y clave.';
       return;
     }
 
-    //2. Validar credenciales contra las variables pubicas del servicio AuthService
-    const accesoCorrecto = this.authService.validarAcceso(this.usuario, this.clave);
+    // 2. Validar contra las variables públicas de AuthService (sin iniciar sesión aún)
+    const accesoCorrecto = this.authService.credencialesValidas(this.usuario, this.clave);
 
-    if(accesoCorrecto){
+    if (accesoCorrecto) {
       this.esAccesoConcedido = true;
-      this.mensajeEstado = 'Acceso concedido. Redirigiendo a AndesTravel UG';
-      //pausa breve antes de redirigir a la vista principal
-      setTimeout(() => this.router.navigate(['/principal']), 900);
-    }else{
+      this.mensajeEstado = '¡Acceso concedido! Redirigiendo a AndesTravel UG...';
+      // Pausa breve para leer el mensaje. La sesión se activa justo antes de navegar,
+      // así el Header cambia cuando el usuario ya está en /principal.
+      setTimeout(() => {
+        this.authService.iniciarSesion(this.usuario);
+        this.router.navigate(['/principal']);
+      }, 900);
+    } else {
       this.esAccesoConcedido = false;
-      this.mensajeEstado = 'Acceso denegado. Usuario o clave incorrectos.';
+      this.mensajeEstado = 'Error en credenciales: Usuario o clave incorrectos.';
     }
   }
 
-
+  /**
+   * Quita el mensaje de error apenas el usuario empieza a escribir.
+   * Se invoca desde la plantilla con (input)="limpiarError()".
+   */
   limpiarError(): void {
-   if(!this.esAccesoConcedido && this.mensajeEstado){
-    this.mensajeEstado = '';
-   }
+    if (!this.esAccesoConcedido && this.mensajeEstado) {
+      this.mensajeEstado = '';
+    }
   }
 
   alternarVistaClave(): void {
