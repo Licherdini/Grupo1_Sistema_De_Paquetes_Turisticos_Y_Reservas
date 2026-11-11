@@ -91,7 +91,7 @@
    >>> Para ajustar cuándo aparece la hamburguesa, cambia SOLO el valor
    >>> de max-width de la siguiente línea:
    ========================================================================== */
-@media (max-width: 767.98px) {
+@media (max-width: 60px) {
   .main-header {
     flex-wrap: nowrap;
     padding: 12px 16px;
