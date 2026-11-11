@@ -19,7 +19,12 @@
   padding: var(--card-padding);
   border-radius: var(--card-radio-borde);
 
-  
+  background: linear-gradient(
+    180deg,
+    var(--card-degradado-arriba) 0%,
+    var(--card-degradado-medio) 45%,
+    var(--card-degradado-abajo) 100%
+  );
 
   border: 1.5px solid var(--card-borde-externo);
   box-shadow:
@@ -43,6 +48,10 @@
   justify-content: center;
   box-shadow: 0 10px 22px var(--card-sombra-color);
   color: var(--icono-color);
+}
+
+.hint-credenciales {
+  font-size: 0.78rem;
 }
 
 .icon-svg-header {

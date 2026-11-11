@@ -25,7 +25,7 @@
   <div class="row g-3 mb-4">
     <div class="col-12 col-sm-6 col-lg" *ngFor="let mod of modulosGrupo">
       <div
-        class="card h-100 module-card cursor-pointer border-0 shadow-sm"
+        class="card h-100 module-card border-0 shadow-sm"
         [ngClass]="{ 'module-active': moduloActivo === mod.id }"
         (click)="seleccionarModulo(mod.id)"
       >
@@ -183,7 +183,7 @@
           </div>
         </div>
       </div>
-            <div class="mt-3 d-flex align-items-center gap-3 flex-wrap">
+      <div class="mt-3 d-flex align-items-center gap-3 flex-wrap">
         <button
           type="button"
           class="btn btn-primary"

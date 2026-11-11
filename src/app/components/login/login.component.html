@@ -13,7 +13,7 @@
       Ingresa tus credenciales para acceder al sistema de paquetes turísticos y reservas.
     </p>
 
-    <form class="login-form" (ngSubmit)="validarCredenciales()" novalidate>
+    <form class="login-form" (ngSubmit)="validarCredenciales()" (keyup.enter)="validarCredenciales()" novalidate>
       <!-- Textbox Usuario con Two-Way Binding [(ngModel)] -->
       <div class="campo-login">
         <svg class="input-icon" viewBox="0 0 24 24" fill="currentColor">
@@ -72,7 +72,7 @@
 
       <!-- Pista académica para pruebas rápidas del profesor -->
       <div class="text-end mb-1">
-        <small class="text-muted" style="font-size: 0.78rem;">
+        <small class="text-muted hint-credenciales">
           Credenciales de prueba: <strong>{{ authService.usuarioValido }}</strong> / <strong>{{ authService.claveValida }}</strong>
         </small>
       </div>
