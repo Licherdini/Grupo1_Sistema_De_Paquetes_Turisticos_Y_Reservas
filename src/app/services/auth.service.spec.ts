@@ -10,27 +10,31 @@ describe('AuthService', () => {
   });
 
   it('debe iniciar sin ninguna sesión activa', () => {
-    expect(service.estaLogueado).toBe(false);
-    expect(service.usuarioActual).toBe('');
+    expect(service.estaLogueado()).toBe(false);
+    expect(service.usuarioActual()).toBe('');
   });
 
-  it('debe conceder acceso al ingresar credenciales válidas', () => {
-    const resultado = service.validarAcceso(service.usuarioValido, service.claveValida);
+  it('debe validar credenciales correctas sin iniciar la sesión todavía', () => {
+    const resultado = service.credencialesValidas(service.usuarioValido, service.claveValida);
     expect(resultado).toBe(true);
-    expect(service.estaLogueado).toBe(true);
-    expect(service.usuarioActual).toBe(service.usuarioValido);
+    expect(service.estaLogueado()).toBe(false);
   });
 
-  it('debe denegar el acceso ante credenciales incorrectas', () => {
-    const resultado = service.validarAcceso('otro', 'incorrecta');
-    expect(resultado).toBe(false);
-    expect(service.estaLogueado).toBe(false);
+  it('debe rechazar credenciales incorrectas', () => {
+    expect(service.credencialesValidas('otro', 'incorrecta')).toBe(false);
+    expect(service.estaLogueado()).toBe(false);
+  });
+
+  it('debe activar la sesión al invocar iniciarSesion', () => {
+    service.iniciarSesion(service.usuarioValido);
+    expect(service.estaLogueado()).toBe(true);
+    expect(service.usuarioActual()).toBe(service.usuarioValido);
   });
 
   it('debe limpiar los datos de sesión al cerrar sesión', () => {
-    service.validarAcceso(service.usuarioValido, service.claveValida);
+    service.iniciarSesion(service.usuarioValido);
     service.cerrarSesion();
-    expect(service.estaLogueado).toBe(false);
-    expect(service.usuarioActual).toBe('');
+    expect(service.estaLogueado()).toBe(false);
+    expect(service.usuarioActual()).toBe('');
   });
 });

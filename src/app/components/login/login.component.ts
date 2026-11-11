@@ -54,7 +54,7 @@ export class LoginComponent {
       setTimeout(() => {
         this.authService.iniciarSesion(this.usuario);
         this.router.navigate(['/principal']);
-      }, 900);
+      }, 1000);
     } else {
       this.esAccesoConcedido = false;
       this.mensajeEstado = 'Error en credenciales: Usuario o clave incorrectos.';

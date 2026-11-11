@@ -44,6 +44,12 @@
   flex-shrink: 0;
 }
 
+.icono-avion {
+  width: 20px;
+  height: 20px;
+  transform: rotate(45deg);
+}
+
 .brand-name {
   font-size: 1.2rem;
   font-weight: 700;
@@ -95,6 +101,19 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Insignia del usuario: ícono SVG alineado con el texto */
+.header-actions .badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.icono-usuario {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
 }
 
 /* ==========================================================================

@@ -26,7 +26,7 @@ describe('authGuard', () => {
 
   it('debe permitir la navegación cuando la sesión está activa', () => {
     const auth = TestBed.inject(AuthService);
-    auth.validarAcceso(auth.usuarioValido, auth.claveValida);
+    auth.iniciarSesion(auth.usuarioValido);
     expect(ejecutarGuardia()).toBe(true);
   });
 });
