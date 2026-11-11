@@ -1,0 +1,53 @@
+<header class="main-header shadow-sm">
+  <!-- IZQUIERDA: logo y nombre de la empresa (siempre visibles) -->
+  <div class="brand">
+    <div class="brand-logo">✈️</div>
+    <div>
+      <span class="brand-name">{{ proyectoInfo.nombreEmpresa }}</span>
+      <small class="brand-subtitle text-muted">{{ proyectoInfo.subtituloEmpresa }}</small>
+    </div>
+  </div>
+
+  <!-- DERECHA (solo teléfono): botón de hamburguesa -->
+  <button
+    type="button"
+    class="btn-menu"
+    aria-label="Abrir o cerrar el menú"
+    aria-controls="menu-principal"
+    [attr.aria-expanded]="menuAbierto"
+    (click)="alternarMenu()"
+  >
+    <svg *ngIf="!menuAbierto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+      <line x1="3" y1="6" x2="21" y2="6" />
+      <line x1="3" y1="12" x2="21" y2="12" />
+      <line x1="3" y1="18" x2="21" y2="18" />
+    </svg>
+    <svg *ngIf="menuAbierto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+      <line x1="5" y1="5" x2="19" y2="19" />
+      <line x1="19" y1="5" x2="5" y2="19" />
+    </svg>
+  </button>
+
+  <!-- OPCIONES: en escritorio van en línea; en teléfono se despliegan bajo el header -->
+  <nav id="menu-principal" class="header-actions" [ngClass]="{ 'menu-abierto': menuAbierto }">
+    <!-- Sin sesión -->
+    <ng-container *ngIf="!authService.estaLogueado">
+      <button type="button" class="btn btn-outline-dark btn-sm px-3 fw-semibold" (click)="cerrarMenu()">
+        Acerca de
+      </button>
+      <button type="button" class="btn btn-dark btn-sm px-3 fw-semibold" (click)="irALogin()">
+        Iniciar Sesión
+      </button>
+    </ng-container>
+
+    <!-- Con sesión -->
+    <ng-container *ngIf="authService.estaLogueado">
+      <span class="badge bg-primary-subtle text-primary-emphasis px-3 py-2 rounded-pill fw-semibold">
+        👤 Usuario: {{ authService.usuarioActual | uppercase }}
+      </span>
+      <button type="button" class="btn btn-danger btn-sm px-3 fw-semibold" (click)="salirDelSistema()">
+        Cerrar Sesión
+      </button>
+    </ng-container>
+  </nav>
+</header>
