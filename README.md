@@ -1,85 +1,44 @@
 # Grupo1_Sistema_De_Paquetes_Turisticos_Y_Reservas
 
-Proyecto desarrollado para la materia de **Desarrollo de Aplicaciones Web Avanzado (DWA)**.
+Proyecto de la asignatura **Desarrollo de Aplicaciones Web Avanzado (DAWA)** — Universidad de Guayaquil.
+Docente: Ph.D. Jorge Luis Charco Aguirre.
 
-## Descripción del Proyecto
-Este proyecto corresponde al **Sistema de Paquetes Turísticos y Reservas** (Grupo 1). La aplicación está construida sobre **Angular** y diseñada para gestionar la visualización, selección y reserva de paquetes turísticos.
+## Descripción
+**AndesTravel UG**: Single Page Application para la comercialización de paquetes turísticos, cotizaciones y reservas multidestino
 
----
+## Integrantes y módulos
+| Módulo | Integrante |
+|:--:|:--|
+| 1. Seguridad, Autenticación y Perfiles | Jhon Herrera Merchán |
+| 2. Catálogo de Paquetes y Destinos | Angie Lopez Mena |
+| 3. Proveedores, Hoteles y Transporte | Sebastián Acosta Andrade |
+| 4. Cotizaciones y Reservas | Kenny Ormaza Padilla |
+| 5. Facturación, Pagos y Reseñas | Danny Guaman Yucailla |
 
-## Tecnologías Utilizadas
-* **Framework:** [Angular](https://angular.dev/) (v22.2.3)
-* **Entorno de ejecución:** Node.js
-* **Lenguaje:** TypeScript
-* **Estilos:** CSS
-* **Pruebas unitarias:** Vitest
+## Tecnologías
+Angular 22 (componentes Standalone), TypeScript, Bootstrap 5.3 (CDN), CSS, Vitest.
 
----
+## Requisitos previos
+- Node.js **22.22.3 o superior** (también compatible 24.15.0+), según los `engines` de Angular 22.
+- Angular CLI: `npm install -g @angular/cli`
 
-##  Requisitos Previos
-Antes de iniciar, asegúrate de tener instalado en tu equipo:
-* [Node.js](https://nodejs.org/) (versión 20 o superior recomendada)
-* [Angular CLI](https://angular.dev/tools/cli) instalado de forma global (`npm install -g @angular/cli`)
-
----
-
-## Servidor de Desarrollo
-
-Para iniciar el servidor local de desarrollo, ejecuta en la terminal:
-
+## Instalación y ejecución
 ```bash
+npm install
 ng serve
 ```
+Abrir `http://localhost:4200/`.
 
-Una vez que el servidor esté en ejecución, abre tu navegador e ingresa a `http://localhost:4200/`. La aplicación se recargará automáticamente al guardar cambios en los archivos fuente.
+## Credenciales de prueba (validación interna en `AuthService`)
+- Usuario: `admin`
+- Clave: `12345`
 
----
+## Rutas
+- `/login`: acceso (componente embebido, sin modales).
+- `/principal`: panel y bosquejo de los 5 módulos (protegido por guardia de ruta).
 
-## Generación de Código (Scaffolding)
-
-Angular CLI incluye herramientas para la generación rápida de componentes, servicios, pipes, etc.:
-
-* **Crear un componente:**
-  ```bash
-  ng generate component nombre-del-componente
-  ```
-
-* **Crear un servicio:**
-  ```bash
-  ng generate service nombre-del-servicio
-  ```
-
-* **Ver lista completa de generadores disponibles:**
-  ```bash
-  ng generate --help
-  ```
-
----
-
-## Compilación para Producción
-
-Para compilar el proyecto y generar los artefactos optimizados:
-
+## Comandos útiles
 ```bash
-ng build
+ng build              # compilación de producción en dist/
+ng test --no-watch    # pruebas unitarias con Vitest
 ```
-
-Los archivos compilados se guardarán dentro del directorio `dist/`. La compilación de producción optimiza el rendimiento y minifica los recursos.
-
----
-
-## Pruebas Unitarias
-
-Para ejecutar las pruebas unitarias mediante el ejecutor [Vitest](https://vitest.dev/):
-
-```bash
-ng test
-```
-
----
-
-## Recursos y Documentación Oficial
-
-Para más información y consultar la documentación oficial de Angular:
-* [Guía oficial de Angular](https://angular.dev)
-* [Referencia de comandos de Angular CLI](https://angular.dev/tools/cli)

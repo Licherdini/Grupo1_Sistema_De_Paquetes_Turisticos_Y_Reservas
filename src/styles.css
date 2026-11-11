@@ -2,38 +2,38 @@
    ARCHIVO: src/styles.css
    FUNCIÓN: Define las variables globales de color, tamaños, tipografía y el
             fondo de cielo frío que se compartirá entre el Login y futuros
-            módulos (como Registro)[cite: 7].
+            módulos (como Registro).
    ========================================================================== */
 
 :root {
-  /* ---------------- [CAMBIAR COLORES DEL FONDO DE PÁGINA AQUÍ] ---------------- */
+  /* ---------------- CAMBIAR COLORES DEL FONDO DE PÁGINA AQUÍ ---------------- */
   --bg-cielo-arriba: #8fd3f4;          /* Azul cielo superior del fondo */
   --bg-cielo-medio: #bfe9ff;           /* Celeste intermedio del fondo */
   --bg-cielo-abajo: #eef8ff;           /* Blanco azulado inferior (efecto nubes) */
 
-  /* ---------------- [CAMBIAR COLORES DE LA TARJETA LOGIN AQUÍ] ---------------- */
+  /* ---------------- CAMBIAR COLORES DE LA TARJETA LOGIN AQUÍ ---------------- */
   --card-degradado-arriba: #c7eeff;    /* Celeste intenso en el tope de la tarjeta */
   --card-degradado-medio: #eff9ff;     /* Transición suave hacia el centro */
-  --card-degradado-abajo: #ffffff;     /* Blanco sólido en la mitad inferior[cite: 3] */
-  --card-borde-externo: #9bd4f5;       /* Borde azulado que separa la tarjeta del fondo[cite: 3] */
+  --card-degradado-abajo: #ffffff;     /* Blanco sólido en la mitad inferior */
+  --card-borde-externo: #9bd4f5;       /* Borde azulado que separa la tarjeta del fondo */
   --card-sombra-color: rgba(14, 65, 115, 0.16); /* Sombra profunda para dar relieve 3D */
-  --card-sombra-inferior: rgba(147, 130, 220, 0.22); /* Reflejo frío al pie de la tarjeta[cite: 3] */
+  --card-sombra-inferior: rgba(147, 130, 220, 0.22); /* Reflejo frío al pie de la tarjeta */
 
-  /* ---------------- [CAMBIAR COLORES DE TEXTOS E INPUTS AQUÍ] ---------------- */
+  /* ---------------- CAMBIAR COLORES DE TEXTOS E INPUTS AQUÍ ---------------- */
   --color-titulo: #0f172a;             /* Color del título "Iniciar Sesión" */
   --color-subtitulo: #64748b;          /* Color de textos secundarios y placeholders */
-  --input-fondo: #eff4f9;              /* Gris azulado suave de las cajas Usuario/Clave[cite: 3] */
+  --input-fondo: #eff4f9;              /* Gris azulado suave de las cajas Usuario/Clave */
   --input-borde-foco: #38bdf8;         /* Color del borde cuando el usuario hace clic */
-  --icono-color: #64748b;              /* Color gris neutro de los íconos SVG[cite: 3] */
+  --icono-color: #64748b;              /* Color gris neutro de los íconos SVG */
 
-  /* ---------------- [CAMBIAR COLORES DEL BOTÓN ACEPTAR AQUÍ] ----------------- */
-  --btn-degradado-arriba: #333842;     /* Brillo superior del botón oscuro[cite: 3] */
-  --btn-degradado-abajo: #31353c;      /* Negro profundo inferior del botón[cite: 3] */
+  /* ---------------- CAMBIAR COLORES DEL BOTÓN ACEPTAR AQUÍ ----------------- */
+  --btn-degradado-arriba: #333842;     /* Brillo superior del botón oscuro */
+  --btn-degradado-abajo: #31353c;      /* Negro profundo inferior del botón */
   --btn-texto-color: #ffffff;          /* Texto blanco del botón */
 
-  /* ---------------- [CAMBIAR TAMAÑOS Y BORDES GENERALES AQUÍ] ---------------- */
+  /* ---------------- CAMBIAR TAMAÑOS Y BORDES GENERALES AQUÍ ---------------- */
   --card-ancho-max: 420px;             /* Ancho de la tarjeta de Login */
-  --card-radio-borde: 32px;            /* Redondeo de las esquinas de la tarjeta[cite: 3] */
+  --card-radio-borde: 32px;            /* Redondeo de las esquinas de la tarjeta */
   --card-padding: 40px 36px;           /* Espacio interno (alto x ancho) de la tarjeta */
   --titulo-tamano: 1.65rem;            /* Tamaño de letra del título principal */
   --subtitulo-tamano: 0.92rem;         /* Tamaño de letra del subtítulo */
@@ -50,11 +50,11 @@
 
 html, body {
   min-height: 100vh;
-  /* [CAMBIAR TIPOGRAFÍA GLOBAL AQUÍ] */
+  /* CAMBIAR TIPOGRAFÍA GLOBAL AQUÍ */
   font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
   color: var(--color-titulo);
 
-  /* Fondo global multicapa (nubes blancas inferiores + cielo degradado frío)[cite: 2, 3] */
+  /* Fondo global multicapa (nubes blancas inferiores + cielo degradado frío) */
   background:
     radial-gradient(circle at 20% 92%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0) 45%),
     radial-gradient(circle at 80% 90%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0) 45%),
@@ -64,14 +64,14 @@ html, body {
   overflow-x: hidden;
 }
 
-/* Arco blanco translúcido detrás de la tarjeta (idéntico a la referencia Ebolt)[cite: 2, 3] */
+/* Arco blanco translúcido decorativo detrás de la tarjeta de login. */
 body::before {
   content: '';
   position: fixed;
   top: 56%;
   left: 50%;
   transform: translate(-50%, -50%);
-  /* [CAMBIAR TAMAÑO DEL ARCO DECORATIVO DE FONDO AQUÍ] */
+  /* CAMBIAR TAMAÑO DEL ARCO DECORATIVO DE FONDO AQUÍ */
   width: 820px;
   height: 820px;
   border-radius: 50%;

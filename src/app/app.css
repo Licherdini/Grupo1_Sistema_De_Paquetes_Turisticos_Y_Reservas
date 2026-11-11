@@ -65,19 +65,6 @@
   transition: all 0.2s ease;
 }
 
-.btn-secondary {
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid var(--card-borde-externo);
-  color: #1e293b;
-}
-
-.btn-primary {
-  background: linear-gradient(180deg, var(--btn-degradado-arriba) 0%, var(--btn-degradado-abajo) 100%);
-  border: none;
-  color: var(--btn-texto-color);
-  box-shadow: 0 4px 12px var(--card-sombra-color);
-}
-
 /* Contenedor central */
 .main-content {
   flex: 1;
@@ -88,11 +75,11 @@
   width: 100%;
 }
 
-app-login {
+/*app-login {
   width: 100%;
   display: flex;
   justify-content: center;
-}
+}*/
 
 /* Pie de página */
 .main-footer {
@@ -117,13 +104,6 @@ app-login {
   .header-actions {
     width: 100%;
     justify-content: center;
-  }
-
-  .btn-header {
-    flex: 1;
-    max-width: 150px;
-    padding: 8px 12px;
-    font-size: 0.82rem;
   }
 
   .main-footer {

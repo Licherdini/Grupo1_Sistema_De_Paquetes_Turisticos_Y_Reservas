@@ -21,6 +21,8 @@ export class App {
   nombreEmpresa: string = 'AndesTravel UG';
   subtituloEmpresa: string = 'Paquetes Turísticos, Cotizaciones y Reservas Multidestino';
   anioActual: number = new Date().getFullYear();
+  integrantes: string =
+    'Jhon Herrera Merchán, Angie López Mena, Sebastián Acosta Andrade, Kenny Ormaza Padilla y Danny Guaman Yucailla';
 
   // Inyección de dependencias del Servicio global y del Router
   constructor(
@@ -31,6 +33,9 @@ export class App {
   irALogin(): void {
     this.router.navigate(['/login']);
   }
+
+
+
 
   salirDelSistema(): void {
     this.authService.cerrarSesion();
