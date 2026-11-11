@@ -14,28 +14,30 @@ export class AuthService {
   public usuarioValido: string = 'admin';
   public claveValida: string = '12345';
 
-  // 2. Variables públicas globales para controlar el Toolbar (Header)
+  // 2. Variables públicas globales que controlan el Toolbar (Header)
   public estaLogueado: boolean = false;
   public usuarioActual: string = '';
 
   constructor() { }
 
   /**
-   * Valida internamente las credenciales ingresadas contra las variables públicas
+   * Solo COMPARA las credenciales ingresadas con las variables públicas.
+   * No modifica el estado de la sesión.
    */
-  validarAcceso(usuarioIngresado: string, claveIngresada: string): boolean {
-    if (
+  credencialesValidas(usuarioIngresado: string, claveIngresada: string): boolean {
+    return (
       usuarioIngresado.trim() === this.usuarioValido &&
       claveIngresada.trim() === this.claveValida
-    ) {
-      this.estaLogueado = true;
-      this.usuarioActual = usuarioIngresado.trim();
-      return true;
-    } else {
-      this.estaLogueado = false;
-      this.usuarioActual = '';
-      return false;
-    }
+    );
+  }
+
+  /**
+   * Activa la sesión. Se invoca cuando el usuario ya va a entrar a /principal,
+   * para que el Header cambie en ese momento y no antes.
+   */
+  iniciarSesion(usuarioIngresado: string): void {
+    this.estaLogueado = true;
+    this.usuarioActual = usuarioIngresado.trim();
   }
 
   /**
