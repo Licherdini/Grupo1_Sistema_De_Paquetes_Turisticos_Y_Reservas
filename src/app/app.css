@@ -1,6 +1,6 @@
 /* ==========================================================================
    ARCHIVO: src/app/app.css
-   FUNCIÓN: Estructura principal con soporte responsivo para móviles y escritorio.
+   FUNCIÓN: Estructura principal de pantalla completa (Header + Main + Footer).
    ========================================================================== */
 
 .layout-wrapper {
@@ -12,59 +12,6 @@
   justify-content: space-between;
 }
 
-/* Cabecera */
-.main-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-  padding: 18px 40px;
-  background: rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(8px);
-
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.brand-logo {
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  background: linear-gradient(180deg, var(--btn-degradado-arriba) 0%, var(--btn-degradado-abajo) 100%);
-  color: var(--btn-texto-color);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  box-shadow: 0 4px 10px var(--card-sombra-color);
-}
-
-.brand-name {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--color-titulo);
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.btn-header {
-  padding: 9px 16px;
-  border-radius: 10px;
-  font-size: 0.86rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
 /* Contenedor central */
 .main-content {
   flex: 1;
@@ -73,41 +20,4 @@
   justify-content: center;
   padding: 20px 16px;
   width: 100%;
-}
-
-/*app-login {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}*/
-
-/* Pie de página */
-.main-footer {
-  text-align: center;
-  padding: 14px 16px;
-  font-size: 0.82rem;
-  color: var(--color-subtitulo);
-  background: rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(8px);
-  border-top: 1px solid rgba(255, 255, 255, 0.5);
-}
-
-/* ---------------- MEDIA QUERIES (TABLETS Y CELULARES) ---------------- */
-@media (max-width: 640px) {
-  .main-header {
-    flex-direction: column;
-    justify-content: center;
-    padding: 14px 16px;
-    text-align: center;
-  }
-
-  .header-actions {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .main-footer {
-    font-size: 0.76rem;
-    line-height: 1.4;
-  }
 }

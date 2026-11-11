@@ -1,46 +1,12 @@
 <div class="layout-wrapper">
-  <!-- TOOLBAR / HEADER DINÁMICO -->   <!-- PIE DE PÁGINA (COPYRIGHT) PENDIENTE UN COMPONENTE APARTE PARA EL HEADER --> 
-  <header class="main-header shadow-sm">
-    <div class="brand">
-      <div class="brand-logo">✈️</div>
-      <div>
-        <span class="brand-name">{{ nombreEmpresa }}</span>
-        <small class="d-none d-md-block text-muted" style="font-size: 0.75rem;">
-          {{ subtituloEmpresa }}
-        </small>
-      </div>
-    </div>
+  <!-- TOOLBAR / HEADER (componente independiente) -->
+  <app-header></app-header>
 
-    <!-- VISTA 1 DEL TOOLBAR: Cuando NO ha iniciado sesión (*ngIf) -->
-    <nav class="header-actions" *ngIf="!authService.estaLogueado">
-      <button type="button" class="btn btn-outline-dark btn-sm px-3 fw-semibold">
-        Acerca de
-      </button>
-      <button type="button" class="btn btn-dark btn-sm px-3 fw-semibold" (click)="irALogin()">
-        Iniciar Sesión
-      </button>
-    </nav>
-
-    <!-- VISTA 2 DEL TOOLBAR: Cuando el acceso es CONCEDIDO (*ngIf) -->
-    <nav class="header-actions" *ngIf="authService.estaLogueado">
-      <span class="badge bg-primary-subtle text-primary-emphasis px-3 py-2 rounded-pill fw-semibold">
-        👤 Usuario: {{ authService.usuarioActual | uppercase }}
-      </span>
-      <button type="button" class="btn btn-danger btn-sm px-3 fw-semibold" (click)="salirDelSistema()">
-        Cerrar Sesión
-      </button>
-    </nav>
-  </header>
-
-  <!-- CONTENIDO CENTRAL DINÁMICO (Muestra Login o Página Principal según la ruta) -->
+  <!-- CONTENIDO CENTRAL DINÁMICO (Login o Página Principal según la ruta) -->
   <main class="main-content">
     <router-outlet></router-outlet>
   </main>
 
-  <!-- PIE DE PÁGINA (COPYRIGHT) PENDIENTE UN COMPONENTE APARTE PARA EL FOOTER--> 
-  <footer class="main-footer">
-    <p class="mb-0">
-      © {{ anioActual }} <strong>{{ nombreEmpresa }}</strong> — Grupo 1: {{ integrantes }}. Todos los derechos reservados.
-    </p>
-  </footer>
+  <!-- PIE DE PÁGINA (componente independiente) -->
+  <app-footer></app-footer>
 </div>
