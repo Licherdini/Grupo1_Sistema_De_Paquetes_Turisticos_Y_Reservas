@@ -4,7 +4,7 @@
                      de forma global entre componentes (Diapositivas 16 y 17).
    ========================================================================== */
 
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
@@ -15,8 +15,8 @@ export class AuthService {
   public claveValida: string = '12345';
 
   // 2. Variables públicas globales que controlan el Toolbar (Header)
-  public estaLogueado: boolean = false;
-  public usuarioActual: string = '';
+  public estaLogueado = signal<boolean>(false);
+  public usuarioActual = signal<string>('');
 
   constructor() { }
 
@@ -36,15 +36,15 @@ export class AuthService {
    * para que el Header cambie en ese momento y no antes.
    */
   iniciarSesion(usuarioIngresado: string): void {
-    this.estaLogueado = true;
-    this.usuarioActual = usuarioIngresado.trim();
+    this.estaLogueado.set(true);
+    this.usuarioActual.set(usuarioIngresado.trim());
   }
 
   /**
    * Cierra la sesión activa y limpia las variables globales
    */
   cerrarSesion(): void {
-    this.estaLogueado = false;
-    this.usuarioActual = '';
+    this.estaLogueado.set(false);
+    this.usuarioActual.set('');
   }
 }

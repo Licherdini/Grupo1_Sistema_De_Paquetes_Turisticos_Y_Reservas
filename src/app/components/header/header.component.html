@@ -31,7 +31,7 @@
   <!-- OPCIONES: en escritorio van en línea; en teléfono se despliegan bajo el header -->
   <nav id="menu-principal" class="header-actions" [ngClass]="{ 'menu-abierto': menuAbierto }">
     <!-- Sin sesión -->
-    <ng-container *ngIf="!authService.estaLogueado">
+    <ng-container *ngIf="!authService.estaLogueado()">
       <button type="button" class="btn btn-outline-dark btn-sm px-3 fw-semibold" (click)="cerrarMenu()">
         Acerca de
       </button>
@@ -41,9 +41,9 @@
     </ng-container>
 
     <!-- Con sesión -->
-    <ng-container *ngIf="authService.estaLogueado">
+    <ng-container *ngIf="authService.estaLogueado()">
       <span class="badge bg-primary-subtle text-primary-emphasis px-3 py-2 rounded-pill fw-semibold">
-        👤 Usuario: {{ authService.usuarioActual | uppercase }}
+        👤 Usuario: {{ authService.usuarioActual() | uppercase }}
       </span>
       <button type="button" class="btn btn-danger btn-sm px-3 fw-semibold" (click)="salirDelSistema()">
         Cerrar Sesión
