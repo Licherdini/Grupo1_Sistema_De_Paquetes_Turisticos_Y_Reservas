@@ -37,4 +37,32 @@ describe('AuthService', () => {
     expect(service.estaLogueado()).toBe(false);
     expect(service.usuarioActual()).toBe('');
   });
+
+    it('debe rechazar un perfil inactivo aunque la clave sea correcta', () => {
+    const inactivo = service.perfiles.find((perfil) => !perfil.activo)!;
+    expect(service.credencialesValidas(inactivo.usuario, inactivo.clave)).toBe(false);
+  });
+
+  it('debe asignar el rol del perfil al iniciar sesión', () => {
+    service.iniciarSesion(service.usuarioValido);
+    expect(service.rolActual()).toBe('Administrador');
+  });
+
+  it('debe registrar los accesos con el más reciente primero', () => {
+    service.registrarAcceso('otro', false);
+    service.registrarAcceso('admin', true);
+    const accesos = service.registroAccesos();
+    expect(accesos.length).toBe(2);
+    expect(accesos[0].usuario).toBe('admin');
+    expect(accesos[0].exitoso).toBe(true);
+  });
+
+  it('debe restaurar la sesión al recargar la página', () => {
+    service.iniciarSesion(service.usuarioValido);
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({});
+    const servicioNuevo = TestBed.inject(AuthService);
+    expect(servicioNuevo.estaLogueado()).toBe(true);
+    expect(servicioNuevo.usuarioActual()).toBe('admin');
+  });
 });

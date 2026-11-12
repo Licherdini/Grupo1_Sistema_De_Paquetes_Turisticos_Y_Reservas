@@ -35,7 +35,14 @@ export class LoginComponent {
     private router: Router
   ) {}
 
+  
+
   validarCredenciales(): void {
+    // Evita envíos repetidos mientras se muestra "Acceso concedido"
+    if (this.esAccesoConcedido) {
+      return;
+    }
+
     // 1. Validar si dejó campos vacíos
     if (this.usuario.trim() === '' || this.clave.trim() === '') {
       this.esAccesoConcedido = false;
@@ -45,6 +52,9 @@ export class LoginComponent {
 
     // 2. Validar contra las variables públicas de AuthService (sin iniciar sesión aún)
     const accesoCorrecto = this.authService.credencialesValidas(this.usuario, this.clave);
+
+   // Auditoría (Módulo 1): deja constancia del intento, sea exitoso o fallido
+    this.authService.registrarAcceso(this.usuario, accesoCorrecto);
 
     if (accesoCorrecto) {
       this.esAccesoConcedido = true;

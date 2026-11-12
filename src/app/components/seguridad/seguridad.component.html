@@ -1,0 +1,134 @@
+<!-- Estado de la sesión -->
+<div class="mb-3">
+  <span
+    class="badge"
+    [ngClass]="{
+      'bg-success-subtle text-success-emphasis': authService.estaLogueado(),
+      'bg-secondary-subtle text-secondary-emphasis': !authService.estaLogueado()
+    }"
+  >
+    {{ authService.estaLogueado() ? 'Sesión validada con AuthService' : 'Sin sesión activa' }}
+  </span>
+</div>
+
+<!-- Indicadores de la sesión activa -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg-3">
+    <div class="superficie-vidrio indicador p-3 h-100">
+      <small class="indicador-etiqueta">Usuario autenticado</small>
+      <strong class="indicador-valor">{{ authService.usuarioActual() | uppercase }}</strong>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="superficie-vidrio indicador p-3 h-100">
+      <small class="indicador-etiqueta">Rol asignado</small>
+      <strong class="indicador-valor">{{ authService.rolActual() }}</strong>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="superficie-vidrio indicador p-3 h-100">
+      <small class="indicador-etiqueta">Inicio de sesión</small>
+      <strong class="indicador-valor">{{ authService.horaInicioSesion() | date: 'dd/MM/yyyy HH:mm:ss' }}</strong>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="superficie-vidrio indicador p-3 h-100">
+      <small class="indicador-etiqueta">Duración de la sesión</small>
+      <strong class="indicador-valor indicador-duracion">{{ duracionSesion() }}</strong>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <!-- Perfiles registrados -->
+  <div class="col-lg-6">
+    <div class="superficie-vidrio p-3 h-100">
+      <h6 class="fw-bold mb-3">Perfiles registrados</h6>
+      <div class="table-responsive">
+        <table class="table tabla-vidrio align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Usuario</th>
+              <th>Rol</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let perfil of authService.perfiles"
+              [ngClass]="{ 'fila-sesion-actual': perfil.usuario === authService.usuarioActual() }"
+            >
+              <td class="fw-semibold">{{ perfil.usuario }}</td>
+              <td>{{ perfil.rol }}</td>
+              <td>
+                <span
+                  class="badge"
+                  [ngClass]="
+                    perfil.activo
+                      ? 'bg-success-subtle text-success-emphasis'
+                      : 'bg-secondary-subtle text-secondary-emphasis'
+                  "
+                >
+                  {{ perfil.activo ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Registro de accesos (auditoría) -->
+  <div class="col-lg-6">
+    <div class="superficie-vidrio p-3 h-100">
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+        <h6 class="fw-bold mb-0">Registro de accesos</h6>
+        <input
+          type="text"
+          class="form-control form-control-sm campo-filtro"
+          placeholder="🔍 Filtrar por usuario o resultado..."
+          aria-label="Filtrar registro de accesos"
+          [(ngModel)]="filtroAccesos"
+        />
+      </div>
+      <div class="table-responsive">
+        <table class="table tabla-vidrio align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Fecha y hora</th>
+              <th>Usuario</th>
+              <th>Resultado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let acceso of accesosFiltrados()">
+              <td>{{ acceso.fechaHora | date: 'dd/MM HH:mm:ss' }}</td>
+              <td class="fw-semibold">{{ acceso.usuario }}</td>
+              <td>
+                <span
+                  class="badge"
+                  [ngClass]="{
+                    'bg-success-subtle text-success-emphasis': acceso.exitoso,
+                    'bg-danger-subtle text-danger-emphasis': !acceso.exitoso
+                  }"
+                >
+                  {{ acceso.exitoso ? 'Exitoso' : 'Fallido' }}
+                </span>
+              </td>
+            </tr>
+            <tr *ngIf="accesosFiltrados().length === 0">
+              <td colspan="3" class="text-center text-muted py-3">No hay accesos para mostrar.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="d-flex justify-content-end mt-4">
+  <button type="button" class="btn btn-danger btn-sm px-4 fw-semibold" (click)="salirDelSistema()">
+    Cerrar sesión
+  </button>
+</div>

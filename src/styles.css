@@ -80,3 +80,101 @@ body::before {
   pointer-events: none;
   z-index: 0;
 }
+
+/* ==========================================================================
+   SISTEMA DE VIDRIO (GLASMORFISMO)
+   FUNCIÓN: Tokens y clases reutilizables por TODOS los módulos.
+   ========================================================================== */
+
+:root {
+  /* >>> AJUSTAR EL EFECTO DE VIDRIO AQUÍ (afecta a toda la aplicación) <<< */
+  --vidrio-color-rgb: 255, 255, 255;     /* Color base del cristal (R, G, B) */
+  --vidrio-opacidad: 0.35;               /* OPACIDAD PRINCIPAL: 0 = transparente, 1 = sólido (recomendado 0.25 a 0.55) */
+  --vidrio-opacidad-fuerte: 0.6;         /* Variante para zonas con mucho texto (tablas, paneles internos) */
+  --vidrio-desenfoque: 14px;             /* Intensidad del difuminado del fondo (8px a 24px) */
+  --vidrio-saturacion: 140%;             /* Realce de color del fondo visto a través del cristal */
+  --vidrio-borde-opacidad: 0.6;          /* Opacidad del borde luminoso */
+  --vidrio-sombra: 0 8px 32px rgba(14, 65, 115, 0.18); /* Sombra externa */
+  --vidrio-radio: 20px;                  /* Redondeo de las tarjetas */
+
+  /* Manchas de color tras el vidrio (sin color detrás, el vidrio no se nota) */
+  --orbe-intensidad: 0.35;               /* 0 = sin manchas */
+}
+
+/* Tarjeta de vidrio principal (CON desenfoque). No anidar una dentro de otra. */
+.tarjeta-vidrio {
+  background: rgba(var(--vidrio-color-rgb), var(--vidrio-opacidad));
+  -webkit-backdrop-filter: blur(var(--vidrio-desenfoque)) saturate(var(--vidrio-saturacion));
+  backdrop-filter: blur(var(--vidrio-desenfoque)) saturate(var(--vidrio-saturacion));
+  border: 1px solid rgba(var(--vidrio-color-rgb), var(--vidrio-borde-opacidad));
+  border-radius: var(--vidrio-radio);
+  box-shadow: var(--vidrio-sombra), inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+/* Variante más opaca, para zonas con mucho texto */
+.tarjeta-vidrio-fuerte {
+  background: rgba(var(--vidrio-color-rgb), var(--vidrio-opacidad-fuerte));
+}
+
+/* Modificador: tarjeta clicable con elevación al pasar el cursor */
+.tarjeta-vidrio-interactiva {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tarjeta-vidrio-interactiva:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 38px rgba(14, 65, 115, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+.tarjeta-vidrio-interactiva:focus-visible {
+  outline: 2px solid var(--input-borde-foco);
+  outline-offset: 2px;
+}
+
+/* Superficie para elementos DENTRO de una tarjeta de vidrio (SIN desenfoque, evita anidar blur) */
+.superficie-vidrio {
+  background: rgba(var(--vidrio-color-rgb), var(--vidrio-opacidad-fuerte));
+  border: 1px solid rgba(var(--vidrio-color-rgb), var(--vidrio-borde-opacidad));
+  border-radius: 14px;
+}
+
+/* Tabla de Bootstrap sobre vidrio: quita el fondo blanco de las celdas */
+.table.tabla-vidrio {
+  --bs-table-bg: transparent;
+  --bs-table-border-color: rgba(148, 163, 184, 0.35);
+}
+
+.tabla-vidrio thead th {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-subtitulo);
+}
+
+/* Marco punteado para los bosquejos de módulos en desarrollo */
+.marco-bosquejo {
+  border: 2px dashed rgba(79, 70, 229, 0.45);
+  border-radius: 16px;
+  background: rgba(var(--vidrio-color-rgb), 0.25);
+}
+
+/* Si el navegador no soporta backdrop-filter, se aumenta la opacidad para conservar la legibilidad */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .tarjeta-vidrio {
+    background: rgba(255, 255, 255, 0.88);
+  }
+}
+
+/* Manchas de color de fondo, detrás del contenido (z-index 0; .layout-wrapper usa z-index 1) */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(99, 102, 241, var(--orbe-intensidad)) 0%, transparent 38%),
+    radial-gradient(circle at 88% 28%, rgba(56, 189, 248, var(--orbe-intensidad)) 0%, transparent 40%),
+    radial-gradient(circle at 70% 85%, rgba(167, 139, 250, var(--orbe-intensidad)) 0%, transparent 38%);
+  pointer-events: none;
+  z-index: 0;
+}

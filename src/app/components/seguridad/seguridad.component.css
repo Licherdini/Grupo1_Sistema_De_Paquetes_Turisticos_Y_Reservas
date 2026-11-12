@@ -1,0 +1,40 @@
+/* ==========================================================================
+   ARCHIVO: seguridad.component.css
+   FUNCIÓN: Estilos propios del Módulo 1. El vidrio, las tablas y las
+            superficies vienen de las clases globales de src/styles.css.
+   ========================================================================== */
+
+.indicador {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.indicador-etiqueta {
+  color: var(--color-subtitulo);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.indicador-valor {
+  color: var(--color-titulo);
+  font-size: 1.1rem;
+  overflow-wrap: anywhere;
+}
+
+/* Dígitos de ancho fijo para que el cronómetro no "salte" al cambiar */
+.indicador-duracion {
+  font-variant-numeric: tabular-nums;
+}
+
+.campo-filtro {
+  max-width: 260px;
+  background: rgba(var(--vidrio-color-rgb), var(--vidrio-opacidad-fuerte));
+}
+
+/* Resalta en la tabla de perfiles el usuario con la sesión activa */
+.fila-sesion-actual > td {
+  --bs-table-bg: rgba(79, 70, 229, 0.12);
+  font-weight: 600;
+}

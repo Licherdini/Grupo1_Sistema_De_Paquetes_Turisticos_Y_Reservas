@@ -21,9 +21,9 @@
 
   background: linear-gradient(
     180deg,
-    var(--card-degradado-arriba) 0%,
-    var(--card-degradado-medio) 45%,
-    var(--card-degradado-abajo) 100%
+    rgba(199, 238, 255, var(--vidrio-opacidad-fuerte)) 0%,
+    rgba(239, 249, 255, var(--vidrio-opacidad-fuerte)) 45%,
+    rgba(255, 255, 255, var(--vidrio-opacidad-fuerte)) 100%
   );
 
   border: 1.5px solid var(--card-borde-externo);
@@ -33,7 +33,7 @@
     0 12px 28px -6px var(--card-sombra-inferior);
 
   text-align: center;
-  backdrop-filter: blur(16px);
+  backdrop-filter: blur(var(--vidrio-desenfoque));
 }
 
 .login-icon-box {

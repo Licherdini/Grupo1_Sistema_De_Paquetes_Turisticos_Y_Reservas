@@ -1,0 +1,20 @@
+<div class="row g-3">
+  <div class="col-lg-7">
+    <p class="mb-3"><strong>Objetivo:</strong> {{ objetivo }}</p>
+    <h6 class="fw-bold">Funciones previstas</h6>
+    <ul class="mb-0">
+      <li *ngFor="let funcion of funcionesPrevistas">{{ funcion }}</li>
+    </ul>
+  </div>
+  <div class="col-lg-5">
+    <div class="marco-bosquejo p-3 h-100">
+      <small class="text-muted d-block mb-2">Vista previa del bosquejo</small>
+      <p class="placeholder-glow mb-0" aria-hidden="true">
+        <span class="placeholder col-12 mb-2"></span>
+        <span class="placeholder col-9 mb-2"></span>
+        <span class="placeholder col-11 mb-2"></span>
+        <span class="placeholder col-6"></span>
+      </p>
+    </div>
+  </div>
+</div>
