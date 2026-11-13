@@ -1,20 +1,224 @@
-<div class="row g-3">
+<p class="mb-3"><strong>Objetivo:</strong> {{ objetivo }}</p>
+
+<div class="row g-4">
+  <!-- COLUMNA IZQUIERDA: FORMULARIO REACTIVO DE COTIZACIÓN -->
   <div class="col-lg-7">
-    <p class="mb-3"><strong>Objetivo:</strong> {{ objetivo }}</p>
-    <h6 class="fw-bold">Funciones previstas</h6>
-    <ul class="mb-0">
-      <li *ngFor="let funcion of funcionesPrevistas">{{ funcion }}</li>
-    </ul>
+    <div class="superficie-vidrio p-3 p-md-4 h-100">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="fw-bold mb-0">Configuración de Cotización Multidestino</h6>
+        <span
+          class="badge"
+          [ngClass]="{
+            'bg-success-subtle text-success-emphasis': paqueteSeleccionado.cuposDisponibles > 5,
+            'bg-warning-subtle text-warning-emphasis':
+              paqueteSeleccionado.cuposDisponibles > 0 && paqueteSeleccionado.cuposDisponibles <= 5,
+            'bg-danger-subtle text-danger-emphasis': paqueteSeleccionado.cuposDisponibles === 0
+          }"
+        >
+          Cupos disponibles: {{ paqueteSeleccionado.cuposDisponibles }}
+        </span>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label for="cotizacionCliente" class="form-label small fw-semibold">
+            Titular de la cotización
+          </label>
+          <input
+            id="cotizacionCliente"
+            type="text"
+            class="form-control campo-vidrio"
+            placeholder="Ingrese nombre del cliente"
+            [(ngModel)]="nombreCliente"
+          />
+        </div>
+
+        <div class="col-md-6">
+          <label for="cotizacionFecha" class="form-label small fw-semibold">
+            Fecha estimada de salida
+          </label>
+          <input
+            id="cotizacionFecha"
+            type="date"
+            class="form-control campo-vidrio"
+            [(ngModel)]="fechaSalida"
+          />
+        </div>
+
+        <div class="col-12">
+          <label for="cotizacionPaquete" class="form-label small fw-semibold">
+            Paquete turístico multidestino
+          </label>
+          <select
+            id="cotizacionPaquete"
+            class="form-select campo-vidrio"
+            [(ngModel)]="paqueteIdSeleccionado"
+          >
+            <option *ngFor="let pkg of paquetesDisponibles" [value]="pkg.id">
+              {{ pkg.nombre }} 
+            </option>
+          </select>
+        </div>
+
+        <div class="col-md-6">
+          <label for="cotizacionPasajeros" class="form-label small fw-semibold">
+            Número de pasajeros
+          </label>
+          <div class="input-group">
+            <button
+              type="button"
+              class="btn btn-vidrio fw-bold"
+              [disabled]="pasajeros <= 1"
+              (click)="cambiarPasajeros(-1)"
+            >
+              -
+            </button>
+            <input
+              id="cotizacionPasajeros"
+              type="number"
+              class="form-control campo-vidrio text-center fw-bold"
+              min="1"
+              [max]="paqueteSeleccionado.cuposDisponibles"
+              [(ngModel)]="pasajeros"
+            />
+            <button
+              type="button"
+              class="btn btn-vidrio fw-bold"
+              [disabled]="pasajeros >= paqueteSeleccionado.cuposDisponibles"
+              (click)="cambiarPasajeros(1)"
+            >
+              +
+            </button>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <label for="cotizacionTemporada" class="form-label small fw-semibold">
+            Temporada tarifaria
+          </label>
+          <select
+            id="cotizacionTemporada"
+            class="form-select campo-vidrio"
+            [(ngModel)]="temporadaSeleccionada"
+          >
+            <option value="Baja">Temporada Baja (-10% desc.)</option>
+            <option value="Media">Temporada Media (Tarifa base)</option>
+            <option value="Alta">Temporada Alta (+20% recargo)</option>
+          </select>
+        </div>
+
+        <div class="col-12">
+          <label class="form-label small fw-semibold d-block mb-2">
+            Servicios adicionales opcionales (por pasajero)
+          </label>
+          <div class="row g-2">
+            <div class="col-12" *ngFor="let servicio of serviciosAdicionales">
+              <div
+                class="form-check p-2 ps-4 item-adicional-vidrio"
+                [ngClass]="{ 'item-adicional-activo': servicio.seleccionado }"
+              >
+                <input
+                  class="form-check-input check-vidrio"
+                  type="checkbox"
+                  [id]="servicio.id"
+                  [(ngModel)]="servicio.seleccionado"
+                />
+                <label
+                  class="form-check-label w-100 d-flex justify-content-between align-items-center"
+                  [for]="servicio.id"
+                >
+                  <span>
+                    <strong class="d-block small">{{ servicio.nombre }}</strong>
+                    <small class="text-muted">{{ servicio.descripcion }}</small>
+                  </span>
+                  <span class="badge bg-primary-subtle text-primary-emphasis ms-2">
+                    +${{ servicio.costoPorPersona }} / pers.
+                  </span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="alert alerta-vidrio-aviso mt-3 mb-0 py-2 small"
+        role="alert"
+        *ngIf="pasajeros > paqueteSeleccionado.cuposDisponibles"
+      >
+        La cantidad solicitada ({{ pasajeros }}) supera los cupos disponibles ({{ paqueteSeleccionado.cuposDisponibles }}) para este paquete.
+      </div>
+    </div>
   </div>
+
+  <!-- COLUMNA DERECHA: DESGLOSE EN TIEMPO REAL Y ACCIÓN DE RESERVA -->
   <div class="col-lg-5">
-    <div class="marco-bosquejo p-3 h-100">
-      <small class="text-muted d-block mb-2">Vista previa del bosquejo</small>
-      <p class="placeholder-glow mb-0" aria-hidden="true">
-        <span class="placeholder col-12 mb-2"></span>
-        <span class="placeholder col-9 mb-2"></span>
-        <span class="placeholder col-11 mb-2"></span>
-        <span class="placeholder col-6"></span>
-      </p>
+    <div class="superficie-vidrio p-3 p-md-4 h-100 d-flex flex-column justify-content-between">
+      <div>
+        <h6 class="fw-bold mb-3">Resumen Dinámico de Presupuesto</h6>
+
+        <div class="bloque-resumen-vidrio p-3 mb-3">
+          <small class="text-muted d-block">Paquete seleccionado</small>
+          <strong class="d-block mb-1">{{ paqueteSeleccionado.nombre }}</strong>
+          <div class="d-flex flex-wrap gap-1">
+            <span class="badge bg-info-subtle text-info-emphasis">{{ paqueteSeleccionado.region }}</span>
+            <span class="badge bg-secondary-subtle text-secondary-emphasis">{{ paqueteSeleccionado.duracion }}</span>
+            <span class="badge bg-light text-dark border">Salida: {{ fechaSalida || 'Sin fecha' }}</span>
+          </div>
+        </div>
+
+        <ul class="list-group list-group-flush lista-vidrio mb-3">
+          <li class="list-group-item d-flex justify-content-between align-items-center small">
+            <span>Tarifa base por pasajero</span>
+            <strong>${{ paqueteSeleccionado.precioBase | number: '1.2-2' }}</strong>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center small">
+            <span>Pasajeros × Factor temporada ({{ temporadaSeleccionada }})</span>
+            <strong>{{ pasajeros }} × {{ obtenerFactorTemporada() }}x</strong>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center small">
+            <span>Subtotal paquete turístico</span>
+            <strong>${{ calcularSubtotalPaquete() | number: '1.2-2' }}</strong>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center small">
+            <span>Subtotal servicios adicionales</span>
+            <strong>${{ calcularSubtotalAdicionales() | number: '1.2-2' }}</strong>
+          </li>
+          <li class="list-group-item fila-total-vidrio d-flex justify-content-between align-items-center">
+            <span class="fw-bold">TOTAL ESTIMADO (USD)</span>
+            <span class="fs-5 fw-bold valor-total-vidrio">
+              ${{ calcularTotal() | number: '1.2-2' }}
+            </span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="d-grid gap-2">
+        <button
+          type="button"
+          class="btn btn-andestravel"
+          [disabled]="!formularioValido()"
+          (click)="generarPreReserva()"
+        >
+          Generar Pre-Reserva y Bloquear Cupos
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-vidrio btn-sm"
+          (click)="irAListadoReservas()"
+        >
+          Ver Reservas Generadas
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-vidrio btn-sm"
+          (click)="limpiarCotizacion()"
+        >
+          Restablecer valores del cotizador
+        </button>
+      </div>
     </div>
   </div>
 </div>

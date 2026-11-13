@@ -1,0 +1,67 @@
+<div class="container py-4">
+  <!-- BARRA SUPERIOR DE PESTAÑAS Y RETORNO -->
+  <div class="tarjeta-vidrio barra-tabs-vidrio px-3 py-2 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div class="d-flex align-items-center gap-2">
+      <button
+        type="button"
+        class="btn btn-tab-vidrio"
+        [ngClass]="{ 'btn-tab-activa': tabActiva === 'cotizador' }"
+        (click)="irACotizador()"
+      >
+        Cotizador
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-tab-vidrio"
+        [ngClass]="{ 'btn-tab-activa': tabActiva === 'reservas' }"
+        (click)="seleccionarReservas()"
+      >
+        Reservas
+      </button>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-volver-panel"
+      (click)="volverAlPanel()"
+    >
+      ← Volver al panel
+    </button>
+  </div>
+
+  <!-- TARJETA PRINCIPAL: RESERVAS GENERADAS EN EL SISTEMA -->
+  <div class="tarjeta-vidrio tarjeta-vidrio-fuerte p-4 p-md-5">
+    <h3 class="titulo-reservas fw-bold mb-4 d-flex align-items-center gap-2">
+      <span aria-hidden="true">📌</span>
+      <span>Reservas Generadas en el Sistema</span>
+    </h3>
+
+    <div class="table-responsive" *ngIf="reservas.length > 0">
+      <table class="table tabla-vidrio tabla-reservas align-middle mb-0">
+        <thead>
+          <tr>
+            <th>CÓDIGO</th>
+            <th>TITULAR</th>
+            <th>DESTINO</th>
+            <th>PASAJEROS</th>
+            <th>TOTAL</th>
+            <th>ESTADO</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let reserva of reservas">
+            <td class="codigo-reserva">{{ reserva.codigo }}</td>
+            <td class="titular-reserva">{{ reserva.titular | uppercase }}</td>
+            <td class="destino-reserva">{{ reserva.destino }}</td>
+            <td class="pasajeros-reserva">{{ reserva.pasajeros }} pax</td>
+            <td class="total-reserva">${{ reserva.total }}</td>
+            <td>
+              <span class="badge badge-confirmada">{{ reserva.estado }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
