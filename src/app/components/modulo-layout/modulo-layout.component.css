@@ -1,0 +1,31 @@
+/* ==========================================================================
+   ARCHIVO: modulo-layout.component.css
+   FUNCIÓN: Estilos del layout de módulos. El vidrio viene de src/styles.css.
+   ========================================================================== */
+
+/* Ocupa todo el ancho y se alinea arriba: evita que el contenido "salte"
+   verticalmente al cambiar de sección (.main-content centra con align-items). */
+:host {
+  display: block;
+  width: 100%;
+  align-self: flex-start;
+}
+
+.encabezado-modulo {
+  border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+.submenu-modulo .nav-link {
+  color: var(--color-titulo);
+  font-weight: 600;
+  border-radius: 999px;
+}
+
+.submenu-modulo .nav-link:hover {
+  background: rgba(var(--vidrio-color-rgb), var(--vidrio-opacidad-fuerte));
+}
+
+.submenu-modulo .nav-link.active {
+  background: #4f46e5;
+  color: #ffffff;
+}

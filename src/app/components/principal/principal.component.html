@@ -24,18 +24,16 @@
     </div>
   </div>
 
-  <!-- SELECTOR DE LOS 5 MÓDULOS (UN MÓDULO POR INTEGRANTE) -->
+  <!-- TARJETAS DE LOS 5 MÓDULOS (UN MÓDULO POR INTEGRANTE): cada una abre su URL -->
   <h4 class="fw-bold mb-3">Módulos del Proyecto</h4>
   <div class="row g-3 mb-4">
     <div class="col-12 col-sm-6 col-lg" *ngFor="let modulo of modulosGrupo">
       <div
         class="tarjeta-vidrio tarjeta-vidrio-interactiva tarjeta-modulo h-100 p-3"
-        [ngClass]="{ 'modulo-activo': moduloActivo === modulo.id }"
         role="button"
         tabindex="0"
-        [attr.aria-pressed]="moduloActivo === modulo.id"
-        (click)="seleccionarModulo(modulo.id)"
-        (keydown.enter)="seleccionarModulo(modulo.id)"
+        (click)="irAModulo(modulo)"
+        (keydown.enter)="irAModulo(modulo)"
       >
         <div class="fs-3 mb-2">{{ modulo.icono }}</div>
         <h6 class="fw-bold mb-1">{{ modulo.titulo }}</h6>
@@ -54,30 +52,5 @@
         </span>
       </div>
     </div>
-  </div>
-
-  <!-- PANEL DEL MÓDULO SELECCIONADO: cada módulo es un componente independiente -->
-  <div class="tarjeta-vidrio p-4" *ngIf="moduloSeleccionado() as modulo">
-    <div class="encabezado-modulo d-flex justify-content-between align-items-start flex-wrap gap-2 pb-3 mb-3">
-      <div>
-        <h5 class="fw-bold mb-0">{{ modulo.icono }} {{ modulo.titulo }}</h5>
-        <small class="text-muted">Responsable: <strong>{{ modulo.responsable }}</strong></small>
-      </div>
-      <span
-        class="badge"
-        [ngClass]="{
-          'bg-success-subtle text-success-emphasis': modulo.estado === 'Funcional',
-          'bg-warning-subtle text-warning-emphasis': modulo.estado === 'En bosquejo'
-        }"
-      >
-        {{ modulo.estado }}
-      </span>
-    </div>
-
-    <app-modulo-seguridad *ngIf="moduloActivo === 1"></app-modulo-seguridad>
-    <app-modulo-catalogo *ngIf="moduloActivo === 2"></app-modulo-catalogo>
-    <app-modulo-proveedores *ngIf="moduloActivo === 3"></app-modulo-proveedores>
-    <app-modulo-cotizaciones *ngIf="moduloActivo === 4"></app-modulo-cotizaciones>
-    <app-modulo-facturacion *ngIf="moduloActivo === 5"></app-modulo-facturacion>
   </div>
 </div>

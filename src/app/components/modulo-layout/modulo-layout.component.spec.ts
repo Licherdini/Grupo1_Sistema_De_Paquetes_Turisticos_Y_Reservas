@@ -1,21 +1,34 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
+import { ActivatedRoute, provideRouter } from '@angular/router';
 import { ModuloLayoutComponent } from './modulo-layout.component';
 
 describe('ModuloLayoutComponent', () => {
-  let component: ModuloLayoutComponent;
-  let fixture: ComponentFixture<ModuloLayoutComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  // El layout lee el módulo desde data: { moduloId } de su ruta
+  function crearLayout(moduloId: number) {
+    TestBed.configureTestingModule({
       imports: [ModuloLayoutComponent],
-    }).compileComponents();
+      providers: [
+        provideRouter([]),
+        { provide: ActivatedRoute, useValue: { snapshot: { data: { moduloId } } } },
+      ],
+    });
+    return TestBed.createComponent(ModuloLayoutComponent);
+  }
 
-    fixture = TestBed.createComponent(ModuloLayoutComponent);
-    component = fixture.componentInstance;
+  it('debe mostrar título, responsable y submenú del módulo 1', async () => {
+    const fixture = crearLayout(1);
     await fixture.whenStable();
+    const texto = (fixture.nativeElement as HTMLElement).textContent;
+    expect(texto).toContain('Seguridad y Perfiles');
+    expect(texto).toContain('Jhon Herrera Merchán');
+    expect(texto).toContain('Registro de accesos');
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('no debe mostrar submenú en un módulo de una sola página (módulo 2)', async () => {
+    const fixture = crearLayout(2);
+    await fixture.whenStable();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.textContent).toContain('Catálogo de Paquetes');
+    expect(el.querySelector('.submenu-modulo')).toBeNull();
   });
 });

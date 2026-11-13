@@ -1,7 +1,5 @@
 /* ==========================================================================
    ARCHIVO: src/app/services/auth.service.ts
-   TEORÍA DEL CURSO: Servicio con @Injectable() para compartir datos y lógica
-                     de forma global entre componentes (Diapositivas 16 y 17).
    MÓDULO 1: Seguridad, Autenticación y Perfiles (Jhon Herrera Merchán).
    ========================================================================== */
 

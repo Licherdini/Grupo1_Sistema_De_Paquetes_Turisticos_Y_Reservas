@@ -1,98 +1,91 @@
 /* ==========================================================================
    ARCHIVO: src/app/components/cotizaciones/cotizaciones.component.css
-   FUNCIÓN: Estilos glasmórficos oscurecidos y botones encapsulados para el
-            Módulo 4 (Cotizaciones), reutilizando tokens de src/styles.css.
+   FUNCIÓN: Estilos glasmórficos claros encapsulados para el Módulo 4,
+            armonizados con la vista de Reservas y los tokens de styles.css.
    ========================================================================== */
 
+/* 1. PANELES INTERNOS TRANSLÚCIDOS (glasmorfismo claro institucional) */
 .superficie-vidrio {
-  background: rgba(15, 23, 42, 0.78);
-  border: 1px solid rgba(148, 163, 184, 0.35);
-  border-radius: 16px;
-  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.22);
-  color: #f1f5f9;
+  background: rgba(var(--vidrio-color-rgb), 0.72);
+  border: 1px solid rgba(var(--vidrio-color-rgb), 0.88);
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgba(14, 65, 115, 0.08);
+  color: var(--color-titulo);
 }
 
 .superficie-vidrio h6,
 .superficie-vidrio .form-label,
 .superficie-vidrio strong {
-  color: #f8fafc;
+  color: var(--color-titulo);
 }
 
-.superficie-vidrio .text-muted,
-.superficie-vidrio small {
-  color: #cbd5e1 !important;
-}
-
+/* 2. CONTROLES DE FORMULARIO (INPUTS, DATE Y SELECTS) CLAROS */
 .campo-vidrio {
-  background-color: rgba(15, 23, 42, 0.74);
+  background-color: rgba(var(--vidrio-color-rgb), 0.88);
   border: 1px solid rgba(148, 163, 184, 0.42);
   border-radius: 12px;
-  color: #f8fafc;
-  color-scheme: dark;
+  color: var(--color-titulo);
   transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .campo-vidrio::placeholder {
-  color: #94a3b8;
+  color: var(--color-subtitulo);
 }
 
 .campo-vidrio:focus {
-  background-color: rgba(15, 23, 42, 0.92);
+  background-color: #ffffff;
   border-color: var(--input-borde-foco);
-  box-shadow: 0 0 0 0.2rem rgba(56, 189, 248, 0.25);
-  color: #ffffff;
-}
-
-.campo-vidrio option {
-  background-color: #0f172a;
-  color: #f8fafc;
+  box-shadow: 0 0 0 0.2rem rgba(56, 189, 248, 0.22);
+  color: var(--color-titulo);
 }
 
 .input-group .campo-vidrio {
   border-radius: 0;
 }
 
+/* 3. SERVICIOS ADICIONALES OPCIONALES */
 .item-adicional-vidrio {
-  background: rgba(30, 41, 59, 0.68);
-  border: 1px solid rgba(148, 163, 184, 0.3);
+  background: rgba(var(--vidrio-color-rgb), 0.65);
+  border: 1px solid rgba(148, 163, 184, 0.35);
   border-radius: 14px;
   cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.15s ease;
 }
 
 .item-adicional-vidrio:hover {
-  background: rgba(30, 41, 59, 0.9);
+  background: rgba(var(--vidrio-color-rgb), 0.92);
   border-color: var(--input-borde-foco);
 }
 
 .item-adicional-activo {
-  background: rgba(14, 116, 144, 0.44);
+  background: rgba(224, 242, 254, 0.88);
   border-color: var(--input-borde-foco);
-  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.2);
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.1);
 }
 
 .check-vidrio {
   width: 1.15rem;
   height: 1.15rem;
   margin-top: 0.2rem;
-  border: 2px solid #94a3b8;
-  background-color: rgba(15, 23, 42, 0.85);
+  border: 2px solid var(--color-subtitulo);
+  background-color: #ffffff;
   cursor: pointer;
 }
 
 .check-vidrio:checked {
-  background-color: #0ea5e9;
-  border-color: #38bdf8;
+  background-color: #0284c7;
+  border-color: #0284c7;
 }
 
 .check-vidrio:focus {
   border-color: var(--input-borde-foco);
-  box-shadow: 0 0 0 0.2rem rgba(56, 189, 248, 0.28);
+  box-shadow: 0 0 0 0.2rem rgba(56, 189, 248, 0.25);
 }
 
+/* 4. BLOQUE RESUMEN Y DESGLOSE FINANCIERO */
 .bloque-resumen-vidrio {
-  background: rgba(30, 41, 59, 0.76);
-  border: 1px solid rgba(148, 163, 184, 0.32);
+  background: rgba(var(--vidrio-color-rgb), 0.85);
+  border: 1px solid rgba(186, 230, 253, 0.9);
   border-radius: 14px;
 }
 
@@ -103,42 +96,44 @@
 }
 
 .lista-vidrio .list-group-item {
-  background-color: rgba(30, 41, 59, 0.65);
-  border-color: rgba(148, 163, 184, 0.22);
-  color: #e2e8f0;
+  background-color: rgba(var(--vidrio-color-rgb), 0.74);
+  border-color: rgba(148, 163, 184, 0.24);
+  color: var(--color-titulo);
 }
 
 .lista-vidrio .fila-total-vidrio {
   background: linear-gradient(
     135deg,
-    rgba(2, 132, 199, 0.42) 0%,
-    rgba(15, 23, 42, 0.88) 100%
+    rgba(224, 242, 254, 0.92) 0%,
+    rgba(240, 249, 255, 0.98) 100%
   );
-  border-top: 1px solid rgba(56, 189, 248, 0.5);
-  color: #ffffff;
+  border-top: 1px solid rgba(56, 189, 248, 0.45);
+  color: var(--color-titulo);
 }
 
+/* Mismo tono verde usado en el monto total de la tabla de Reservas */
 .valor-total-vidrio {
-  color: #38bdf8;
+  color: #16a34a;
 }
 
+/* 5. BOTONES DEL COTIZADOR (ENCAPSULADOS Y ARMONIZADOS) */
 .btn.btn-andestravel {
-  background: linear-gradient(180deg, #0369a1 0%, var(--btn-degradado-abajo) 100%);
+  background: linear-gradient(180deg, var(--btn-degradado-arriba) 0%, var(--btn-degradado-abajo) 100%);
   color: var(--btn-texto-color);
-  border: 1px solid rgba(56, 189, 248, 0.55);
+  border: 1px solid rgba(15, 23, 42, 0.2);
   border-radius: 12px;
   min-height: 44px;
   padding: 0.55rem 1.15rem;
   font-weight: 600;
-  box-shadow: 0 6px 18px rgba(2, 132, 199, 0.28);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.16);
   transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
 }
 
 .btn.btn-andestravel:hover:not(:disabled) {
   color: var(--btn-texto-color);
-  filter: brightness(1.14);
+  filter: brightness(1.12);
   transform: translateY(-1px);
-  box-shadow: 0 10px 22px rgba(56, 189, 248, 0.35);
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.22);
 }
 
 .btn.btn-andestravel:focus-visible {
@@ -147,25 +142,25 @@
 }
 
 .btn.btn-andestravel:disabled {
-  opacity: 0.45;
+  opacity: 0.5;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
 }
 
 .btn.btn-vidrio {
-  background: rgba(30, 41, 59, 0.82);
-  color: #f1f5f9;
-  border: 1px solid rgba(148, 163, 184, 0.45);
+  background: rgba(var(--vidrio-color-rgb), 0.85);
+  color: var(--color-titulo);
+  border: 1px solid rgba(148, 163, 184, 0.42);
   border-radius: 12px;
   font-weight: 600;
   transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
 }
 
 .btn.btn-vidrio:hover:not(:disabled) {
-  background: rgba(51, 65, 85, 0.95);
-  border-color: var(--input-borde-foco);
-  color: #ffffff;
+  background: #ffffff;
+  border-color: #0284c7;
+  color: #0284c7;
 }
 
 .btn.btn-vidrio:focus-visible {
@@ -174,13 +169,14 @@
 }
 
 .btn.btn-vidrio:disabled {
-  opacity: 0.4;
+  opacity: 0.45;
   cursor: not-allowed;
 }
 
+/* 6. ALERTA DE EXCESO DE CUPOS */
 .alerta-vidrio-aviso {
-  background: rgba(113, 63, 18, 0.88);
-  border: 1px solid rgba(250, 204, 21, 0.55);
+  background: rgba(254, 249, 195, 0.92);
+  border: 1px solid rgba(234, 179, 8, 0.45);
   border-radius: 12px;
-  color: #fef9c3;
+  color: #854d0e;
 }

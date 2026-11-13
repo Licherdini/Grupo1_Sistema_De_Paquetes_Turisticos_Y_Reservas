@@ -1,1 +1,43 @@
-<p>seguridad-accesos works!</p>
+<div class="superficie-vidrio p-3">
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+    <h6 class="fw-bold mb-0">Registro de accesos</h6>
+    <input
+      type="text"
+      class="form-control form-control-sm campo-filtro"
+      placeholder="🔍 Filtrar por usuario o resultado..."
+      aria-label="Filtrar registro de accesos"
+      [(ngModel)]="filtroAccesos"
+    />
+  </div>
+  <div class="table-responsive">
+    <table class="table tabla-vidrio align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Fecha y hora</th>
+          <th>Usuario</th>
+          <th>Resultado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let acceso of accesosFiltrados()">
+          <td>{{ acceso.fechaHora | date: 'dd/MM HH:mm:ss' }}</td>
+          <td class="fw-semibold">{{ acceso.usuario }}</td>
+          <td>
+            <span
+              class="badge"
+              [ngClass]="{
+                'bg-success-subtle text-success-emphasis': acceso.exitoso,
+                'bg-danger-subtle text-danger-emphasis': !acceso.exitoso
+              }"
+            >
+              {{ acceso.exitoso ? 'Exitoso' : 'Fallido' }}
+            </span>
+          </td>
+        </tr>
+        <tr *ngIf="accesosFiltrados().length === 0">
+          <td colspan="3" class="text-center text-muted py-3">No hay accesos para mostrar.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

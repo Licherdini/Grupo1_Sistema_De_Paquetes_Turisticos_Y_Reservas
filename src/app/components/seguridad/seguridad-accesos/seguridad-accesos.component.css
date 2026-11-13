@@ -1,0 +1,5 @@
+/* Caja de filtro (movida desde seguridad.component.css) */
+.campo-filtro {
+  max-width: 260px;
+  background: rgba(var(--vidrio-color-rgb), var(--vidrio-opacidad-fuerte));
+}

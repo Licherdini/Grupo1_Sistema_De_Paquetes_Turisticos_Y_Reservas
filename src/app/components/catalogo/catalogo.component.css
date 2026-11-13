@@ -1,0 +1,81 @@
+.indicador {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.indicador-etiqueta {
+  color: var(--color-subtitulo);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.indicador-valor {
+  color: var(--color-titulo);
+  font-size: 1.1rem;
+}
+
+.tarjeta-paquete {
+  border-top: 4px solid #94a3b8;
+}
+
+.tarjeta-paquete.region-costa {
+  border-top-color: #0ea5e9;
+}
+
+.tarjeta-paquete.region-sierra {
+  border-top-color: #4f46e5;
+}
+
+.tarjeta-paquete.region-amazonia {
+  border-top-color: #16a34a;
+}
+
+.tarjeta-paquete.region-insular {
+  border-top-color: #f59e0b;
+}
+
+.bloque-tarifa {
+  background: rgba(var(--vidrio-color-rgb), 0.55);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 12px;
+}
+
+.menu-acciones {
+  border-top: 1px dashed rgba(148, 163, 184, 0.6);
+}
+
+.linea-tiempo {
+  border-left: 2px solid rgba(79, 70, 229, 0.35);
+  padding-left: 1rem;
+  margin-left: 0.35rem;
+}
+
+.linea-tiempo-item {
+  position: relative;
+  padding-bottom: 0.75rem;
+}
+
+.linea-tiempo-item::before {
+  content: '';
+  position: absolute;
+  left: -1.4rem;
+  top: 0.3rem;
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 50%;
+  background: #4f46e5;
+}
+
+.fila-dia {
+  background: rgba(var(--vidrio-color-rgb), 0.45);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 12px;
+}
+
+.btn-close-sm {
+  width: 0.5rem;
+  height: 0.5rem;
+  padding: 0.15rem;
+}

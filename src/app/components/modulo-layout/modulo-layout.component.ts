@@ -1,9 +1,27 @@
+/* ==========================================================================
+   ARCHIVO: src/app/components/modulo-layout/modulo-layout.component.ts
+   TEORÍA DEL CURSO: Rutas hijas y <router-outlet> (Diapositivas 10 y 11).
+   FUNCIÓN: Layout compartido por los 5 módulos: breadcrumb, encabezado del
+            módulo, submenú y el <router-outlet> donde se pinta cada sección.
+            El módulo se identifica con data: { moduloId } en app.routes.ts.
+   ========================================================================== */
+
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { ModuloGrupo, ModulosService } from '../../services/modulos.service';
 
 @Component({
-  imports: [],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
   selector: 'app-modulo-layout',
   styleUrl: './modulo-layout.component.css',
   templateUrl: './modulo-layout.component.html',
 })
-export class ModuloLayoutComponent {}
+export class ModuloLayoutComponent {
+  modulo: ModuloGrupo | undefined;
+
+  // Inyección de dependencias: la ruta activa (trae el moduloId) y el catálogo de módulos
+  constructor(route: ActivatedRoute, modulosService: ModulosService) {
+    this.modulo = modulosService.obtenerModulo(route.snapshot.data['moduloId']);
+  }
+}

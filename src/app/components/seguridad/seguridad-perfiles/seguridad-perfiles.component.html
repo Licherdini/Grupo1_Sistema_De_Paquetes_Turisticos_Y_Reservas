@@ -1,1 +1,42 @@
-<p>seguridad-perfiles works!</p>
+<div class="superficie-vidrio p-3">
+  <h6 class="fw-bold mb-1">Perfiles registrados</h6>
+  <p class="small text-muted mb-3">Pulsa un perfil para ver su ficha.</p>
+  <div class="table-responsive">
+    <table class="table tabla-vidrio align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Usuario</th>
+          <th>Nombre</th>
+          <th>Rol</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let perfil of authService.perfiles"
+          class="fila-clic"
+          tabindex="0"
+          [ngClass]="{ 'fila-sesion-actual': perfil.usuario === authService.usuarioActual() }"
+          (click)="verPerfil(perfil.usuario)"
+          (keydown.enter)="verPerfil(perfil.usuario)"
+        >
+          <td class="fw-semibold">{{ perfil.usuario }}</td>
+          <td>{{ perfil.nombreCompleto }}</td>
+          <td>{{ perfil.rol }}</td>
+          <td>
+            <span
+              class="badge"
+              [ngClass]="
+                perfil.activo
+                  ? 'bg-success-subtle text-success-emphasis'
+                  : 'bg-secondary-subtle text-secondary-emphasis'
+              "
+            >
+              {{ perfil.activo ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
