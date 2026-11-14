@@ -1,0 +1,198 @@
+<!-- Aviso de cupón activado para la cotización actual -->
+<div
+  class="alert alert-success d-flex justify-content-between align-items-center py-2 px-3 small fw-semibold"
+  role="status"
+  *ngIf="cuponAplicado"
+>
+  <span>Cupón {{ cuponAplicado.codigo }} (-{{ cuponAplicado.descuento }}%) activado para la cotización actual</span>
+  <button type="button" class="btn-close btn-close-sm" aria-label="Cerrar aviso" (click)="cerrarAviso()"></button>
+</div>
+
+<!-- ZONA 1: formulario embebido de creación y edición (Create / Update) -->
+<div class="superficie-vidrio formulario-cupon p-3 mb-3" [ngClass]="{ 'modo-edicion': editandoId !== null }">
+  <div class="d-flex align-items-center gap-2 mb-3">
+    <h6 class="fw-bold mb-0">
+      {{ editandoId === null ? 'Registrar nuevo cupón promocional' : 'Editando cupón seleccionado' }}
+    </h6>
+    <span class="badge bg-warning-subtle text-warning-emphasis" *ngIf="editandoId !== null">Modo edición</span>
+  </div>
+
+  <div class="row g-2 align-items-end">
+    <div class="col-6 col-lg-2">
+      <label for="cuponCodigo" class="form-label small fw-semibold">Código del cupón</label>
+      <input
+        id="cuponCodigo"
+        type="text"
+        class="form-control campo-codigo"
+        placeholder="ANDES15"
+        [(ngModel)]="borrador.codigo"
+      />
+    </div>
+    <div class="col-12 col-lg-3">
+      <label for="cuponCampana" class="form-label small fw-semibold">Campaña o destino asociado</label>
+      <input
+        id="cuponCampana"
+        type="text"
+        class="form-control"
+        placeholder="Ej.: Feriado Ruta de los Volcanes"
+        [(ngModel)]="borrador.campana"
+      />
+    </div>
+    <div class="col-6 col-lg-2">
+      <label for="cuponDescuento" class="form-label small fw-semibold">Descuento (%)</label>
+      <input
+        id="cuponDescuento"
+        type="number"
+        class="form-control"
+        placeholder="5 a 70"
+        [min]="descuentoMinimo"
+        [max]="descuentoMaximo"
+        [(ngModel)]="borrador.descuento"
+      />
+    </div>
+    <div class="col-6 col-lg-2">
+      <label for="cuponUsos" class="form-label small fw-semibold">Límite de usos</label>
+      <input
+        id="cuponUsos"
+        type="number"
+        class="form-control"
+        placeholder="Ej.: 50"
+        min="1"
+        [(ngModel)]="borrador.usosTotales"
+      />
+    </div>
+    <div class="col-6 col-lg-1">
+      <label for="cuponEstado" class="form-label small fw-semibold">Estado</label>
+      <select id="cuponEstado" class="form-select px-2" [(ngModel)]="borrador.estado">
+        <option value="Vigente">Vigente</option>
+        <option value="Expirado">Expirado</option>
+      </select>
+    </div>
+    <div class="col-12 col-lg-2 d-grid gap-2">
+      <button type="button" class="btn btn-success fw-semibold" [disabled]="!formularioValido()" (click)="guardar()">
+        {{ editandoId === null ? 'Crear Cupón' : 'Actualizar Cupón' }}
+      </button>
+      <button type="button" class="btn btn-outline-secondary btn-sm" *ngIf="editandoId !== null" (click)="cancelarEdicion()">
+        Cancelar
+      </button>
+    </div>
+  </div>
+  <small class="text-danger d-block mt-2" *ngIf="codigoDuplicado()">
+    El código {{ codigoNormalizado() }} ya existe. Usa otro código.
+  </small>
+  <small class="text-muted d-block mt-2">
+    Descuento entre {{ descuentoMinimo }}% y {{ descuentoMaximo }}%. El código admite solo letras y números.
+  </small>
+</div>
+
+<!-- ZONA 2: búsqueda y filtrado reactivo (Read) -->
+<div class="row g-2 align-items-end mb-3">
+  <div class="col-12 col-md-6">
+    <label for="cuponBusqueda" class="form-label small fw-semibold">Buscar por código o campaña</label>
+    <input
+      id="cuponBusqueda"
+      type="text"
+      class="form-control"
+      placeholder="🔍 Ej.: UGVIAJA20 o Galápagos"
+      [(ngModel)]="textoBusqueda"
+    />
+  </div>
+  <div class="col-6 col-md-3">
+    <label for="cuponFiltroEstado" class="form-label small fw-semibold">Estado de vigencia</label>
+    <select id="cuponFiltroEstado" class="form-select" [(ngModel)]="estadoFiltro">
+      <option value="Todos">Todos los estados</option>
+      <option value="Vigente">Solo Vigentes</option>
+      <option value="Expirado">Solo Expirados</option>
+    </select>
+  </div>
+  <div class="col-6 col-md-3 d-grid">
+    <button type="button" class="btn btn-outline-secondary" (click)="limpiarFiltros()">Limpiar filtros</button>
+  </div>
+</div>
+
+<!-- ZONA 3: tabla de vidrio con acciones por fila -->
+<div class="superficie-vidrio p-2">
+  <div class="table-responsive">
+    <table class="table tabla-vidrio align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Campaña / Beneficio</th>
+          <th>Descuento</th>
+          <th>Usos disponibles</th>
+          <th>Vigencia</th>
+          <th class="text-end">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let cupon of cuponesFiltrados()" [ngClass]="{ 'fila-edicion': cupon.id === editandoId }">
+          <td><span class="badge bg-dark codigo-cupon">{{ cupon.codigo }}</span></td>
+          <td>{{ cupon.campana }}</td>
+          <td class="fw-bold texto-descuento">{{ cupon.descuento }}% OFF</td>
+          <td class="celda-usos">
+            <small class="d-block">{{ cupon.usosDisponibles }} / {{ cupon.usosTotales }} usos restantes</small>
+            <div
+              class="progress barra-usos"
+              role="progressbar"
+              aria-label="Usos restantes"
+              [attr.aria-valuenow]="porcentajeRestante(cupon)"
+              aria-valuemin="0"
+              aria-valuemax="100"
+            >
+              <div
+                class="progress-bar"
+                [ngClass]="estadoEfectivo(cupon) === 'Vigente' ? 'bg-success' : 'bg-secondary'"
+                [style.width.%]="porcentajeRestante(cupon)"
+              ></div>
+            </div>
+          </td>
+          <td>
+            <span
+              class="badge"
+              [ngClass]="
+                estadoEfectivo(cupon) === 'Vigente'
+                  ? 'bg-success-subtle text-success-emphasis'
+                  : 'bg-danger-subtle text-danger-emphasis'
+              "
+            >
+              {{ estadoEfectivo(cupon) }}
+            </span>
+          </td>
+          <td>
+            <div class="acciones-cupon d-flex justify-content-end flex-wrap gap-1">
+              <button
+                type="button"
+                class="btn btn-sm btn-primary"
+                title="Aplicar en Cotizador"
+                [disabled]="estadoEfectivo(cupon) === 'Expirado'"
+                (click)="aplicarEnCotizador(cupon)"
+              >
+                Aplicar en Cotizador
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-dark" title="Editar cupón" (click)="editar(cupon)">
+                Editar
+              </button>
+              <button
+                type="button"
+                class="btn btn-sm btn-warning"
+                title="Cambiar estado entre Vigente y Expirado"
+                [disabled]="cupon.usosDisponibles <= 0"
+                (click)="alternarEstado(cupon)"
+              >
+                Cambiar estado
+              </button>
+              <button type="button" class="btn btn-sm btn-danger" title="Eliminar cupón" (click)="eliminar(cupon)">
+                Eliminar
+              </button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="cuponesFiltrados().length === 0">
+          <td colspan="6" class="text-center text-muted py-4">
+            No hay cupones que coincidan con el filtro aplicado.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

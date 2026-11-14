@@ -1,9 +1,7 @@
 /* ==========================================================================
    ARCHIVO: src/app/app.routes.ts
-   TEORÍA DEL CURSO: Capa de control (Router) que define la navegación entre
-                     las vistas de la SPA (Diapositivas 10 y 11).
-                     Rutas hijas: cada módulo es un padre (ModuloLayoutComponent)
-                     con su <router-outlet>; el guard del padre protege a las hijas.
+    FUNCIÓN: Rutas de la aplicación. Cada ruta puede tener un componente y/o hijos.
+    creado por: Jhon Herrera, Angie Lopez, Sebastián Acosta, Kenny Ormaza, Danny Guaman, Matews Narvaez
    ========================================================================== */
 
 import { Routes } from '@angular/router';
@@ -13,12 +11,15 @@ import { ModuloLayoutComponent } from './components/modulo-layout/modulo-layout.
 import { SeguridadSesionComponent } from './components/seguridad/seguridad-sesion/seguridad-sesion.component';
 import { SeguridadPerfilesComponent } from './components/seguridad/seguridad-perfiles/seguridad-perfiles.component';
 import { SeguridadPerfilDetalleComponent } from './components/seguridad/seguridad-perfil-detalle/seguridad-perfil-detalle.component';
+import { SeguridadPerfilFormularioComponent } from './components/seguridad/seguridad-perfil-formulario/seguridad-perfil-formulario.component';
 import { SeguridadAccesosComponent } from './components/seguridad/seguridad-accesos/seguridad-accesos.component';
 import { ModuloCatalogoComponent } from './components/catalogo/catalogo.component';
 import { ModuloProveedoresComponent } from './components/proveedores/proveedores.component';
 import { ModuloCotizacionesComponent } from './components/cotizaciones/cotizaciones.component';
 import { ReservasComponent } from './components/reservas/reservas.component';
 import { ModuloFacturacionComponent } from './components/facturacion/facturacion.component';
+import { PromocionesOfertasComponent } from './components/promociones/promociones-ofertas/promociones-ofertas.component';
+import { PromocionesCuponesComponent } from './components/promociones/promociones-cupones/promociones-cupones.component';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -36,7 +37,9 @@ export const routes: Routes = [
       { path: '', redirectTo: 'sesion', pathMatch: 'full' },
       { path: 'sesion', component: SeguridadSesionComponent },
       { path: 'perfiles', component: SeguridadPerfilesComponent },
+      { path: 'perfiles/nuevo', component: SeguridadPerfilFormularioComponent, data: { modo: 'crear' } },
       { path: 'perfiles/:usuario', component: SeguridadPerfilDetalleComponent },
+      { path: 'perfiles/:usuario/editar', component: SeguridadPerfilFormularioComponent, data: { modo: 'editar' } },
       { path: 'accesos', component: SeguridadAccesosComponent }
     ]
   },
@@ -79,6 +82,19 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data: { moduloId: 5 },
     children: [{ path: '', component: ModuloFacturacionComponent }]
+  },
+
+  // Módulo 6: Promociones y Cupones (Matews Narvaez)
+  {
+    path: 'promociones',
+    component: ModuloLayoutComponent,
+    canActivate: [authGuard],
+    data: { moduloId: 6 },
+    children: [
+      { path: '', redirectTo: 'ofertas', pathMatch: 'full' },
+      { path: 'ofertas', component: PromocionesOfertasComponent },
+      { path: 'cupones', component: PromocionesCuponesComponent }
+    ]
   },
 
   { path: '**', redirectTo: 'login' }

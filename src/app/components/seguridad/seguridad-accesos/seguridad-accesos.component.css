@@ -1,5 +1,7 @@
-/* Caja de filtro (movida desde seguridad.component.css) */
+/* Controles de filtro (caja de usuario y selector de resultado) */
 .campo-filtro {
-  max-width: 260px;
-  background: rgba(var(--vidrio-color-rgb), var(--vidrio-opacidad-fuerte));
+  width: 220px;
+  max-width: 100%;
+  /* background-color (y no "background"): conserva la flecha del <select> de Bootstrap */
+  background-color: rgba(var(--vidrio-color-rgb), var(--vidrio-opacidad-fuerte));
 }

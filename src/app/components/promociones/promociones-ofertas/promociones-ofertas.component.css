@@ -1,0 +1,62 @@
+/* Etiqueta de temporada (rojo/coral, estilo oferta relámpago) */
+.pildora-temporada {
+  display: inline-block;
+  background: #ef4444;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+}
+
+.filtro-alianza {
+  min-width: 260px;
+}
+
+.campo-codigo {
+  font-family: 'Consolas', 'Courier New', monospace;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.tarjeta-oferta {
+  border-top: 4px solid #ef4444;
+}
+
+.insignia-ahorro {
+  background: #ef4444;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.95rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+}
+
+.pie-oferta {
+  border-top: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+/* Recuadro punteado tipo ticket recortable */
+.ticket-cupon {
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 0.3rem 0.7rem;
+  border: 2px dashed #64748b;
+  border-radius: 8px;
+  background: rgba(var(--vidrio-color-rgb), 0.7);
+  color: var(--color-titulo);
+}
+
+.icono-papelera {
+  width: 16px;
+  height: 16px;
+}
+
+@media (max-width: 575.98px) {
+  .filtro-alianza {
+    min-width: 100%;
+  }
+}

@@ -1,14 +1,44 @@
 <div class="superficie-vidrio p-3">
   <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
     <h6 class="fw-bold mb-0">Registro de accesos</h6>
-    <input
-      type="text"
-      class="form-control form-control-sm campo-filtro"
-      placeholder="🔍 Filtrar por usuario o resultado..."
-      aria-label="Filtrar registro de accesos"
-      [(ngModel)]="filtroAccesos"
-    />
+    <div class="d-flex flex-wrap align-items-center gap-2">
+      <input
+        type="text"
+        class="form-control form-control-sm campo-filtro"
+        placeholder="🔍 Filtrar por usuario..."
+        aria-label="Filtrar registro de accesos por usuario"
+        [(ngModel)]="filtroAccesos"
+      />
+      <select
+        class="form-select form-select-sm campo-filtro"
+        aria-label="Filtrar registro de accesos por resultado"
+        [(ngModel)]="filtroResultado"
+      >
+        <option>Todos</option>
+        <option>Concedido</option>
+        <option>Denegado</option>
+      </select>
+      <!-- Maqueta: limpieza del historial -->
+      <button type="button" class="btn btn-sm btn-outline-danger fw-semibold" (click)="pedirLimpieza()">
+        Limpiar historial
+      </button>
+    </div>
   </div>
+
+  <!-- Confirmación dentro de la página (la rúbrica no permite modales) -->
+  <div class="alert alert-warning py-2 small mb-3" role="alert" *ngIf="confirmandoLimpieza()">
+    <p class="mb-2">¿Confirmas limpiar el historial de accesos? <span class="badge bg-warning-subtle text-warning-emphasis">Maqueta</span></p>
+    <button type="button" class="btn btn-sm btn-danger fw-semibold me-2" (click)="confirmarLimpieza()">
+      Confirmar limpieza
+    </button>
+    <button type="button" class="btn btn-sm btn-outline-secondary fw-semibold" (click)="cancelarLimpieza()">
+      Cancelar
+    </button>
+  </div>
+  <div class="alert alert-info py-2 small mb-3" role="status" *ngIf="mensajeSimulacion()">
+    {{ mensajeSimulacion() }}
+  </div>
+
   <div class="table-responsive">
     <table class="table tabla-vidrio align-middle mb-0">
       <thead>
@@ -30,7 +60,7 @@
                 'bg-danger-subtle text-danger-emphasis': !acceso.exitoso
               }"
             >
-              {{ acceso.exitoso ? 'Exitoso' : 'Fallido' }}
+              {{ acceso.exitoso ? 'Concedido' : 'Denegado' }}
             </span>
           </td>
         </tr>

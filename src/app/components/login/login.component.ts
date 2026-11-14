@@ -19,12 +19,11 @@ import { ProyectoInfoService } from '../../services/proyecto-info.service';
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
-  // Propiedades vinculadas con Two-way binding [(ngModel)]
   usuario: string = '';
   clave: string = '';
   mostrarClave: boolean = false;
 
-  // Control de mensajes en pantalla (sin diálogos emergentes)
+  // Control de mensajes en pantalla 
   mensajeEstado: string = '';
   esAccesoConcedido: boolean = false;
 
@@ -34,9 +33,7 @@ export class LoginComponent {
     public proyectoInfo: ProyectoInfoService,
     private router: Router
   ) {}
-
   
-
   validarCredenciales(): void {
     // Evita envíos repetidos mientras se muestra "Acceso concedido"
     if (this.esAccesoConcedido) {
@@ -59,8 +56,7 @@ export class LoginComponent {
     if (accesoCorrecto) {
       this.esAccesoConcedido = true;
       this.mensajeEstado = '¡Acceso concedido! Redirigiendo a AndesTravel UG...';
-      // Pausa breve para leer el mensaje. La sesión se activa justo antes de navegar,
-      // así el Header cambia cuando el usuario ya está en /principal.
+      // Pausa breve para leer el mensaje. La sesión se activa justo antes de navegar
       setTimeout(() => {
         this.authService.iniciarSesion(this.usuario);
         this.router.navigate(['/principal']);
@@ -73,7 +69,6 @@ export class LoginComponent {
 
   /**
    * Quita el mensaje de error apenas el usuario empieza a escribir.
-   * Se invoca desde la plantilla con (input)="limpiarError()".
    */
   limpiarError(): void {
     if (!this.esAccesoConcedido && this.mensajeEstado) {

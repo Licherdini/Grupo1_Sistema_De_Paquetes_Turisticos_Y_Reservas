@@ -59,7 +59,7 @@ export class AuthService {
     }
   ];
 
-  // 3. Variables públicas globales (signals) que controlan Header y Módulo 1
+  // 3. Variables públicas globales que controlan Header y Módulo 1
   public estaLogueado = signal<boolean>(false);
   public usuarioActual = signal<string>('');
   public rolActual = signal<string>('');
@@ -72,7 +72,7 @@ export class AuthService {
   }
 
   /**
-   * Solo COMPARA las credenciales ingresadas con los perfiles registrados.
+   *  COMPARA las credenciales ingresadas con los perfiles registrados.
    * Un perfil inactivo no puede ingresar. No modifica el estado de la sesión.
    */
   credencialesValidas(usuarioIngresado: string, claveIngresada: string): boolean {

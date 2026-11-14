@@ -29,4 +29,12 @@ describe('SeguridadPerfilesComponent', () => {
     (filas[1] as HTMLElement).click();
     expect(navegar).toHaveBeenCalledWith(['/seguridad', 'perfiles', 'agente']);
   });
+
+  it('debe ofrecer el enlace "+ Nuevo perfil" hacia el formulario (maqueta)', async () => {
+    const fixture = TestBed.createComponent(SeguridadPerfilesComponent);
+    await fixture.whenStable();
+    const enlace = (fixture.nativeElement as HTMLElement).querySelector('a.btn') as HTMLAnchorElement;
+    expect(enlace.textContent).toContain('Nuevo perfil');
+    expect(enlace.getAttribute('href')).toBe('/seguridad/perfiles/nuevo');
+  });
 });

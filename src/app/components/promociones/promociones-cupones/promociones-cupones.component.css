@@ -1,0 +1,46 @@
+.campo-codigo {
+  font-family: 'Consolas', 'Courier New', monospace;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+/* Formulario: borde ámbar mientras se edita una fila */
+.formulario-cupon.modo-edicion {
+  border: 2px solid #f59e0b;
+  background: rgba(254, 249, 195, 0.55);
+}
+
+.fila-edicion > td {
+  --bs-table-bg: rgba(245, 158, 11, 0.14);
+}
+
+.codigo-cupon {
+  font-family: 'Consolas', 'Courier New', monospace;
+  letter-spacing: 0.04em;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.7rem;
+}
+
+.texto-descuento {
+  color: #0284c7;
+  white-space: nowrap;
+}
+
+.celda-usos {
+  min-width: 170px;
+}
+
+.barra-usos {
+  height: 6px;
+  margin-top: 4px;
+}
+
+.acciones-cupon .btn {
+  white-space: nowrap;
+}
+
+.btn-close-sm {
+  width: 0.5rem;
+  height: 0.5rem;
+  padding: 0.15rem;
+}

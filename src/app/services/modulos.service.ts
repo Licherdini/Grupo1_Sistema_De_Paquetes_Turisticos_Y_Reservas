@@ -85,6 +85,19 @@ export class ModulosService {
       descripcion: 'Comprobantes electrónicos, registro de abonos y calificación post-viaje.',
       estado: 'En bosquejo',
       secciones: []
+    },
+    {
+      id: 6,
+      ruta: 'promociones',
+      titulo: 'Módulo 6: Promociones y Cupones',
+      responsable: 'Matews Abrahan Narvaez Cabeza',
+      icono: '🎟️',
+      descripcion: 'Ofertas de temporada por alianza bancaria y gestión de cupones de descuento.',
+      estado: 'En bosquejo',
+      secciones: [
+        { ruta: 'ofertas', etiqueta: 'Ofertas de Temporada' },
+        { ruta: 'cupones', etiqueta: 'Cupones de Descuento' }
+      ]
     }
   ];
 

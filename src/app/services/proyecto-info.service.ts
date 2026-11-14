@@ -12,6 +12,6 @@ export class ProyectoInfoService {
   public nombreEmpresa: string = 'AndesTravel UG';
   public subtituloEmpresa: string = 'Paquetes Turísticos, Cotizaciones y Reservas Multidestino';
   public integrantes: string =
-    'Jhon Herrera Merchán, Angie Lopez Mena, Sebastián Acosta Andrade, Kenny Ormaza Padilla y Danny Guaman Yucailla';
+  'Jhon Herrera Merchán, Angie Lopez Mena, Sebastián Acosta Andrade, Kenny Ormaza Padilla, Danny Guaman Yucailla y Matews Abrahan Narvaez Cabeza';
   public anioActual: number = new Date().getFullYear();
 }

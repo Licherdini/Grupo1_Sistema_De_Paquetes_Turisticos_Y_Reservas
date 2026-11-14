@@ -1,7 +1,7 @@
 /* ==========================================================================
    ARCHIVO: seguridad-sesion.component.ts
    FUNCIÓN: Módulo 1, sección "Mi sesión": estado, indicadores y cronómetro de
-            la sesión activa, tomados de AuthService.
+            la sesión activa
    ========================================================================== */
 
 import { Component, OnDestroy, OnInit, signal } from '@angular/core';

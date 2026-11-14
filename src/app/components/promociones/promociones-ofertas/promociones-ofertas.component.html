@@ -1,0 +1,122 @@
+<!-- BLOQUE A: barra de control y filtro por alianza bancaria (Read) -->
+<div class="superficie-vidrio p-3 mb-3 d-flex justify-content-between align-items-center flex-wrap gap-3">
+  <div>
+    <span class="pildora-temporada">OFERTAS DE TEMPORADA</span>
+    <small class="d-block text-muted mt-1">Campañas relámpago y beneficios por medio de pago</small>
+  </div>
+  <div class="filtro-alianza">
+    <label for="ofertasAlianza" class="form-label small fw-semibold mb-1">Alianza bancaria o medio de pago</label>
+    <select id="ofertasAlianza" class="form-select form-select-sm" [(ngModel)]="filtroAlianza">
+      <option value="Todos">Todos los medios de pago</option>
+      <option *ngFor="let alianza of alianzas" [value]="alianza">{{ alianza }}</option>
+    </select>
+  </div>
+</div>
+
+<!-- BLOQUE B: panel embebido para registrar una campaña (Create, sin modales) -->
+<div class="superficie-vidrio p-3 mb-4">
+  <h6 class="fw-bold mb-3">Registrar nueva campaña</h6>
+  <div class="row g-2 align-items-end">
+    <div class="col-12 col-md-6 col-lg-3">
+      <label for="campanaTitulo" class="form-label small fw-semibold">Título de la campaña</label>
+      <input
+        id="campanaTitulo"
+        type="text"
+        class="form-control"
+        placeholder="Ej.: Cyber Travel Galápagos"
+        [(ngModel)]="nuevaCampana.titulo"
+      />
+    </div>
+    <div class="col-12 col-md-6 col-lg-3">
+      <label for="campanaAlianza" class="form-label small fw-semibold">Alianza bancaria</label>
+      <select id="campanaAlianza" class="form-select" [(ngModel)]="nuevaCampana.alianza">
+        <option *ngFor="let alianza of alianzas" [value]="alianza">{{ alianza }}</option>
+      </select>
+    </div>
+    <div class="col-6 col-lg-2">
+      <label for="campanaDescuento" class="form-label small fw-semibold">Descuento (%)</label>
+      <input
+        id="campanaDescuento"
+        type="number"
+        class="form-control"
+        placeholder="Ej.: 20"
+        [min]="descuentoMinimo"
+        [max]="descuentoMaximo"
+        [(ngModel)]="nuevaCampana.descuento"
+      />
+    </div>
+    <div class="col-6 col-lg-2">
+      <label for="campanaCodigo" class="form-label small fw-semibold">Cupón vinculado</label>
+      <input
+        id="campanaCodigo"
+        type="text"
+        class="form-control campo-codigo"
+        placeholder="UGVIAJA20"
+        [(ngModel)]="nuevaCampana.codigo"
+      />
+    </div>
+    <div class="col-12 col-lg-2 d-grid">
+      <button type="button" class="btn btn-dark fw-semibold" [disabled]="!formularioValido()" (click)="publicarCampana()">
+        + Publicar Campaña
+      </button>
+    </div>
+  </div>
+  <small class="text-danger d-block mt-2" *ngIf="codigoRepetido()">
+    Ya existe una campaña con el código {{ codigoNormalizado() }}. Usa otro código.
+  </small>
+  <small class="text-muted d-block mt-2">
+    El descuento debe estar entre {{ descuentoMinimo }}% y {{ descuentoMaximo }}%.
+  </small>
+</div>
+
+<!-- BLOQUE C: cuadrícula de tarjetas de ofertas relámpago (Read y Delete) -->
+<div class="row g-3">
+  <div class="col-12 col-md-6 col-lg-4" *ngFor="let campana of campanasFiltradas()">
+    <article class="superficie-vidrio tarjeta-oferta h-100 d-flex flex-column p-3">
+      <div class="d-flex justify-content-between align-items-start gap-2 mb-3">
+        <span class="insignia-ahorro">-{{ campana.descuento }}% OFF</span>
+        <span
+          class="badge"
+          [ngClass]="esUltimosDias(campana) ? 'bg-danger-subtle text-danger-emphasis' : 'bg-secondary-subtle text-secondary-emphasis'"
+        >
+          {{ esUltimosDias(campana) ? 'Últimos ' + campana.diasRestantes + ' días' : 'Quedan ' + campana.diasRestantes + ' días' }}
+        </span>
+      </div>
+
+      <h6 class="fw-bold mb-1">{{ campana.titulo }}</h6>
+      <p class="small text-muted mb-3">{{ campana.descripcion }}</p>
+      <div class="mb-3">
+        <span class="badge bg-info-subtle text-info-emphasis text-wrap text-start">{{ campana.alianza }}</span>
+      </div>
+
+      <div class="pie-oferta mt-auto pt-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <span class="ticket-cupon">{{ campana.codigo }}</span>
+        <div class="d-flex gap-2">
+          <button type="button" class="btn btn-sm btn-dark fw-semibold" (click)="gestionarCupon(campana)">
+            Gestionar / Usar Cupón
+          </button>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-danger"
+            title="Finalizar campaña"
+            [attr.aria-label]="'Finalizar campaña ' + campana.titulo"
+            (click)="finalizarCampana(campana)"
+          >
+            <svg class="icono-papelera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="3 6 5 6 21 6" />
+              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+              <path d="M10 11v6M14 11v6" />
+              <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <div class="col-12" *ngIf="campanasFiltradas().length === 0">
+    <div class="superficie-vidrio text-center text-muted py-4">
+      No hay campañas para este medio de pago. Publica una nueva arriba o cambia el filtro.
+    </div>
+  </div>
+</div>

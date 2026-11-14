@@ -39,6 +39,39 @@
         {{ ultimoIngreso() ? (ultimoIngreso() | date: 'dd/MM/yyyy HH:mm:ss') : 'Sin registros en esta pestaña' }}
       </dd>
     </dl>
+
+    <!-- ACCIONES EN MAQUETA (Update / Delete): simulan el resultado sin modificar datos -->
+    <hr class="my-4" />
+    <div class="d-flex flex-wrap align-items-center gap-2">
+      <a class="btn btn-sm btn-dark fw-semibold" [routerLink]="['/seguridad', 'perfiles', perfil.usuario, 'editar']">
+        Editar perfil
+      </a>
+      <button type="button" class="btn btn-sm btn-outline-dark fw-semibold" (click)="reiniciarIntentos()">
+        Reiniciar intentos fallidos
+      </button>
+      <button type="button" class="btn btn-sm btn-outline-dark fw-semibold" (click)="cambiarEstado()">
+        {{ perfil.activo ? 'Bloquear cuenta' : 'Activar cuenta' }}
+      </button>
+      <button type="button" class="btn btn-sm btn-outline-danger fw-semibold" (click)="pedirBaja()">
+        Dar de baja
+      </button>
+      <span class="badge bg-warning-subtle text-warning-emphasis ms-auto">Maqueta</span>
+    </div>
+
+    <!-- Confirmación dentro de la página (la rúbrica no permite modales) -->
+    <div class="alert alert-warning py-2 small mt-3 mb-0" role="alert" *ngIf="confirmandoBaja()">
+      <p class="mb-2">¿Confirmas dar de baja el perfil "{{ perfil.usuario }}"?</p>
+      <button type="button" class="btn btn-sm btn-danger fw-semibold me-2" (click)="confirmarBaja()">
+        Confirmar baja
+      </button>
+      <button type="button" class="btn btn-sm btn-outline-secondary fw-semibold" (click)="cancelarBaja()">
+        Cancelar
+      </button>
+    </div>
+
+    <div class="alert alert-info py-2 small mt-3 mb-0" role="status" *ngIf="mensajeSimulacion()">
+      {{ mensajeSimulacion() }}
+    </div>
   </ng-container>
 
   <ng-template #perfilNoEncontrado>

@@ -4,10 +4,12 @@
             ingreso (AuthService) con filtro en tiempo real.
    ========================================================================== */
 
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService, RegistroAcceso } from '../../../services/auth.service';
+
+export type ResultadoFiltro = 'Todos' | 'Concedido' | 'Denegado';
 
 @Component({
   imports: [CommonModule, FormsModule],
@@ -16,22 +18,41 @@ import { AuthService, RegistroAcceso } from '../../../services/auth.service';
   templateUrl: './seguridad-accesos.component.html',
 })
 export class SeguridadAccesosComponent {
-  // Two-way binding del filtro de la tabla de accesos
+  // Two-way binding de los filtros de la tabla de accesos
   filtroAccesos: string = '';
+  filtroResultado: ResultadoFiltro = 'Todos';
+
+  // MAQUETA (Delete): limpieza simulada del historial. Son signals (app sin zone.js).
+  mensajeSimulacion = signal<string>('');
+  confirmandoLimpieza = signal<boolean>(false);
 
   constructor(public authService: AuthService) {}
 
-  // Filtro en tiempo real del registro de accesos: por usuario o por resultado
+  // Filtro en tiempo real del registro de accesos: por nombre de usuario y por resultado
   accesosFiltrados(): RegistroAcceso[] {
     const texto = this.filtroAccesos.trim().toLowerCase();
-    const accesos = this.authService.registroAccesos();
-    if (texto === '') {
-      return accesos;
-    }
-    return accesos.filter(
+    return this.authService.registroAccesos().filter(
       (acceso) =>
-        acceso.usuario.toLowerCase().includes(texto) ||
-        (acceso.exitoso ? 'exitoso' : 'fallido').includes(texto)
+        (texto === '' || acceso.usuario.toLowerCase().includes(texto)) &&
+        (this.filtroResultado === 'Todos' || (this.filtroResultado === 'Concedido') === acceso.exitoso)
+    );
+  }
+
+  // ---- Limpieza del historial en maqueta (no borra nada) ----
+  pedirLimpieza(): void {
+    this.mensajeSimulacion.set('');
+    this.confirmandoLimpieza.set(true);
+  }
+
+  cancelarLimpieza(): void {
+    this.confirmandoLimpieza.set(false);
+  }
+
+  confirmarLimpieza(): void {
+    this.confirmandoLimpieza.set(false);
+    const total = this.authService.registroAccesos().length;
+    this.mensajeSimulacion.set(
+      `Maqueta: se eliminarían ${total} registros del historial de accesos. No se borró nada.`
     );
   }
 }

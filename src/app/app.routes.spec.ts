@@ -16,4 +16,12 @@ describe('Rutas de la aplicación', () => {
   it('cada módulo debe tener al menos una ruta hija', () => {
     rutasDeModulo.forEach((ruta) => expect((ruta.children ?? []).length).toBeGreaterThan(0));
   });
+
+  it('en Seguridad, perfiles/nuevo debe declararse antes de perfiles/:usuario', () => {
+    const seguridad = rutasDeModulo.find((ruta) => ruta.data?.['moduloId'] === 1);
+    const rutas = (seguridad?.children ?? []).map((hija) => hija.path);
+    expect(rutas).toContain('perfiles/:usuario/editar');
+    expect(rutas.indexOf('perfiles/nuevo')).toBeGreaterThan(-1);
+    expect(rutas.indexOf('perfiles/nuevo')).toBeLessThan(rutas.indexOf('perfiles/:usuario'));
+  });
 });
