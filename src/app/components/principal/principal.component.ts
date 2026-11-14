@@ -20,7 +20,7 @@ import { ModuloGrupo, ModulosService } from '../../services/modulos.service';
 })
 export class PrincipalComponent {
   // Los 5 módulos vienen de ModulosService (fuente única).
-  // Cuando un integrante termine su módulo, cambia SOLO el estado de su línea allí.
+  // Cuando terminen su módulo, cambien SOLO el estado de su línea allí.
   modulosGrupo: ModuloGrupo[];
 
   constructor(

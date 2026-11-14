@@ -1,23 +1,21 @@
 /* ==========================================================================
    ARCHIVO: src/app/services/modulos.service.ts
-   TEORÍA DEL CURSO: Servicio con @Injectable() para compartir datos entre
-                     componentes (Diapositivas 16 y 17).
+   TEORÍA DEL CURSO: Servicio para compartir datos entre los componentes
    FUNCIÓN: Fuente única de los 5 módulos (título, responsable, estado, URL y
-            secciones del submenú). La usan la Página Principal (tarjetas) y el
-            Layout de módulo (encabezado y submenú).
-            Cuando un integrante termine su módulo, cambia SOLO su línea.
+            secciones del submenú). La usan la Página Principal (tarjetas)
+            Cuando terminen su módulo, cambia SOLO su línea.
    ========================================================================== */
 
 import { Injectable } from '@angular/core';
 
 export interface SeccionModulo {
-  ruta: string;      // segmento de URL de la sección, ej. 'perfiles'
-  etiqueta: string;  // texto del submenú
+  ruta: string;      // URL de la sección
+  etiqueta: string;  
 }
 
 export interface ModuloGrupo {
   id: number;
-  ruta: string;      // primer segmento de URL del módulo, ej. 'seguridad'
+  ruta: string;      // del módulo
   titulo: string;
   responsable: string;
   icono: string;

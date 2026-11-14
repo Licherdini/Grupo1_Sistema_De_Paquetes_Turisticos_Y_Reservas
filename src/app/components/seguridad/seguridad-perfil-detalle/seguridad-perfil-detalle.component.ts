@@ -1,6 +1,5 @@
 /* ==========================================================================
    ARCHIVO: seguridad-perfil-detalle.component.ts
-   TEORÍA DEL CURSO: Parámetros de ruta con ActivatedRoute (Diapositivas 10 y 11).
    FUNCIÓN: Ficha de un perfil (/seguridad/perfiles/:usuario). Los datos salen de
             AuthService; los intentos se calculan con su registro de accesos.
             No se muestra la clave del perfil.

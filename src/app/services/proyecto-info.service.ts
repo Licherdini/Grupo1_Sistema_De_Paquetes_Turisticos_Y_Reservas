@@ -1,7 +1,6 @@
 /* ==========================================================================
    ARCHIVO: src/app/services/proyecto-info.service.ts
-   FUNCIÓN: Fuente única de los datos institucionales del proyecto, compartida
-            por Login, Header y Footer
+   FUNCIÓN: Fuente única de los datos del proyecto, compartida por Login, Header y Footer
    ========================================================================== */
 
 import { Injectable } from '@angular/core';

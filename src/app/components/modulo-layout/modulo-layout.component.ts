@@ -1,9 +1,7 @@
 /* ==========================================================================
    ARCHIVO: src/app/components/modulo-layout/modulo-layout.component.ts
-   TEORÍA DEL CURSO: Rutas hijas y <router-outlet> (Diapositivas 10 y 11).
-   FUNCIÓN: Layout compartido por los 5 módulos: breadcrumb, encabezado del
-            módulo, submenú y el <router-outlet> donde se pinta cada sección.
-            El módulo se identifica con data: { moduloId } en app.routes.ts.
+   FUNCIÓN: Layout compartido por los 5 módulos: encabezado del
+            módulo, submenú. El módulo se identifica con data: { moduloId } en app.routes.ts.
    ========================================================================== */
 
 import { Component } from '@angular/core';
