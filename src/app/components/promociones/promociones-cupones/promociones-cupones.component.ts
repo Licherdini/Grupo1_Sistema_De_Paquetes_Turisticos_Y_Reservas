@@ -44,7 +44,8 @@ export class PromocionesCuponesComponent {
     { id: 1, codigo: 'UGVIAJA20', campana: 'Cyber Travel Galápagos', descuento: 20, usosTotales: 50, usosDisponibles: 18, estado: 'Vigente' },
     { id: 2, codigo: 'ANDES15', campana: 'Feriado Ruta de los Volcanes', descuento: 15, usosTotales: 100, usosDisponibles: 64, estado: 'Vigente' },
     { id: 3, codigo: 'SPONDY10', campana: 'Escapada Ruta del Spondylus', descuento: 10, usosTotales: 30, usosDisponibles: 30, estado: 'Vigente' },
-    { id: 4, codigo: 'NAVIDAD25', campana: 'Promo Navidad anterior', descuento: 25, usosTotales: 20, usosDisponibles: 7, estado: 'Expirado' }
+    { id: 4, codigo: 'SELVA12', campana: 'Aventura en la Amazonía', descuento: 12, usosTotales: 15, usosDisponibles: 0, estado: 'Vigente' },
+    { id: 5, codigo: 'NAVIDAD25', campana: 'Promo Navidad anterior', descuento: 25, usosTotales: 20, usosDisponibles: 7, estado: 'Expirado' }
   ];
 
   // Two-way binding de los filtros (Zona 2)
