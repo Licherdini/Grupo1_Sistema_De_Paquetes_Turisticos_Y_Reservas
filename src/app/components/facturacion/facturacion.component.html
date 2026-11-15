@@ -1,20 +1,571 @@
-<div class="row g-3">
-  <div class="col-lg-7">
-    <p class="mb-3"><strong>Objetivo:</strong> {{ objetivo }}</p>
-    <h6 class="fw-bold">Funciones previstas</h6>
-    <ul class="mb-0">
-      <li *ngFor="let funcion of funcionesPrevistas">{{ funcion }}</li>
-    </ul>
+<!-- AVISOS / ALERTAS REACTIVAS -->
+<div
+  *ngIf="mensajeAlerta"
+  class="alert alert-dismissible fade show py-2 px-3 small fw-medium mb-3 d-flex justify-content-between align-items-center rounded-3"
+  [ngClass]="{
+    'alert-success': tipoAlerta === 'success',
+    'alert-warning': tipoAlerta === 'warning',
+    'alert-info': tipoAlerta === 'info'
+  }"
+  role="alert"
+>
+  <span>{{ mensajeAlerta }}</span>
+  <button type="button" class="btn-close btn-close-sm" aria-label="Cerrar aviso" (click)="cerrarAlerta()"></button>
+</div>
+
+<!-- KPIs EJECUTIVOS -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg-3">
+    <div class="kpi-tarjeta p-3 rounded-3 bg-white h-100">
+      <span class="kpi-subtitulo d-block text-uppercase text-muted">Total facturado</span>
+      <div class="kpi-monto fs-4 fw-bold text-dark mt-1">${{ totalFacturado() | number: '1.2-2' }}</div>
+      <small class="text-muted">Ventas brutas emitidas</small>
+    </div>
   </div>
+  <div class="col-6 col-lg-3">
+    <div class="kpi-tarjeta p-3 rounded-3 bg-white h-100">
+      <span class="kpi-subtitulo d-block text-uppercase text-muted">Abonado confirmado</span>
+      <div class="kpi-monto fs-4 fw-bold text-success mt-1">${{ totalAbonado() | number: '1.2-2' }}</div>
+      <small class="text-muted">Cobros acreditados</small>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="kpi-tarjeta p-3 rounded-3 bg-white h-100">
+      <span class="kpi-subtitulo d-block text-uppercase text-muted">Saldo por cobrar</span>
+      <div class="kpi-monto fs-4 fw-bold text-danger mt-1">${{ saldoPendienteTotal() | number: '1.2-2' }}</div>
+      <small class="text-muted">Cuentas pendientes</small>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="kpi-tarjeta p-3 rounded-3 bg-white h-100">
+      <span class="kpi-subtitulo d-block text-uppercase text-muted">Índice de satisfacción</span>
+      <div class="kpi-monto fs-4 fw-bold text-dark mt-1">
+        {{ promedioSatisfaccion() | number: '1.1-1' }} <span class="fs-6 text-muted fw-normal">/ 5.0</span>
+      </div>
+      <small class="text-muted">{{ resenas.length }} opiniones verificadas</small>
+    </div>
+  </div>
+</div>
+
+<!-- NAVEGACIÓN POR PESTAÑAS -->
+<ul class="nav nav-tabs pestanas-facturacion mb-4" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button
+      type="button"
+      class="nav-link"
+      role="tab"
+      [ngClass]="{ active: tabActiva === 'comprobantes' }"
+      [attr.aria-selected]="tabActiva === 'comprobantes'"
+      (click)="seleccionarTab('comprobantes')"
+    >
+      Comprobantes de Venta
+    </button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button
+      type="button"
+      class="nav-link"
+      role="tab"
+      [ngClass]="{ active: tabActiva === 'pagos' }"
+      [attr.aria-selected]="tabActiva === 'pagos'"
+      (click)="seleccionarTab('pagos')"
+    >
+      Control de Pagos y Abonos
+    </button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button
+      type="button"
+      class="nav-link"
+      role="tab"
+      [ngClass]="{ active: tabActiva === 'resenas' }"
+      [attr.aria-selected]="tabActiva === 'resenas'"
+      (click)="seleccionarTab('resenas')"
+    >
+      Valoraciones del Servicio ({{ resenas.length }})
+    </button>
+  </li>
+</ul>
+
+<!-- ===================== PESTAÑA: COMPROBANTES ===================== -->
+<div *ngIf="tabActiva === 'comprobantes'" class="row g-4">
+  <div class="col-lg-7">
+    <!-- FILTROS DE BÚSQUEDA -->
+    <div class="panel-blanco p-3 rounded-3 mb-3">
+      <div class="row g-2 align-items-end">
+        <div class="col-12 col-md-7">
+          <label for="buscarComprobante" class="form-label small fw-semibold text-muted mb-1">
+            Buscar por código, cliente o paquete
+          </label>
+          <input
+            id="buscarComprobante"
+            type="text"
+            class="form-control form-control-sm"
+            placeholder="Ej.: FAC-0001, María Pérez, Galápagos"
+            [(ngModel)]="filtroBusqueda"
+          />
+        </div>
+        <div class="col-8 col-md-3">
+          <label for="filtroEstadoFactura" class="form-label small fw-semibold text-muted mb-1">
+            Estado
+          </label>
+          <select id="filtroEstadoFactura" class="form-select form-select-sm" [(ngModel)]="filtroEstado">
+            <option value="Todos">Todos los estados</option>
+            <option value="Pagado">Pagado</option>
+            <option value="Parcial">Pago Parcial</option>
+            <option value="Pendiente">Pendiente</option>
+            <option value="Anulado">Anulado</option>
+          </select>
+        </div>
+        <div class="col-4 col-md-2 d-grid">
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-secondary"
+            (click)="filtroBusqueda = ''; filtroEstado = 'Todos'"
+          >
+            Limpiar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABLA DE COMPROBANTES -->
+    <div class="panel-blanco rounded-3 overflow-hidden">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 tabla-elegante">
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Titular</th>
+              <th>Paquete Turístico</th>
+              <th class="text-end">Importe</th>
+              <th class="text-center">Estado</th>
+              <th class="text-end">Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let comp of comprobantesFiltrados()"
+              [ngClass]="{ 'fila-activa': comprobanteSeleccionado?.codigo === comp.codigo }"
+              (click)="seleccionarComprobante(comp)"
+              style="cursor: pointer"
+            >
+              <td>
+                <span class="codigo-factura">{{ comp.codigo }}</span>
+              </td>
+              <td>
+                <div class="fw-semibold text-dark">{{ comp.cliente }}</div>
+                <small class="text-muted d-block">ID: {{ comp.identificacion }}</small>
+              </td>
+              <td>
+                <div class="text-truncate text-dark" style="max-width: 175px" [title]="comp.paquete">
+                  {{ comp.paquete }}
+                </div>
+              </td>
+              <td class="text-end fw-bold text-dark">${{ comp.total | number: '1.2-2' }}</td>
+              <td class="text-center">
+                <span
+                  class="badge-estado"
+                  [ngClass]="{
+                    'badge-pagado': comp.estado === 'Pagado',
+                    'badge-parcial': comp.estado === 'Parcial',
+                    'badge-pendiente': comp.estado === 'Pendiente',
+                    'badge-anulado': comp.estado === 'Anulado'
+                  }"
+                >
+                  {{ comp.estado }}
+                </span>
+              </td>
+              <td class="text-end" (click)="$event.stopPropagation()">
+                <div class="btn-group btn-group-sm">
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-dark px-2"
+                    title="Ver detalle en el comprobante lateral"
+                    (click)="seleccionarComprobante(comp)"
+                  >
+                    Detalle
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-danger px-2"
+                    title="Anular comprobante"
+                    [disabled]="comp.estado === 'Anulado'"
+                    (click)="anularComprobante(comp)"
+                  >
+                    Anular
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="comprobantesFiltrados().length === 0">
+              <td colspan="6" class="text-center text-muted py-4">
+                No se encontraron comprobantes que coincidan con los criterios de búsqueda.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- VOUCHER EJECUTIVO LATERAL -->
   <div class="col-lg-5">
-    <div class="marco-bosquejo p-3 h-100">
-      <small class="text-muted d-block mb-2">Vista previa del bosquejo</small>
-      <p class="placeholder-glow mb-0" aria-hidden="true">
-        <span class="placeholder col-12 mb-2"></span>
-        <span class="placeholder col-9 mb-2"></span>
-        <span class="placeholder col-11 mb-2"></span>
-        <span class="placeholder col-6"></span>
-      </p>
+    <div class="voucher-ejecutivo p-4 rounded-3" *ngIf="comprobanteSeleccionado">
+      <div class="d-flex justify-content-between align-items-start border-bottom pb-3 mb-3">
+        <div>
+          <span class="voucher-empresa d-block fw-bold text-uppercase">AndesTravel UG</span>
+          <small class="text-muted">Documento de Liquidación y Venta</small>
+        </div>
+        <div class="text-end">
+          <span class="badge bg-dark px-3 py-1 font-monospace">{{ comprobanteSeleccionado.codigo }}</span>
+          <small class="text-muted d-block mt-1">{{ comprobanteSeleccionado.fecha }}</small>
+        </div>
+      </div>
+
+      <div class="row g-2 mb-3 small">
+        <div class="col-7">
+          <span class="text-muted d-block text-uppercase tracking-wider">Cliente</span>
+          <strong class="text-dark d-block">{{ comprobanteSeleccionado.cliente }}</strong>
+          <span class="text-muted">RUC/CI: {{ comprobanteSeleccionado.identificacion }}</span>
+        </div>
+        <div class="col-5 text-end">
+          <span class="text-muted d-block text-uppercase tracking-wider">Pasajeros</span>
+          <strong class="text-dark">{{ comprobanteSeleccionado.pasajeros }} personas</strong>
+        </div>
+      </div>
+
+      <div class="p-2 rounded bg-light mb-3 small">
+        <span class="text-muted d-block text-uppercase tracking-wider">Servicio Contratado</span>
+        <div class="fw-semibold text-dark">{{ comprobanteSeleccionado.paquete }}</div>
+      </div>
+
+      <div class="voucher-desglose small">
+        <div class="d-flex justify-content-between text-muted py-1 border-bottom">
+          <span>Subtotal servicios</span>
+          <span class="font-monospace">${{ comprobanteSeleccionado.subtotal | number: '1.2-2' }}</span>
+        </div>
+        <div class="d-flex justify-content-between text-muted py-1 border-bottom">
+          <span>Impuesto al Valor Agregado (15%)</span>
+          <span class="font-monospace">${{ comprobanteSeleccionado.iva | number: '1.2-2' }}</span>
+        </div>
+        <div class="d-flex justify-content-between fw-bold py-2 border-bottom fs-6 text-dark">
+          <span>Monto Total</span>
+          <span class="font-monospace text-dark">${{ comprobanteSeleccionado.total | number: '1.2-2' }}</span>
+        </div>
+        <div class="d-flex justify-content-between py-1 text-muted">
+          <span>Abonos confirmados</span>
+          <span class="font-monospace text-success fw-semibold">
+            ${{ comprobanteSeleccionado.montoAbonado | number: '1.2-2' }}
+          </span>
+        </div>
+        <div class="d-flex justify-content-between py-1 text-muted">
+          <span>Saldo adeudado</span>
+          <span class="font-monospace text-danger fw-semibold">
+            ${{ comprobanteSeleccionado.saldoPendiente | number: '1.2-2' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- SELLO DE ESTADO MINIMALISTA -->
+      <div class="text-center my-4">
+        <span
+          class="sello-elegante"
+          [ngClass]="{
+            'sello-pagado': comprobanteSeleccionado.estado === 'Pagado',
+            'sello-parcial': comprobanteSeleccionado.estado === 'Parcial',
+            'sello-pendiente': comprobanteSeleccionado.estado === 'Pendiente',
+            'sello-anulado': comprobanteSeleccionado.estado === 'Anulado'
+          }"
+        >
+          {{ comprobanteSeleccionado.estado === 'Pagado' ? 'PAGADO COMPLETO' : (comprobanteSeleccionado.estado === 'Parcial' ? 'PAGO PARCIAL REGISTRADO' : (comprobanteSeleccionado.estado === 'Anulado' ? 'ANULADO' : 'PENDIENTE DE PAGO')) }}
+        </span>
+      </div>
+
+      <div class="d-flex gap-2 pt-2">
+        <button type="button" class="btn btn-sm btn-outline-dark flex-fill fw-medium" (click)="imprimirVoucher()">
+          Imprimir
+        </button>
+        <button type="button" class="btn btn-sm btn-dark flex-fill fw-medium" (click)="descargarPdf()">
+          Descargar PDF
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== PESTAÑA: PAGOS ===================== -->
+<div *ngIf="tabActiva === 'pagos'" class="row g-4">
+  <div class="col-lg-7">
+    <!-- FILTRO DE PAGOS -->
+    <div class="panel-blanco p-3 rounded-3 mb-3 d-flex justify-content-between align-items-center">
+      <span class="small fw-semibold text-muted text-uppercase">Libro de Transacciones</span>
+      <div class="d-flex align-items-center gap-2">
+        <label for="filtroMetodo" class="small text-muted mb-0">Modalidad:</label>
+        <select id="filtroMetodo" class="form-select form-select-sm w-auto" [(ngModel)]="filtroMetodoPago">
+          <option value="Todos">Todas las modalidades</option>
+          <option value="Tarjeta">Tarjeta de crédito/débito</option>
+          <option value="Transferencia">Transferencia bancaria</option>
+          <option value="Abono">Abono en ventanilla</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- TABLA DE HISTORIAL -->
+    <div class="panel-blanco rounded-3 overflow-hidden">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 tabla-elegante">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Comprobante</th>
+              <th>Modalidad</th>
+              <th>Referencia</th>
+              <th class="text-end">Monto</th>
+              <th class="text-center">Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let pago of pagosFiltrados()">
+              <td><small class="text-muted">{{ pago.fecha }}</small></td>
+              <td><span class="codigo-factura">{{ pago.comprobanteCodigo }}</span></td>
+              <td>
+                <span class="text-dark fw-medium">
+                  {{ pago.metodo === 'Tarjeta' ? 'Tarjeta Bancaria' : (pago.metodo === 'Transferencia' ? 'Transferencia' : 'Abono en Efectivo') }}
+                </span>
+              </td>
+              <td><small class="text-muted font-monospace">{{ pago.referencia }}</small></td>
+              <td class="text-end fw-bold text-dark">${{ pago.monto | number: '1.2-2' }}</td>
+              <td class="text-center">
+                <span
+                  class="badge-estado"
+                  [ngClass]="pago.estado === 'Confirmado' ? 'badge-pagado' : 'badge-parcial'"
+                >
+                  {{ pago.estado }}
+                </span>
+              </td>
+            </tr>
+            <tr *ngIf="pagosFiltrados().length === 0">
+              <td colspan="6" class="text-center text-muted py-4">
+                No hay movimientos registrados para el filtro seleccionado.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- COLUMNA DERECHA: REGISTRO DE ABONO -->
+  <div class="col-lg-5">
+    <!-- PROGRESO DEL COMPROBANTE SELECCIONADO -->
+    <div class="panel-blanco p-4 rounded-3 mb-3" *ngIf="comprobanteSeleccionado">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h6 class="fw-bold mb-0 text-dark">Liquidación · {{ comprobanteSeleccionado.codigo }}</h6>
+        <span class="badge bg-dark font-monospace">{{ porcentajePago(comprobanteSeleccionado) }}%</span>
+      </div>
+      <small class="text-muted d-block mb-3">
+        {{ comprobanteSeleccionado.cliente }} — {{ comprobanteSeleccionado.paquete }}
+      </small>
+
+      <div class="progress mb-2 barra-progreso-elegante">
+        <div
+          class="progress-bar bg-dark"
+          role="progressbar"
+          [style.width.%]="porcentajePago(comprobanteSeleccionado)"
+          [attr.aria-valuenow]="porcentajePago(comprobanteSeleccionado)"
+          aria-valuemin="0"
+          aria-valuemax="100"
+        ></div>
+      </div>
+
+      <div class="d-flex justify-content-between small pt-1">
+        <span class="text-muted">Abonado: <strong class="text-dark">${{ comprobanteSeleccionado.montoAbonado | number: '1.2-2' }}</strong></span>
+        <span class="text-muted">Saldo: <strong class="text-danger">${{ comprobanteSeleccionado.saldoPendiente | number: '1.2-2' }}</strong></span>
+      </div>
+    </div>
+
+    <!-- FORMULARIO DE NUEVO ABONO -->
+    <div class="panel-blanco p-4 rounded-3">
+      <h6 class="fw-bold mb-3 text-dark">Registrar Transacción de Pago</h6>
+      
+      <div class="mb-3">
+        <label for="selectComprobantePago" class="form-label small fw-semibold text-muted mb-1">
+          Comprobante destino
+        </label>
+        <select
+          id="selectComprobantePago"
+          class="form-select form-select-sm"
+          [(ngModel)]="pagoNuevo.comprobanteCodigo"
+        >
+          <option
+            *ngFor="let c of comprobantes"
+            [value]="c.codigo"
+            [disabled]="c.estado === 'Pagado' || c.estado === 'Anulado'"
+          >
+            {{ c.codigo }} — {{ c.cliente }} (Saldo: ${{ c.saldoPendiente | number: '1.2-2' }})
+          </option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label small fw-semibold text-muted mb-1 d-block">Modalidad de cobro</label>
+        <div class="btn-group btn-group-sm w-100" role="group">
+          <button
+            type="button"
+            class="btn"
+            [ngClass]="pagoNuevo.metodo === 'Tarjeta' ? 'btn-dark' : 'btn-outline-secondary'"
+            (click)="pagoNuevo.metodo = 'Tarjeta'"
+          >
+            Tarjeta
+          </button>
+          <button
+            type="button"
+            class="btn"
+            [ngClass]="pagoNuevo.metodo === 'Transferencia' ? 'btn-dark' : 'btn-outline-secondary'"
+            (click)="pagoNuevo.metodo = 'Transferencia'"
+          >
+            Transferencia
+          </button>
+          <button
+            type="button"
+            class="btn"
+            [ngClass]="pagoNuevo.metodo === 'Abono' ? 'btn-dark' : 'btn-outline-secondary'"
+            (click)="pagoNuevo.metodo = 'Abono'"
+          >
+            Abono Ventanilla
+          </button>
+        </div>
+      </div>
+
+      <div class="row g-2 mb-3">
+        <div class="col-7">
+          <label for="pagoMonto" class="form-label small fw-semibold text-muted mb-1">Monto a abonar ($)</label>
+          <input
+            id="pagoMonto"
+            type="number"
+            class="form-control form-control-sm font-monospace"
+            step="0.01"
+            min="1"
+            [(ngModel)]="pagoNuevo.monto"
+          />
+        </div>
+        <div class="col-5">
+          <label for="pagoRef" class="form-label small fw-semibold text-muted mb-1">N° Referencia</label>
+          <input
+            id="pagoRef"
+            type="text"
+            class="form-control form-control-sm font-monospace"
+            placeholder="Opcional"
+            [(ngModel)]="pagoNuevo.referencia"
+          />
+        </div>
+      </div>
+
+      <button type="button" class="btn btn-sm btn-dark w-100 py-2 fw-medium" (click)="registrarPago()">
+        Confirmar y Registrar Abono
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== PESTAÑA: RESEÑAS ===================== -->
+<div *ngIf="tabActiva === 'resenas'" class="row g-4">
+  <!-- COLUMNA IZQUIERDA: RESUMEN Y FORMULARIO -->
+  <div class="col-lg-5">
+    <div class="panel-blanco p-4 rounded-3 mb-3 text-center">
+      <div class="display-5 fw-bold text-dark font-monospace">{{ promedioSatisfaccion() | number: '1.1-1' }}</div>
+      <div class="text-dark small fw-semibold text-uppercase tracking-wider mt-1">Calificación Promedio General</div>
+      <small class="text-muted d-block mb-3">{{ resenas.length }} evaluaciones de pasajeros</small>
+
+      <div class="d-flex align-items-center gap-2 small mb-1" *ngFor="let estr of [5, 4, 3, 2, 1]">
+        <span class="text-muted font-monospace" style="width: 28px">{{ estr }} pts</span>
+        <div class="progress flex-fill" style="height: 6px; background-color: #f1f5f9">
+          <div
+            class="progress-bar bg-dark"
+            [style.width.%]="porcentajeEstrellas(estr)"
+          ></div>
+        </div>
+        <span class="text-muted font-monospace" style="width: 28px; text-align: right">
+          {{ conteoPorEstrellas(estr) }}
+        </span>
+      </div>
+    </div>
+
+    <!-- FORMULARIO DE RESEÑA -->
+    <div class="panel-blanco p-4 rounded-3">
+      <h6 class="fw-bold mb-3 text-dark">Registrar Evaluación de Viaje</h6>
+      
+      <div class="mb-2">
+        <label for="resenaNombre" class="form-label small fw-semibold text-muted mb-1">Nombre completo del pasajero</label>
+        <input
+          id="resenaNombre"
+          type="text"
+          class="form-control form-control-sm"
+          placeholder="Ej.: Juan Morales"
+          [(ngModel)]="nuevaResena.cliente"
+        />
+      </div>
+
+      <div class="mb-3">
+        <label for="resenaPaquete" class="form-label small fw-semibold text-muted mb-1">Paquete contratado</label>
+        <select id="resenaPaquete" class="form-select form-select-sm" [(ngModel)]="nuevaResena.paquete">
+          <option value="AND-01 Galápagos Imperial">AND-01 Galápagos Imperial</option>
+          <option value="AND-02 Ruta de los Volcanes">AND-02 Ruta de los Volcanes</option>
+          <option value="AND-03 Aventura Amazónica">AND-03 Aventura Amazónica</option>
+          <option value="AND-04 Sol y Playa Salinas">AND-04 Sol y Playa Salinas</option>
+        </select>
+      </div>
+
+      <div class="mb-3 text-center p-2 rounded bg-light">
+        <span class="small fw-semibold text-muted d-block mb-2">Puntuación otorgada (1 a 5)</span>
+        <div class="btn-group btn-group-sm" role="group">
+          <button
+            *ngFor="let s of [1, 2, 3, 4, 5]"
+            type="button"
+            class="btn btn-sm px-3 font-monospace"
+            [ngClass]="nuevaResena.estrellas === s ? 'btn-dark' : 'btn-outline-secondary'"
+            (click)="setCalificacion(s)"
+          >
+            {{ s }}
+          </button>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="resenaComentario" class="form-label small fw-semibold text-muted mb-1">Comentario sobre el servicio</label>
+        <textarea
+          id="resenaComentario"
+          class="form-control form-control-sm"
+          rows="3"
+          placeholder="Describe la calidad de los guías, hoteles y traslados..."
+          [(ngModel)]="nuevaResena.comentario"
+        ></textarea>
+      </div>
+
+      <button type="button" class="btn btn-sm btn-dark w-100 py-2 fw-medium" (click)="registrarResena()">
+        Publicar Evaluación
+      </button>
+    </div>
+  </div>
+
+  <!-- COLUMNA DERECHA: LISTADO -->
+  <div class="col-lg-7">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h6 class="fw-bold mb-0 text-dark">Registro de Valoraciones Publicadas</h6>
+      <span class="badge bg-light text-dark border">{{ resenas.length }} testimonios</span>
+    </div>
+
+    <div class="panel-blanco p-4 rounded-3 mb-3" *ngFor="let r of resenas">
+      <div class="d-flex justify-content-between align-items-center mb-1">
+        <strong class="text-dark">{{ r.cliente }}</strong>
+        <span class="badge bg-dark font-monospace">{{ r.estrellas }} / 5 pts</span>
+      </div>
+      <div class="d-flex justify-content-between align-items-center text-muted small mb-2">
+        <span>{{ r.paquete }}</span>
+        <span>{{ r.fecha }}</span>
+      </div>
+      <p class="small text-secondary mb-0 leading-relaxed">{{ r.comentario }}</p>
     </div>
   </div>
 </div>

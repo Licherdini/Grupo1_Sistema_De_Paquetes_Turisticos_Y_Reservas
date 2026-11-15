@@ -83,7 +83,7 @@ export class ModulosService {
       responsable: 'Danny Guaman Yucailla',
       icono: '💳',
       descripcion: 'Comprobantes electrónicos, registro de abonos y calificación post-viaje.',
-      estado: 'En bosquejo',
+      estado: 'Funcional',
       secciones: []
     },
     {

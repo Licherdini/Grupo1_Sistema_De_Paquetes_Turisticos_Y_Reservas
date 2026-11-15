@@ -1,0 +1,215 @@
+/* ==========================================================================
+   ARCHIVO: facturacion.component.css
+   MÓDULO: Facturación, Pagos y Reseñas (Danny Guaman)
+   ESTILO: Ejecutivo, Minimalista y Corporativo
+   ========================================================================== */
+
+:host {
+  display: block;
+}
+
+/* Paneles y Tarjetas */
+.panel-blanco {
+  background-color: #ffffff;
+  border: 1px solid rgba(203, 213, 225, 0.6);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.kpi-tarjeta {
+  border: 1px solid rgba(203, 213, 225, 0.6);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.kpi-tarjeta::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-color: #334155;
+}
+
+.kpi-tarjeta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+}
+
+.kpi-subtitulo {
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+
+.kpi-monto {
+  letter-spacing: -0.02em;
+}
+
+/* Pestañas */
+.pestanas-facturacion {
+  border-bottom: 1.5px solid #e2e8f0;
+}
+
+.pestanas-facturacion .nav-link {
+  color: #64748b;
+  border: none;
+  border-bottom: 2.5px solid transparent;
+  padding: 10px 18px;
+  font-size: 0.92rem;
+  font-weight: 500;
+  background: transparent;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.pestanas-facturacion .nav-link:hover {
+  color: #0f172a;
+}
+
+.pestanas-facturacion .nav-link.active {
+  color: #0f172a;
+  font-weight: 700;
+  border-bottom-color: #0f172a;
+  background: transparent;
+}
+
+/* Tabla Elegante */
+.tabla-elegante thead th {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+  font-weight: 600;
+  background-color: #f8fafc;
+  padding: 12px 14px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.tabla-elegante tbody td {
+  padding: 13px 14px;
+  font-size: 0.88rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.fila-activa {
+  background-color: #f8fafc !important;
+  box-shadow: inset 3px 0 0 #0f172a;
+}
+
+.codigo-factura {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #0f172a;
+  background-color: #f1f5f9;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+
+/* Badges Ejecutivos */
+.badge-estado {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  letter-spacing: 0.02em;
+}
+
+.badge-pagado {
+  background-color: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+.badge-parcial {
+  background-color: #fffbeb;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+.badge-pendiente {
+  background-color: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.badge-anulado {
+  background-color: #f8fafc;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
+/* Voucher Ejecutivo */
+.voucher-ejecutivo {
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
+  position: relative;
+}
+
+.voucher-empresa {
+  letter-spacing: 0.05em;
+  font-size: 0.95rem;
+  color: #0f172a;
+}
+
+.tracking-wider {
+  letter-spacing: 0.05em;
+  font-size: 0.72rem;
+}
+
+/* Sello Minimalista */
+.sello-elegante {
+  display: inline-block;
+  padding: 6px 18px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transform: rotate(-3deg);
+}
+
+.sello-pagado {
+  border: 1.5px solid #059669;
+  color: #059669;
+  background-color: #ecfdf5;
+}
+
+.sello-parcial {
+  border: 1.5px solid #d97706;
+  color: #d97706;
+  background-color: #fffbeb;
+}
+
+.sello-pendiente {
+  border: 1.5px solid #dc2626;
+  color: #dc2626;
+  background-color: #fef2f2;
+}
+
+.sello-anulado {
+  border: 1.5px solid #64748b;
+  color: #64748b;
+  background-color: #f8fafc;
+}
+
+.barra-progreso-elegante {
+  height: 7px;
+  background-color: #f1f5f9;
+  border-radius: 9999px;
+}
+
+.leading-relaxed {
+  line-height: 1.55;
+}
+
+@media (max-width: 768px) {
+  .kpi-monto {
+    font-size: 1.25rem !important;
+  }
+}
