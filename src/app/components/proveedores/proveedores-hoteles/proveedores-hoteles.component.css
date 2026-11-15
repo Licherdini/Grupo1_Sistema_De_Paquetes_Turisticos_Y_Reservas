@@ -1,0 +1,74 @@
+/* ==========================================================================
+   ARCHIVO: proveedores-hoteles.component.css
+   MÓDULO 3 / Sección: Cadenas Hoteleras
+   ========================================================================== */
+
+/* Píldora encabezado (dorado/hotelero) */
+.pildora-hoteles {
+  display: inline-block;
+  background: #b45309;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+}
+
+/* Tarjeta de hotel: acento dorado superior */
+.tarjeta-hotel {
+  border-top: 4px solid #b45309;
+}
+
+/* Nombre de cadena hotelera (gris pequeño) */
+.nombre-cadena {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-subtitulo);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Estrellas de categoría resaltadas */
+.categoria-hotel {
+  display: inline-block;
+  font-size: 0.85rem;
+  padding: 0.2rem 0.5rem;
+  background: rgba(180, 83, 9, 0.12);
+  border-radius: 8px;
+  border: 1px solid rgba(180, 83, 9, 0.25);
+}
+
+/* Tarifa por noche destacada */
+.tarifa-hotel {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #b45309;
+}
+
+/* Pie de tarjeta con separador */
+.pie-hotel {
+  border-top: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+/* Panel de edición embebido */
+.panel-edicion {
+  border-radius: 10px;
+}
+
+/* Bloque de detalles */
+.detalle-hotel {
+  flex: 1;
+}
+
+/* Ícono papelera (mismo que otros módulos) */
+.icono-papelera {
+  width: 16px;
+  height: 16px;
+}
+
+@media (max-width: 575.98px) {
+  .tarifa-hotel {
+    font-size: 1.1rem;
+  }
+}

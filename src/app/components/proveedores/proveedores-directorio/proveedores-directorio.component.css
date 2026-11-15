@@ -1,0 +1,60 @@
+/* ==========================================================================
+   ARCHIVO: proveedores-directorio.component.css
+   MÓDULO 3 / Sección: Directorio de Proveedores
+   ========================================================================== */
+
+/* Píldora encabezado (azul corporativo viajes) */
+.pildora-directorio {
+  display: inline-block;
+  background: #0369a1;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+}
+
+/* Avatar con iniciales del proveedor */
+.avatar-proveedor {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #0369a1, #38bdf8);
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.75rem;
+  letter-spacing: 0.03em;
+  flex-shrink: 0;
+}
+
+/* Tarifa con formato destacado */
+.tarifa-celda {
+  font-size: 1rem;
+  color: #0369a1;
+}
+
+/* Fila en modo edición: fondo tenue para diferenciarla */
+.fila-editando {
+  background: rgba(56, 189, 248, 0.08) !important;
+}
+
+/* Fila de confirmación de eliminación */
+.fila-confirmacion {
+  background: rgba(239, 68, 68, 0.06) !important;
+}
+
+/* Ícono papelera (mismo que otros módulos) */
+.icono-papelera {
+  width: 16px;
+  height: 16px;
+}
+
+@media (max-width: 575.98px) {
+  .pildora-directorio {
+    font-size: 0.72rem;
+  }
+}

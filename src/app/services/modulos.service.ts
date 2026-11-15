@@ -1,4 +1,4 @@
-/* ==========================================================================
+﻿/* ==========================================================================
    ARCHIVO: src/app/services/modulos.service.ts
    TEORÍA DEL CURSO: Servicio para compartir datos entre los componentes
    FUNCIÓN: Fuente única de los 5 módulos (título, responsable, estado, URL y
@@ -56,12 +56,15 @@ export class ModulosService {
     {
       id: 3,
       ruta: 'proveedores',
-      titulo: 'Módulo 3: Proveedores, Hoteles y Transporte',
+      titulo: 'Módulo 3: Gestión de Proveedores y Hospedaje',
       responsable: 'Sebastián Acosta Andrade',
       icono: '🏨',
-      descripcion: 'Convenios con aerolíneas, transporte, cadenas hoteleras y guías certificados.',
-      estado: 'En bosquejo',
-      secciones: []
+      descripcion: 'Convenios con aerolíneas, transporte terrestre y cadenas hoteleras aliadas por ciudad destino.',
+      estado: 'Funcional',
+      secciones: [
+        { ruta: 'directorio', etiqueta: 'Directorio de Proveedores' },
+        { ruta: 'hoteles', etiqueta: 'Cadenas Hoteleras' }
+      ]
     },
     {
       id: 4,

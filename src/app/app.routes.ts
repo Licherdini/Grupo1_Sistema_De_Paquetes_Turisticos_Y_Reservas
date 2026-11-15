@@ -15,6 +15,8 @@ import { SeguridadPerfilFormularioComponent } from './components/seguridad/segur
 import { SeguridadAccesosComponent } from './components/seguridad/seguridad-accesos/seguridad-accesos.component';
 import { ModuloCatalogoComponent } from './components/catalogo/catalogo.component';
 import { ModuloProveedoresComponent } from './components/proveedores/proveedores.component';
+import { ProveedoresDirectorioComponent } from './components/proveedores/proveedores-directorio/proveedores-directorio.component';
+import { ProveedoresHotelesComponent } from './components/proveedores/proveedores-hoteles/proveedores-hoteles.component';
 import { ModuloCotizacionesComponent } from './components/cotizaciones/cotizaciones.component';
 import { ReservasComponent } from './components/reservas/reservas.component';
 import { ModuloFacturacionComponent } from './components/facturacion/facturacion.component';
@@ -59,7 +61,11 @@ export const routes: Routes = [
     component: ModuloLayoutComponent,
     canActivate: [authGuard],
     data: { moduloId: 3 },
-    children: [{ path: '', component: ModuloProveedoresComponent }]
+    children: [
+      { path: '', redirectTo: 'directorio', pathMatch: 'full' },
+      { path: 'directorio', component: ProveedoresDirectorioComponent },
+      { path: 'hoteles', component: ProveedoresHotelesComponent }
+    ]
   },
 
   // Módulo 4: Cotizaciones y Reservas (Kenny Ormaza)
