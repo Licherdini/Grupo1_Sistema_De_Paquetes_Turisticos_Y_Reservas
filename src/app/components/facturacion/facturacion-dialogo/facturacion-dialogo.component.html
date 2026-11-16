@@ -1,0 +1,70 @@
+<h2 mat-dialog-title class="dialogo-titulo">
+  Modificar factura: {{ datos.idFactura }}
+</h2>
+
+<mat-dialog-content>
+  <form id="formFactura" (ngSubmit)="guardar()" novalidate>
+    <div class="row g-3">
+      <div class="col-12 col-md-6">
+        <label for="dlgCliente" class="form-label small fw-semibold">Cliente</label>
+        <input
+          id="dlgCliente"
+          name="cliente"
+          type="text"
+          class="form-control"
+          placeholder="Ej.: María Pérez"
+          [(ngModel)]="cliente"
+        />
+        <small class="text-danger d-block mt-1" *ngIf="cliente !== '' && cliente.trim().length < 3">
+          El nombre debe tener al menos 3 caracteres.
+        </small>
+      </div>
+
+      <div class="col-12 col-md-6">
+        <label for="dlgPaquete" class="form-label small fw-semibold">Paquete turístico</label>
+        <input
+          id="dlgPaquete"
+          name="paqueteTuristico"
+          type="text"
+          class="form-control"
+          placeholder="Ej.: AND-01 Galápagos Imperial"
+          [(ngModel)]="paqueteTuristico"
+        />
+      </div>
+
+      <div class="col-12 col-md-6">
+        <label for="dlgMonto" class="form-label small fw-semibold">Monto total ($)</label>
+        <input
+          id="dlgMonto"
+          name="montoTotal"
+          type="number"
+          class="form-control font-monospace"
+          step="0.01"
+          min="1"
+          [(ngModel)]="montoTotal"
+        />
+      </div>
+
+      <div class="col-12 col-md-6">
+        <label for="dlgEstado" class="form-label small fw-semibold">Estado de pago</label>
+        <select id="dlgEstado" name="estadoPago" class="form-select" [(ngModel)]="estadoPago">
+          <option *ngFor="let opcion of estados" [value]="opcion">{{ opcion }}</option>
+        </select>
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button type="button" class="btn btn-outline-secondary btn-sm fw-semibold" (click)="cancelar()">
+    Cancelar
+  </button>
+  <button
+    type="submit"
+    form="formFactura"
+    class="btn btn-dark btn-sm fw-semibold px-3"
+    [disabled]="!formularioValido"
+  >
+    Guardar cambios
+  </button>
+</mat-dialog-actions>

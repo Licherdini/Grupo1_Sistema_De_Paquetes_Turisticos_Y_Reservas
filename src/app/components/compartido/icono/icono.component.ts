@@ -12,7 +12,7 @@ export type NombreIcono =
   | 'candado' | 'buscar' | 'flecha-izquierda' | 'mas' | 'cerrar' | 'check'
   | 'advertencia' | 'papelera' | 'informacion' | 'exito' | 'editar'
   | 'ubicacion' | 'calendario' | 'tarjeta' | 'cupon' | 'brujula' | 'hotel'
-  | 'cama' | 'cubiertos' | 'avion' | 'bus' | 'estrella';
+  | 'cama' | 'cubiertos' | 'avion' | 'bus' | 'estrella' | 'usuario';
 
 // Cada icono es una lista de trazos SVG en una cuadrícula de 24 x 24
 const TRAZOS: Record<NombreIcono, string[]> = {
@@ -49,7 +49,8 @@ const TRAZOS: Record<NombreIcono, string[]> = {
     'M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3',
     'M9 18h5', 'M7 16a2 2 0 1 0 0 4 2 2 0 0 0 0-4z', 'M16 16a2 2 0 1 0 0 4 2 2 0 0 0 0-4z'
   ],
-  estrella: ['M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z']
+  estrella: ['M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z'],
+  usuario: ['M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2', 'M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z']
 };
 
 @Component({

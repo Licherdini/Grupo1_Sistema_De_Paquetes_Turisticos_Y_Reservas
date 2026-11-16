@@ -1,103 +1,73 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { of } from 'rxjs';
+import { vi } from 'vitest';
 import { ModuloFacturacionComponent } from './facturacion.component';
-import { FormsModule } from '@angular/forms';
+import { FacturacionService } from '../../services/facturacion.service';
 
 describe('ModuloFacturacionComponent (Módulo 5: Facturación)', () => {
-  let component: ModuloFacturacionComponent;
-  let fixture: ComponentFixture<ModuloFacturacionComponent>;
+  function crear() {
+    TestBed.configureTestingModule({
+      imports: [ModuloFacturacionComponent],
+      providers: [FacturacionService]
+    });
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [ModuloFacturacionComponent, FormsModule]
-    }).compileComponents();
+    const dialogo = vi.spyOn(TestBed.inject(MatDialog), 'open').mockReturnValue({
+      afterClosed: () => of(true)
+    } as never);
+    const snack = vi.spyOn(TestBed.inject(MatSnackBar), 'open').mockReturnValue(undefined as never);
+    const fixture = TestBed.createComponent(ModuloFacturacionComponent);
+    const service = TestBed.inject(FacturacionService);
 
-    fixture = TestBed.createComponent(ModuloFacturacionComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    return { fixture, componente: fixture.componentInstance, service, dialogo, snack };
+  }
 
   it('debe crear el componente correctamente', () => {
-    expect(component).toBeTruthy();
+    const { componente } = crear();
+    expect(componente).toBeTruthy();
   });
 
-  it('debe iniciar con la pestaña de comprobantes activa y con datos iniciales', () => {
-    expect(component.tabActiva).toBe('comprobantes');
-    expect(component.comprobantes.length).toBeGreaterThanOrEqual(3);
-    expect(component.comprobanteSeleccionado).toBeDefined();
+  it('debe iniciar en vista administrador y permitir cambiar a vista cliente', () => {
+    const { componente } = crear();
+    expect(componente.vistaActiva).toBe('admin');
+
+    componente.vistaActiva = 'cliente';
+    expect(componente.vistaActiva).toBe('cliente');
   });
 
-  it('debe calcular los KPIs reactivos dinámicamente', () => {
-    const total = component.totalFacturado();
-    const abonado = component.totalAbonado();
-    const saldo = component.saldoPendienteTotal();
-
-    expect(total).toBeGreaterThan(0);
-    expect(abonado).toBeGreaterThan(0);
-    expect(saldo).toBeGreaterThanOrEqual(0);
-    expect(component.promedioSatisfaccion()).toBeGreaterThan(0);
+  it('debe listar las facturas iniciales del servicio', () => {
+    const { componente } = crear();
+    expect(componente.facturas.length).toBeGreaterThanOrEqual(3);
+    expect(componente.facturasFiltradas.length).toBe(componente.facturas.length);
   });
 
-  it('debe alternar entre pestañas correctamente', () => {
-    component.seleccionarTab('pagos');
-    expect(component.tabActiva).toBe('pagos');
+  it('debe filtrar las facturas en tiempo real según el término de búsqueda', () => {
+    const { componente } = crear();
+    componente.filtro = 'María';
+    expect(componente.facturasFiltradas.length).toBe(1);
+    expect(componente.facturasFiltradas[0].cliente).toBe('María Pérez');
 
-    component.seleccionarTab('resenas');
-    expect(component.tabActiva).toBe('resenas');
+    componente.filtro = 'FAC-0002';
+    expect(componente.facturasFiltradas.length).toBe(1);
+    expect(componente.facturasFiltradas[0].idFactura).toBe('FAC-0002');
 
-    component.seleccionarTab('comprobantes');
-    expect(component.tabActiva).toBe('comprobantes');
+    componente.filtro = 'inexistente';
+    expect(componente.facturasFiltradas.length).toBe(0);
   });
 
-  it('debe filtrar comprobantes por texto y por estado', () => {
-    component.filtroBusqueda = 'María';
-    const filtrados = component.comprobantesFiltrados();
-    expect(filtrados.length).toBe(1);
-    expect(filtrados[0].cliente).toBe('María Pérez');
-
-    component.filtroBusqueda = '';
-    component.filtroEstado = 'Pagado';
-    expect(component.comprobantesFiltrados().every((c) => c.estado === 'Pagado')).toBe(true);
+  it('debe abrir el diálogo al solicitar modificar una factura', () => {
+    const { componente, dialogo } = crear();
+    const factura = componente.facturas[0];
+    componente.abrirModificar(factura);
+    expect(dialogo).toHaveBeenCalled();
   });
 
-  it('debe permitir seleccionar un comprobante para el voucher interactivo', () => {
-    const segundo = component.comprobantes[1];
-    component.seleccionarComprobante(segundo);
-    expect(component.comprobanteSeleccionado.codigo).toBe(segundo.codigo);
-  });
-
-  it('debe registrar un abono exitosamente y actualizar el saldo de la factura', () => {
-    const comp = component.comprobantes[0]; // FAC-0001 (Parcial, saldo pendiente 1047)
-    const saldoAnterior = comp.saldoPendiente;
-    const pagosIniciales = component.pagos.length;
-
-    component.pagoNuevo = {
-      comprobanteCodigo: comp.codigo,
-      metodo: 'Tarjeta',
-      referencia: 'TX-TEST-01',
-      monto: 200
-    };
-
-    component.registrarPago();
-
-    expect(component.pagos.length).toBe(pagosIniciales + 1);
-    expect(comp.saldoPendiente).toBe(saldoAnterior - 200);
-    expect(comp.montoAbonado).toBeGreaterThan(0);
-  });
-
-  it('debe publicar una reseña y actualizar el promedio de satisfacción', () => {
-    const totalInicial = component.resenas.length;
-
-    component.nuevaResena = {
-      cliente: 'Andrés López',
-      paquete: 'AND-01 Galápagos Imperial',
-      estrellas: 5,
-      comentario: 'Viaje inolvidable, todo de primera calidad.'
-    };
-
-    component.registrarResena();
-
-    expect(component.resenas.length).toBe(totalInicial + 1);
-    expect(component.resenas[0].cliente).toBe('Andrés López');
-    expect(component.promedioSatisfaccion()).toBeGreaterThan(0);
+  it('debe solicitar confirmación y eliminar una factura', async () => {
+    const { componente, dialogo } = crear();
+    const cantidadInicial = componente.facturas.length;
+    await componente.eliminar('FAC-0001');
+    expect(dialogo).toHaveBeenCalled();
+    expect(componente.facturas.length).toBe(cantidadInicial - 1);
   });
 });
