@@ -1,0 +1,29 @@
+<h2 mat-dialog-title class="dialogo-titulo" [ngClass]="'tipo-' + tipo">
+  <app-icono [nombre]="icono" />
+  {{ datos.titulo }}
+</h2>
+
+<mat-dialog-content>
+  <p class="mb-0">{{ datos.mensaje }}</p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <!-- Property binding / ngIf: el botón Cancelar solo aparece si no se pidió ocultarlo -->
+  <button
+    *ngIf="datos.textoCancelar !== null"
+    type="button"
+    class="btn btn-outline-secondary btn-sm fw-semibold"
+    [mat-dialog-close]="false"
+  >
+    {{ datos.textoCancelar ?? 'Cancelar' }}
+  </button>
+  <button
+    type="button"
+    class="btn btn-sm fw-semibold px-3"
+    [ngClass]="claseBotonConfirmar"
+    [mat-dialog-close]="true"
+    cdkFocusInitial
+  >
+    {{ datos.textoConfirmar ?? 'Confirmar' }}
+  </button>
+</mat-dialog-actions>

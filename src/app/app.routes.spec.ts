@@ -17,11 +17,11 @@ describe('Rutas de la aplicación', () => {
     rutasDeModulo.forEach((ruta) => expect((ruta.children ?? []).length).toBeGreaterThan(0));
   });
 
-  it('en Seguridad, perfiles/nuevo debe declararse antes de perfiles/:usuario', () => {
+  it('en Seguridad, la ficha de perfil existe y el formulario en página ya no existe', () => {
     const seguridad = rutasDeModulo.find((ruta) => ruta.data?.['moduloId'] === 1);
     const rutas = (seguridad?.children ?? []).map((hija) => hija.path);
-    expect(rutas).toContain('perfiles/:usuario/editar');
-    expect(rutas.indexOf('perfiles/nuevo')).toBeGreaterThan(-1);
-    expect(rutas.indexOf('perfiles/nuevo')).toBeLessThan(rutas.indexOf('perfiles/:usuario'));
+    expect(rutas).toContain('perfiles/:usuario');
+    expect(rutas).not.toContain('perfiles/nuevo');
+    expect(rutas).not.toContain('perfiles/:usuario/editar');
   });
 });

@@ -8,13 +8,15 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { IconoComponent } from '../compartido/icono/icono.component';
+
 import { AuthService } from '../../services/auth.service';
 import { ModuloGrupo, ModulosService } from '../../services/modulos.service';
 
 @Component({
   selector: 'app-principal',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, IconoComponent],
   templateUrl: './principal.component.html',
   styleUrl: './principal.component.css'
 })

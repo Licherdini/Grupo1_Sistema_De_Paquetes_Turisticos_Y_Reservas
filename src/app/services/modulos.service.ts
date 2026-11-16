@@ -7,6 +7,8 @@
    ========================================================================== */
 
 import { Injectable } from '@angular/core';
+import type { NombreIcono } from '../components/compartido/icono/icono.component';
+
 
 export interface SeccionModulo {
   ruta: string;      // URL de la sección
@@ -18,7 +20,7 @@ export interface ModuloGrupo {
   ruta: string;      // del módulo
   titulo: string;
   responsable: string;
-  icono: string;
+  icono: NombreIcono;
   descripcion: string;
   estado: 'Funcional' | 'En bosquejo';
   secciones: SeccionModulo[];   // vacío = módulo de una sola página (sin submenú)
@@ -34,7 +36,7 @@ export class ModulosService {
       ruta: 'seguridad',
       titulo: 'Módulo 1: Seguridad y Perfiles',
       responsable: 'Jhon Herrera Merchán',
-      icono: '🔐',
+      icono: 'candado',
       descripcion: 'Control de acceso, sesión activa, perfiles con roles y registro de accesos.',
       estado: 'Funcional',
       secciones: [
@@ -48,7 +50,7 @@ export class ModulosService {
       ruta: 'catalogo',
       titulo: 'Módulo 2: Catálogo de Paquetes',
       responsable: 'Angie Lopez Mena',
-      icono: '🏝️',
+      icono: 'brujula',
       descripcion: 'Destinos por regiones del Ecuador, itinerarios, cupos y tarifas base.',
       estado: 'En bosquejo',
       secciones: []
@@ -58,7 +60,7 @@ export class ModulosService {
       ruta: 'proveedores',
       titulo: 'Módulo 3: Gestión de Proveedores y Hospedaje',
       responsable: 'Sebastián Acosta Andrade',
-      icono: '🏨',
+      icono: 'hotel',
       descripcion: 'Convenios con aerolíneas, transporte terrestre y cadenas hoteleras aliadas por ciudad destino.',
       estado: 'Funcional',
       secciones: [
@@ -71,7 +73,7 @@ export class ModulosService {
       ruta: 'cotizaciones',
       titulo: 'Módulo 4: Cotizaciones y Reservas',
       responsable: 'Kenny Ormaza Padilla',
-      icono: '📅',
+      icono: 'calendario',
       descripcion: 'Motor de cálculo de tarifas por pasajeros, fechas de salida y bloqueo de cupos.',
       estado: 'En bosquejo',
       secciones: [
@@ -84,7 +86,7 @@ export class ModulosService {
       ruta: 'facturacion',
       titulo: 'Módulo 5: Facturación, Pagos y Reseñas',
       responsable: 'Danny Guaman Yucailla',
-      icono: '💳',
+      icono: 'tarjeta',
       descripcion: 'Comprobantes electrónicos, registro de abonos y calificación post-viaje.',
       estado: 'Funcional',
       secciones: []
@@ -94,7 +96,7 @@ export class ModulosService {
       ruta: 'promociones',
       titulo: 'Módulo 6: Promociones y Cupones',
       responsable: 'Matews Abrahan Narvaez Cabeza',
-      icono: '🎟️',
+      icono: 'cupon',
       descripcion: 'Ofertas de temporada por alianza bancaria y gestión de cupones de descuento.',
       estado: 'En bosquejo',
       secciones: [

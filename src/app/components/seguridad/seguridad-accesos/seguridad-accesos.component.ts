@@ -8,11 +8,12 @@ import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService, RegistroAcceso } from '../../../services/auth.service';
+import { IconoComponent } from '../../compartido/icono/icono.component';
 
 export type ResultadoFiltro = 'Todos' | 'Concedido' | 'Denegado';
 
 @Component({
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, IconoComponent],
   selector: 'app-seguridad-accesos',
   styleUrl: './seguridad-accesos.component.css',
   templateUrl: './seguridad-accesos.component.html',

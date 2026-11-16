@@ -1,0 +1,99 @@
+<h2 mat-dialog-title class="dialogo-titulo">
+  {{ modo === 'crear' ? 'Nuevo perfil de usuario' : 'Modificar perfil: ' + usuario }}
+</h2>
+
+<mat-dialog-content>
+  <form id="formPerfil" (ngSubmit)="guardar()" novalidate>
+    <div class="row g-3">
+      <div class="col-12 col-md-6">
+        <label for="dlgUsuario" class="form-label small fw-semibold">Usuario</label>
+        <input
+          id="dlgUsuario"
+          name="usuario"
+          type="text"
+          class="form-control"
+          placeholder="Ej.: jperez"
+          autocomplete="off"
+          [readOnly]="modo === 'editar'"
+          [(ngModel)]="usuario"
+        />
+        <small class="text-danger d-block mt-1" *ngIf="usuario !== '' && !usuarioValido">
+          De 3 a 20 caracteres: letras, números, punto, guion o guion bajo.
+        </small>
+        <small class="text-danger d-block mt-1" *ngIf="usuarioDuplicado">
+          Ya existe un perfil con ese usuario.
+        </small>
+      </div>
+
+      <div class="col-12 col-md-6">
+        <label for="dlgNombre" class="form-label small fw-semibold">Nombre completo</label>
+        <input
+          id="dlgNombre"
+          name="nombreCompleto"
+          type="text"
+          class="form-control"
+          placeholder="Ej.: Juan Pérez"
+          [(ngModel)]="nombreCompleto"
+        />
+      </div>
+
+      <div class="col-12 col-md-6">
+        <label for="dlgRol" class="form-label small fw-semibold">Rol asignado</label>
+        <select id="dlgRol" name="rol" class="form-select" [(ngModel)]="rol">
+          <option *ngFor="let opcion of roles" [value]="opcion">{{ opcion }}</option>
+        </select>
+      </div>
+
+      <div class="col-12 col-md-6">
+        <label for="dlgEstado" class="form-label small fw-semibold">Estado de la cuenta</label>
+        <select
+          id="dlgEstado"
+          name="estado"
+          class="form-select"
+          [disabled]="!!motivoProtegido"
+          [(ngModel)]="estado"
+        >
+          <option *ngFor="let opcion of estados" [value]="opcion">{{ opcion }}</option>
+        </select>
+        <small class="text-muted d-block mt-1" *ngIf="motivoProtegido">
+          El estado no se puede cambiar: {{ motivoProtegido }}
+        </small>
+      </div>
+
+      <div class="col-12">
+        <label for="dlgClave" class="form-label small fw-semibold">Clave</label>
+        <div class="input-group">
+          <input
+            id="dlgClave"
+            name="clave"
+            class="form-control"
+            autocomplete="new-password"
+            [type]="mostrarClave ? 'text' : 'password'"
+            [placeholder]="modo === 'editar' ? 'Dejar vacío para no cambiarla' : 'Mínimo 4 caracteres'"
+            [(ngModel)]="clave"
+          />
+          <button type="button" class="btn btn-outline-secondary" (click)="mostrarClave = !mostrarClave">
+            {{ mostrarClave ? 'Ocultar' : 'Mostrar' }}
+          </button>
+        </div>
+        <small class="text-danger d-block mt-1" *ngIf="clave !== '' && !claveValida">
+          La clave debe tener al menos 4 caracteres.
+        </small>
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button type="button" class="btn btn-outline-secondary btn-sm fw-semibold" (click)="cancelar()">
+    Cancelar
+  </button>
+  <button
+    type="submit"
+    form="formPerfil"
+    class="btn btn-dark btn-sm fw-semibold px-3"
+    [disabled]="!formularioValido"
+  >
+    {{ modo === 'crear' ? 'Crear perfil' : 'Guardar cambios' }}
+  </button>
+</mat-dialog-actions>

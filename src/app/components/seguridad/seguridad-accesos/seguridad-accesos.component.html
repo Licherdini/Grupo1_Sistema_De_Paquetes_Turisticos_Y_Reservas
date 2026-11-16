@@ -2,13 +2,16 @@
   <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
     <h6 class="fw-bold mb-0">Registro de accesos</h6>
     <div class="d-flex flex-wrap align-items-center gap-2">
-      <input
-        type="text"
-        class="form-control form-control-sm campo-filtro"
-        placeholder="🔍 Filtrar por usuario..."
-        aria-label="Filtrar registro de accesos por usuario"
-        [(ngModel)]="filtroAccesos"
-      />
+      <div class="campo-buscar">
+        <app-icono nombre="buscar" />
+        <input
+          type="text"
+          class="form-control form-control-sm campo-filtro"
+          placeholder="Filtrar por usuario..."
+          aria-label="Filtrar registro de accesos por usuario"
+          [(ngModel)]="filtroAccesos"
+        />
+      </div>
       <select
         class="form-select form-select-sm campo-filtro"
         aria-label="Filtrar registro de accesos por resultado"

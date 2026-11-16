@@ -1,5 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
+import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { of } from 'rxjs';
+import { vi } from 'vitest';
 import { SeguridadPerfilDetalleComponent } from './seguridad-perfil-detalle.component';
 import { AuthService } from '../../../services/auth.service';
 
@@ -15,7 +18,8 @@ describe('SeguridadPerfilDetalleComponent', () => {
     return TestBed.createComponent(SeguridadPerfilDetalleComponent);
   }
 
-  beforeEach(() => sessionStorage.clear());
+  const confirmarTodo = () =>
+    vi.spyOn(TestBed.inject(MatDialog), 'open').mockReturnValue({ afterClosed: () => of(true) } as never);
 
   it('debe mostrar la ficha del perfil indicado en la URL', async () => {
     const fixture = crearFicha('admin');
@@ -47,46 +51,45 @@ describe('SeguridadPerfilDetalleComponent', () => {
     expect((fixture.nativeElement as HTMLElement).textContent).toContain('No existe un perfil');
   });
 
-  it('debe enlazar "Editar perfil" con el formulario de edición (maqueta)', async () => {
+  it('"Editar perfil" abre el diálogo con el perfil de la ficha', async () => {
     const fixture = crearFicha('admin');
+    const abrir = confirmarTodo();
     await fixture.whenStable();
-    const enlace = (fixture.nativeElement as HTMLElement).querySelector('a.btn') as HTMLAnchorElement;
-    expect(enlace.textContent).toContain('Editar perfil');
-    expect(enlace.getAttribute('href')).toBe('/seguridad/perfiles/admin/editar');
+    const boton = (fixture.nativeElement as HTMLElement).querySelector('button.btn-dark') as HTMLButtonElement;
+    expect(boton.textContent).toContain('Editar perfil');
+    boton.click();
+    expect(abrir).toHaveBeenCalled();
+    expect(TestBed.inject(AuthService).perfilSeleccionado()?.usuario).toBe('admin');
   });
 
-  it('las acciones solo simulan el resultado y no modifican los perfiles', async () => {
+  it('"Bloquear cuenta" cambia el estado real tras confirmar', async () => {
+    const fixture = crearFicha('agente');
+    confirmarTodo();
+    await fixture.whenStable();
+    await fixture.componentInstance.cambiarEstado();
+    await new Promise((resolver) => setTimeout(resolver));
+    await fixture.whenStable();
+    expect(TestBed.inject(AuthService).perfiles().find((p) => p.usuario === 'agente')!.estado).toBe('Bloqueado');
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain('Bloqueado');
+  });
+
+  it('"Dar de baja" elimina lógicamente y vuelve a la lista de perfiles', async () => {
+    const fixture = crearFicha('agente');
+    confirmarTodo();
+    const navegar = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    await fixture.whenStable();
+    await fixture.componentInstance.darDeBaja();
+    expect(TestBed.inject(AuthService).perfilesVisibles().some((p) => p.usuario === 'agente')).toBe(false);
+    expect(navegar).toHaveBeenCalledWith(['/seguridad', 'perfiles']);
+  });
+
+  it('"Reiniciar intentos fallidos" sigue siendo una simulación', async () => {
     const fixture = crearFicha('admin');
     const authService = TestBed.inject(AuthService);
-    const antes = JSON.stringify(authService.perfiles);
-    const ficha = fixture.componentInstance;
-
-    ficha.reiniciarIntentos();
+    const antes = JSON.stringify(authService.perfiles());
+    fixture.componentInstance.reiniciarIntentos();
     await fixture.whenStable();
     expect((fixture.nativeElement as HTMLElement).textContent).toContain('Maqueta: se reiniciarían a 0');
-
-    ficha.cambiarEstado();
-    await fixture.whenStable();
-    expect((fixture.nativeElement as HTMLElement).textContent).toContain('de Activo a Bloqueado');
-
-    expect(JSON.stringify(authService.perfiles)).toBe(antes);
-  });
-
-  it('"Dar de baja" pide confirmación dentro de la página antes de simular', async () => {
-    const fixture = crearFicha('agente');
-    const authService = TestBed.inject(AuthService);
-    const total = authService.perfiles.length;
-    const ficha = fixture.componentInstance;
-
-    ficha.pedirBaja();
-    await fixture.whenStable();
-    expect((fixture.nativeElement as HTMLElement).textContent).toContain('¿Confirmas dar de baja');
-
-    ficha.confirmarBaja();
-    await fixture.whenStable();
-    const texto = (fixture.nativeElement as HTMLElement).textContent;
-    expect(texto).not.toContain('¿Confirmas dar de baja');
-    expect(texto).toContain('Maqueta: se daría de baja el perfil "agente"');
-    expect(authService.perfiles.length).toBe(total);
+    expect(JSON.stringify(authService.perfiles())).toBe(antes);
   });
 });

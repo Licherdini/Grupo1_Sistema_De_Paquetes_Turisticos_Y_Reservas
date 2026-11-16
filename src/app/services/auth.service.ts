@@ -3,16 +3,29 @@
    MÓDULO 1: Seguridad, Autenticación y Perfiles (Jhon Herrera Merchán).
    ========================================================================== */
 
-import { Injectable, signal } from '@angular/core';
+import { Injectable, computed, signal } from '@angular/core';
 
 export type RolUsuario = 'Administrador' | 'Agente de viajes' | 'Auditor';
+export type EstadoCuenta = 'Activo' | 'Bloqueado' | 'Inactivo';
 
 export interface PerfilUsuario {
   usuario: string;
   clave: string;
   rol: RolUsuario;
   nombreCompleto: string;
-  activo: boolean;
+  estado: EstadoCuenta;
+  // Eliminado lógico: el perfil deja de mostrarse y de poder ingresar,
+  // pero sigue en el arreglo (reaparece al reiniciar la app o al ponerlo en false)
+  eliminado: boolean;
+}
+
+// Datos que captura el diálogo de crear / modificar un perfil
+export interface DatosPerfil {
+  usuario: string;
+  nombreCompleto: string;
+  rol: RolUsuario;
+  estado: EstadoCuenta;
+  clave: string;
 }
 
 export interface RegistroAcceso {
@@ -34,30 +47,41 @@ export class AuthService {
   public usuarioValido: string = 'admin';
   public claveValida: string = '12345';
 
-  // 2. Perfiles registrados (simulación académica de una base de usuarios)
-  public perfiles: PerfilUsuario[] = [
+  // 2. Perfiles registrados (simulación académica de una base de usuarios).
+  //    Es un signal: la tabla del Módulo 1 se actualiza sola al crear, modificar o eliminar.
+  //    Vive solo en memoria: al reiniciar la aplicación vuelve a este estado inicial.
+  public perfiles = signal<PerfilUsuario[]>([
     {
       usuario: this.usuarioValido,
       clave: this.claveValida,
       rol: 'Administrador',
       nombreCompleto: 'Administrador del sistema',
-      activo: true
+      estado: 'Activo',
+      eliminado: false
     },
     {
       usuario: 'agente',
       clave: 'viajes2026',
       rol: 'Agente de viajes',
       nombreCompleto: 'Agente de ventas',
-      activo: true
+      estado: 'Activo',
+      eliminado: false
     },
     {
       usuario: 'auditor',
       clave: 'revision2026',
       rol: 'Auditor',
       nombreCompleto: 'Auditor de accesos',
-      activo: false
+      estado: 'Inactivo',
+      eliminado: false
     }
-  ];
+  ]);
+
+  // Perfiles que se muestran en pantalla (sin los eliminados lógicamente)
+  public perfilesVisibles = computed(() => this.perfiles().filter((perfil) => !perfil.eliminado));
+
+  // Perfil elegido en la tabla; el diálogo lo lee (null = el diálogo trabaja en modo crear)
+  public perfilSeleccionado = signal<PerfilUsuario | null>(null);
 
   // 3. Variables públicas globales que controlan Header y Módulo 1
   public estaLogueado = signal<boolean>(false);
@@ -72,12 +96,18 @@ export class AuthService {
   }
 
   /**
-   *  COMPARA las credenciales ingresadas con los perfiles registrados.
-   * Un perfil inactivo no puede ingresar. No modifica el estado de la sesión.
+   * COMPARA las credenciales ingresadas con los perfiles registrados.
+   * Un perfil eliminado, bloqueado o inactivo no puede ingresar.
+   * No modifica el estado de la sesión.
    */
   credencialesValidas(usuarioIngresado: string, claveIngresada: string): boolean {
     const perfil = this.buscarPerfil(usuarioIngresado.trim());
-    return !!perfil && perfil.activo && perfil.clave === claveIngresada.trim();
+    return (
+      !!perfil &&
+      !perfil.eliminado &&
+      perfil.estado === 'Activo' &&
+      perfil.clave === claveIngresada.trim()
+    );
   }
 
   /**
@@ -125,8 +155,96 @@ export class AuthService {
     this.guardarAccesos();
   }
 
+  // ---------------------------------------------------------------------
+  // CRUD de perfiles (variables y métodos de servicio, sin base de datos)
+  // ---------------------------------------------------------------------
+
+  /** True si el usuario ya existe, incluso si está eliminado lógicamente. */
+  usuarioExiste(usuario: string): boolean {
+    return this.perfiles().some((perfil) => perfil.usuario === usuario.trim());
+  }
+
+  /**
+   * Devuelve por qué un perfil no puede eliminarse ni cambiar de estado
+   * (null si no tiene restricciones).
+   */
+  motivoProtegido(usuario: string): string | null {
+    if (usuario === this.usuarioValido) {
+      return 'es la cuenta administradora base del sistema.';
+    }
+    if (usuario === this.usuarioActual()) {
+      return 'tiene la sesión activa en este momento.';
+    }
+    return null;
+  }
+
+  /** Create: agrega un perfil nuevo. Falla (false) si el usuario ya existe. */
+  crearPerfil(datos: DatosPerfil): boolean {
+    const usuario = datos.usuario.trim();
+    if (this.usuarioExiste(usuario)) {
+      return false;
+    }
+    const nuevo: PerfilUsuario = {
+      usuario,
+      clave: datos.clave.trim(),
+      rol: datos.rol,
+      nombreCompleto: datos.nombreCompleto.trim(),
+      estado: datos.estado,
+      eliminado: false
+    };
+    this.perfiles.update((lista) => [...lista, nuevo]);
+    return true;
+  }
+
+  /**
+   * Update: modifica un perfil. La clave vacía significa "no cambiarla".
+   * Los perfiles protegidos conservan su estado.
+   */
+  actualizarPerfil(usuario: string, cambios: Partial<Omit<DatosPerfil, 'usuario'>>): boolean {
+    if (!this.perfiles().some((perfil) => perfil.usuario === usuario)) {
+      return false;
+    }
+    const protegido = this.motivoProtegido(usuario) !== null;
+    this.perfiles.update((lista) =>
+      lista.map((perfil) =>
+        perfil.usuario !== usuario
+          ? perfil
+          : {
+              ...perfil,
+              nombreCompleto: cambios.nombreCompleto?.trim() || perfil.nombreCompleto,
+              rol: cambios.rol ?? perfil.rol,
+              estado: protegido ? perfil.estado : (cambios.estado ?? perfil.estado),
+              clave: cambios.clave?.trim() ? cambios.clave.trim() : perfil.clave
+            }
+      )
+    );
+    if (usuario === this.usuarioActual() && cambios.rol) {
+      this.rolActual.set(cambios.rol);
+    }
+    return true;
+  }
+
+  /**
+   * Delete lógico: marca el perfil como eliminado. No se pierde del arreglo.
+   * Para restaurarlo basta poner eliminado: false en el código o reiniciar la app.
+   */
+  eliminarPerfil(usuario: string): boolean {
+    if (this.motivoProtegido(usuario) !== null) {
+      return false;
+    }
+    if (!this.perfiles().some((perfil) => perfil.usuario === usuario && !perfil.eliminado)) {
+      return false;
+    }
+    this.perfiles.update((lista) =>
+      lista.map((perfil) => (perfil.usuario === usuario ? { ...perfil, eliminado: true } : perfil))
+    );
+    return true;
+  }
+
+  // ---------------------------------------------------------------------
+
   private buscarPerfil(usuario: string): PerfilUsuario | undefined {
-    return this.perfiles.find((perfil) => perfil.usuario === usuario);
+    return this.perfiles().find((perfil) => perfil.usuario === usuario);
   }
 
   private guardarSesion(): void {
@@ -151,7 +269,9 @@ export class AuthService {
         return;
       }
       const datos = JSON.parse(crudo) as { usuario?: string; horaInicio?: string };
-      const perfil = this.perfiles.find((p) => p.usuario === datos.usuario && p.activo);
+      const perfil = this.perfiles().find(
+        (p) => p.usuario === datos.usuario && p.estado === 'Activo' && !p.eliminado
+      );
       if (!perfil) {
         return;
       }

@@ -179,3 +179,73 @@ body::after {
   z-index: 0;
 }
 
+
+/* ==========================================================================
+   MATERIAL (diálogos y avisos) INTEGRADO AL SISTEMA DE VIDRIO
+   FUNCIÓN: Los diálogos (MatDialog) y avisos (MatSnackBar) usan los tokens
+            de vidrio ya definidos arriba. Se activan con panelClass.
+   ========================================================================== */
+
+.dialogo-vidrio {
+  --mat-dialog-container-color: rgba(var(--vidrio-color-rgb), 0.94);
+  --mat-dialog-container-shape: var(--vidrio-radio);
+}
+
+.dialogo-vidrio .mat-mdc-dialog-surface {
+  -webkit-backdrop-filter: blur(var(--vidrio-desenfoque));
+  backdrop-filter: blur(var(--vidrio-desenfoque));
+  border: 1px solid rgba(var(--vidrio-color-rgb), var(--vidrio-borde-opacidad));
+  box-shadow: var(--vidrio-sombra);
+}
+
+/* Avisos de resultado (creado, actualizado, eliminado) */
+.snack-exito {
+  --mat-snack-bar-container-color: #166534;
+  --mat-snack-bar-supporting-text-color: #ffffff;
+  --mat-snack-bar-button-color: #bbf7d0;
+}
+
+/* Tipografía del proyecto en los componentes Material (sin esto usan "Roboto"
+   y, si no está instalada, el navegador cae a una fuente con serifas) */
+html {
+  --mat-sys-display-large-font: inherit;
+  --mat-sys-display-medium-font: inherit;
+  --mat-sys-display-small-font: inherit;
+  --mat-sys-headline-large-font: inherit;
+  --mat-sys-headline-medium-font: inherit;
+  --mat-sys-headline-small-font: inherit;
+  --mat-sys-title-large-font: inherit;
+  --mat-sys-title-medium-font: inherit;
+  --mat-sys-title-small-font: inherit;
+  --mat-sys-body-large-font: inherit;
+  --mat-sys-body-medium-font: inherit;
+  --mat-sys-body-small-font: inherit;
+  --mat-sys-label-large-font: inherit;
+  --mat-sys-label-medium-font: inherit;
+  --mat-sys-label-small-font: inherit;
+}
+
+/* Botones de los diálogos: separados entre sí */
+.dialogo-vidrio .mat-mdc-dialog-actions {
+  gap: 8px;
+  padding: 8px 24px 20px;
+}
+
+/* Input de filtro con icono SVG a la izquierda (<app-icono> + <input>) */
+.campo-buscar {
+  position: relative;
+}
+
+.campo-buscar app-icono {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  color: var(--color-subtitulo);
+  pointer-events: none;
+}
+
+.campo-buscar .form-control {
+  padding-left: 2rem;
+}
+

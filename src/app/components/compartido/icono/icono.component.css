@@ -1,0 +1,8 @@
+/* Se alinea con el texto y toma su tamaño (font-size) y su color */
+:host {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  vertical-align: -0.125em;
+}

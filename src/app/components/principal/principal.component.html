@@ -35,7 +35,7 @@
         (click)="irAModulo(modulo)"
         (keydown.enter)="irAModulo(modulo)"
       >
-        <div class="fs-3 mb-2">{{ modulo.icono }}</div>
+        <div class="fs-3 mb-2"><app-icono [nombre]="modulo.icono" /></div>
         <h6 class="fw-bold mb-1">{{ modulo.titulo }}</h6>
         <span class="badge bg-secondary-subtle text-secondary-emphasis mb-2">
           Resp: {{ modulo.responsable }}

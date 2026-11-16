@@ -11,7 +11,6 @@ import { ModuloLayoutComponent } from './components/modulo-layout/modulo-layout.
 import { SeguridadSesionComponent } from './components/seguridad/seguridad-sesion/seguridad-sesion.component';
 import { SeguridadPerfilesComponent } from './components/seguridad/seguridad-perfiles/seguridad-perfiles.component';
 import { SeguridadPerfilDetalleComponent } from './components/seguridad/seguridad-perfil-detalle/seguridad-perfil-detalle.component';
-import { SeguridadPerfilFormularioComponent } from './components/seguridad/seguridad-perfil-formulario/seguridad-perfil-formulario.component';
 import { SeguridadAccesosComponent } from './components/seguridad/seguridad-accesos/seguridad-accesos.component';
 import { ModuloCatalogoComponent } from './components/catalogo/catalogo.component';
 import { ModuloProveedoresComponent } from './components/proveedores/proveedores.component';
@@ -39,9 +38,7 @@ export const routes: Routes = [
       { path: '', redirectTo: 'sesion', pathMatch: 'full' },
       { path: 'sesion', component: SeguridadSesionComponent },
       { path: 'perfiles', component: SeguridadPerfilesComponent },
-      { path: 'perfiles/nuevo', component: SeguridadPerfilFormularioComponent, data: { modo: 'crear' } },
       { path: 'perfiles/:usuario', component: SeguridadPerfilDetalleComponent },
-      { path: 'perfiles/:usuario/editar', component: SeguridadPerfilFormularioComponent, data: { modo: 'editar' } },
       { path: 'accesos', component: SeguridadAccesosComponent }
     ]
   },

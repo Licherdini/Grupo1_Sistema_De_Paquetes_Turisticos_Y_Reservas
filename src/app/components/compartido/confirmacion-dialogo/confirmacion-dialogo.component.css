@@ -1,0 +1,20 @@
+.dialogo-titulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-titulo);
+}
+
+.tipo-peligro {
+  color: #b91c1c;
+}
+
+.tipo-advertencia {
+  color: #b45309;
+}
+
+.tipo-exito {
+  color: #15803d;
+}

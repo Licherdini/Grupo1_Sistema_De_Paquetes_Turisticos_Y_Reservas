@@ -1,6 +1,20 @@
-/* Resalta el usuario con la sesión activa (movido desde seguridad.component.css) */
+/* Tabla Material sobre vidrio: sin fondo propio para dejar ver la tarjeta */
+.tabla-perfiles {
+  --mat-table-background-color: transparent;
+  --mat-table-row-item-outline-color: rgba(148, 163, 184, 0.35);
+  --mat-table-header-headline-color: var(--color-subtitulo);
+  --mat-table-row-item-label-text-color: var(--color-titulo);
+}
+
+.tabla-perfiles th.mat-mdc-header-cell {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Resalta el usuario con la sesión activa */
 .fila-sesion-actual > td {
-  --bs-table-bg: rgba(79, 70, 229, 0.12);
+  background: rgba(79, 70, 229, 0.12);
   font-weight: 600;
 }
 
@@ -10,10 +24,36 @@
 }
 
 .fila-clic:hover > td {
-  --bs-table-bg: rgba(var(--vidrio-color-rgb), var(--vidrio-opacidad-fuerte));
+  background: rgba(var(--vidrio-color-rgb), var(--vidrio-opacidad-fuerte));
 }
 
 .fila-clic:focus-visible {
   outline: 2px solid var(--input-borde-foco);
   outline-offset: -2px;
+}
+
+/* Animación de entrada y salida de filas (animate.enter / animate.leave) */
+.fila-entra {
+  animation: fila-entra 0.28s ease-out;
+}
+
+.fila-sale {
+  animation: fila-sale 0.2s ease-in forwards;
+}
+
+@keyframes fila-entra {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fila-sale {
+  from { opacity: 1; }
+  to { opacity: 0; transform: translateX(16px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fila-entra,
+  .fila-sale {
+    animation: none;
+  }
 }

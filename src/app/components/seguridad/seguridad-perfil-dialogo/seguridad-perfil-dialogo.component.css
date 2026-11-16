@@ -1,0 +1,11 @@
+/* El usuario no se puede cambiar al modificar: se ve como campo bloqueado */
+input[readonly] {
+  background-color: #f1f5f9;
+  color: var(--color-subtitulo);
+}
+
+.dialogo-titulo {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-titulo);
+}

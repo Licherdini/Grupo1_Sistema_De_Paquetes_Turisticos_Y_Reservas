@@ -1,7 +1,9 @@
 <div class="superficie-vidrio p-4">
-  <a routerLink="/seguridad/perfiles" class="small fw-semibold">← Volver a perfiles</a>
+  <a routerLink="/seguridad/perfiles" class="small fw-semibold d-inline-flex align-items-center gap-1">
+    <app-icono nombre="flecha-izquierda" /> Volver a perfiles
+  </a>
 
-  <ng-container *ngIf="perfil; else perfilNoEncontrado">
+  <ng-container *ngIf="perfil() as perfil; else perfilNoEncontrado">
     <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mt-3 mb-3">
       <div>
         <h5 class="fw-bold mb-0">{{ perfil.nombreCompleto }}</h5>
@@ -9,13 +11,13 @@
       </div>
       <span
         class="badge"
-        [ngClass]="
-          perfil.activo
-            ? 'bg-success-subtle text-success-emphasis'
-            : 'bg-secondary-subtle text-secondary-emphasis'
-        "
+        [ngClass]="{
+          'bg-success-subtle text-success-emphasis': perfil.estado === 'Activo',
+          'bg-danger-subtle text-danger-emphasis': perfil.estado === 'Bloqueado',
+          'bg-secondary-subtle text-secondary-emphasis': perfil.estado === 'Inactivo'
+        }"
       >
-        {{ perfil.activo ? 'Activo' : 'Inactivo' }}
+        {{ perfil.estado }}
       </span>
     </div>
 
@@ -40,32 +42,20 @@
       </dd>
     </dl>
 
-    <!-- ACCIONES EN MAQUETA (Update / Delete): simulan el resultado sin modificar datos -->
+    <!-- ACCIONES: Editar, estado y baja son reales; reiniciar intentos sigue en maqueta -->
     <hr class="my-4" />
     <div class="d-flex flex-wrap align-items-center gap-2">
-      <a class="btn btn-sm btn-dark fw-semibold" [routerLink]="['/seguridad', 'perfiles', perfil.usuario, 'editar']">
+      <button type="button" class="btn btn-sm btn-dark fw-semibold" (click)="editar()">
         Editar perfil
-      </a>
+      </button>
       <button type="button" class="btn btn-sm btn-outline-dark fw-semibold" (click)="reiniciarIntentos()">
         Reiniciar intentos fallidos
       </button>
       <button type="button" class="btn btn-sm btn-outline-dark fw-semibold" (click)="cambiarEstado()">
-        {{ perfil.activo ? 'Bloquear cuenta' : 'Activar cuenta' }}
+        {{ perfil.estado === 'Activo' ? 'Bloquear cuenta' : 'Activar cuenta' }}
       </button>
-      <button type="button" class="btn btn-sm btn-outline-danger fw-semibold" (click)="pedirBaja()">
+      <button type="button" class="btn btn-sm btn-outline-danger fw-semibold" (click)="darDeBaja()">
         Dar de baja
-      </button>
-      <span class="badge bg-warning-subtle text-warning-emphasis ms-auto">Maqueta</span>
-    </div>
-
-    <!-- Confirmación dentro de la página (la rúbrica no permite modales) -->
-    <div class="alert alert-warning py-2 small mt-3 mb-0" role="alert" *ngIf="confirmandoBaja()">
-      <p class="mb-2">¿Confirmas dar de baja el perfil "{{ perfil.usuario }}"?</p>
-      <button type="button" class="btn btn-sm btn-danger fw-semibold me-2" (click)="confirmarBaja()">
-        Confirmar baja
-      </button>
-      <button type="button" class="btn btn-sm btn-outline-secondary fw-semibold" (click)="cancelarBaja()">
-        Cancelar
       </button>
     </div>
 

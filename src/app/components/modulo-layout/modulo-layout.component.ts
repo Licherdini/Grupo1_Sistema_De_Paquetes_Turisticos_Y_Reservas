@@ -8,9 +8,10 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { ModuloGrupo, ModulosService } from '../../services/modulos.service';
+import { IconoComponent } from '../compartido/icono/icono.component'
 
 @Component({
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, IconoComponent],
   selector: 'app-modulo-layout',
   styleUrl: './modulo-layout.component.css',
   templateUrl: './modulo-layout.component.html',
