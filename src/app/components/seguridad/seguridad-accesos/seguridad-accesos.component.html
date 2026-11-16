@@ -13,13 +13,13 @@
         />
       </div>
       <select
-        class="form-select form-select-sm campo-filtro"
+        class="form-select form-control-sm campo-filtro"
         aria-label="Filtrar registro de accesos por resultado"
         [(ngModel)]="filtroResultado"
       >
-        <option>Todos</option>
-        <option>Concedido</option>
-        <option>Denegado</option>
+        <option value="Todos">Todos</option>
+        <option value="Concedido">Concedido</option>
+        <option value="Denegado">Denegado</option>
       </select>
       <!-- Solo el Administrador ve esta acción; se deshabilita si no hay registros -->
       <button
@@ -39,5 +39,39 @@
     {{ mensajeNotificacion() }}
   </div>
 
-  <!-- tabla: sin cambios (thead y tbody actuales) -->
+  <div class="table-responsive">
+    <table class="table tabla-vidrio align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Fecha y hora</th>
+          <th>Usuario</th>
+          <th>Resultado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let acceso of accesosFiltrados(); let i = index"
+          class="fila-animada"
+          [style.animation-delay]="i * 40 + 'ms'"
+        >
+          <td>{{ acceso.fechaHora | date: 'dd/MM HH:mm:ss' }}</td>
+          <td class="fw-semibold">{{ acceso.usuario }}</td>
+          <td>
+            <span
+              class="badge"
+              [ngClass]="{
+                'bg-success-subtle text-success-emphasis': acceso.exitoso,
+                'bg-danger-subtle text-danger-emphasis': !acceso.exitoso
+              }"
+            >
+              {{ acceso.exitoso ? 'Concedido' : 'Denegado' }}
+            </span>
+          </td>
+        </tr>
+        <tr *ngIf="accesosFiltrados().length === 0">
+          <td colspan="3" class="text-center text-muted py-3">No hay accesos para mostrar.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
