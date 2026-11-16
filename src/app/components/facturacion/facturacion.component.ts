@@ -2,7 +2,8 @@
    ARCHIVO: src/app/components/facturacion/facturacion.component.ts
    FUNCIÓN: Módulo 5 (Danny Guaman). Facturación, Pagos y Reseñas.
             Gestión de comprobantes y facturas con Angular Material,
-            señales (signals), diálogo de edición y diálogo de confirmación.
+            señales (signals), diálogo de edición, diálogo de confirmación
+            y alternancia entre Vista Administrador y Vista Cliente.
    ========================================================================== */
 
 import { Component, inject } from '@angular/core';
@@ -26,17 +27,13 @@ import { FacturacionDialogoComponent } from './facturacion-dialogo/facturacion-d
   templateUrl: './facturacion.component.html',
   styleUrl: './facturacion.component.css'
 })
-
-export class FacturacionComponent {
-  // Pestaña inicial para tus pruebas
-  vistaActiva: 'admin' | 'cliente' = 'admin';
-}
-
-
 export class ModuloFacturacionComponent {
   private facturacionService = inject(FacturacionService);
   private dialog = inject(MatDialog);
   private notificaciones = inject(MatSnackBar);
+
+  // Control de pestaña / vista activa
+  vistaActiva: 'admin' | 'cliente' = 'admin';
 
   // Filtro en tiempo real
   filtro: string = '';
@@ -86,7 +83,6 @@ export class ModuloFacturacionComponent {
       });
   }
 
-
   // Eliminar registro previa confirmación
   async eliminar(id: string): Promise<void> {
     const factura = this.facturas.find(f => f.idFactura === id);
@@ -117,3 +113,5 @@ export class ModuloFacturacionComponent {
   }
 }
 
+// Alias de compatibilidad
+export { ModuloFacturacionComponent as FacturacionComponent };
