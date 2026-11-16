@@ -89,6 +89,7 @@ export class AuthService {
   public rolActual = signal<string>('');
   public horaInicioSesion = signal<Date | null>(null);
   public registroAccesos = signal<RegistroAcceso[]>([]);
+  public esAdministrador = computed(() => this.rolActual() === 'Administrador');
 
   constructor() {
     this.restaurarSesion();
@@ -153,6 +154,21 @@ export class AuthService {
       [nuevoRegistro, ...lista].slice(0, this.maximoRegistros)
     );
     this.guardarAccesos();
+  }
+
+  /**
+   * Delete: vacía el registro de accesos (memoria y sessionStorage).
+   * Solo el Administrador puede hacerlo. Devuelve cuántos registros eliminó,
+   * o null si la sesión actual no tiene permiso.
+   */
+  limpiarAccesos(): number | null {
+    if (!this.esAdministrador()) {
+      return null;
+    }
+    const total = this.registroAccesos().length;
+    this.registroAccesos.set([]);
+    this.guardarAccesos();
+    return total;
   }
 
   // ---------------------------------------------------------------------

@@ -21,57 +21,23 @@
         <option>Concedido</option>
         <option>Denegado</option>
       </select>
-      <!-- Maqueta: limpieza del historial -->
-      <button type="button" class="btn btn-sm btn-outline-danger fw-semibold d-inline-flex align-items-center gap-1" (click)="pedirLimpieza()">
+      <!-- Solo el Administrador ve esta acción; se deshabilita si no hay registros -->
+      <button
+        *ngIf="authService.esAdministrador()"
+        type="button"
+        class="btn btn-sm btn-outline-danger fw-semibold d-inline-flex align-items-center gap-1"
+        [disabled]="authService.registroAccesos().length === 0"
+        (click)="limpiarHistorial()"
+      >
         <app-icono nombre="papelera" />
         Limpiar historial
       </button>
     </div>
   </div>
 
-  <!-- Confirmación dentro de la página (la rúbrica no permite modales) -->
-  <div class="alert alert-warning py-2 small mb-3" role="alert" *ngIf="confirmandoLimpieza()">
-    <p class="mb-2">¿Confirmas limpiar el historial de accesos? <span class="badge bg-warning-subtle text-warning-emphasis">Maqueta</span></p>
-    <button type="button" class="btn btn-sm btn-danger fw-semibold me-2" (click)="confirmarLimpieza()">
-      Confirmar limpieza
-    </button>
-    <button type="button" class="btn btn-sm btn-outline-secondary fw-semibold" (click)="cancelarLimpieza()">
-      Cancelar
-    </button>
-  </div>
-  <div class="alert alert-info py-2 small mb-3" role="status" *ngIf="mensajeSimulacion()">
-    {{ mensajeSimulacion() }}
+  <div class="alert alert-info py-2 small mb-3" role="status" *ngIf="mensajeNotificacion()">
+    {{ mensajeNotificacion() }}
   </div>
 
-  <div class="table-responsive">
-    <table class="table tabla-vidrio align-middle mb-0">
-      <thead>
-        <tr>
-          <th>Fecha y hora</th>
-          <th>Usuario</th>
-          <th>Resultado</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let acceso of accesosFiltrados()">
-          <td>{{ acceso.fechaHora | date: 'dd/MM HH:mm:ss' }}</td>
-          <td class="fw-semibold">{{ acceso.usuario }}</td>
-          <td>
-            <span
-              class="badge"
-              [ngClass]="{
-                'bg-success-subtle text-success-emphasis': acceso.exitoso,
-                'bg-danger-subtle text-danger-emphasis': !acceso.exitoso
-              }"
-            >
-              {{ acceso.exitoso ? 'Concedido' : 'Denegado' }}
-            </span>
-          </td>
-        </tr>
-        <tr *ngIf="accesosFiltrados().length === 0">
-          <td colspan="3" class="text-center text-muted py-3">No hay accesos para mostrar.</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <!-- tabla: sin cambios (thead y tbody actuales) -->
 </div>

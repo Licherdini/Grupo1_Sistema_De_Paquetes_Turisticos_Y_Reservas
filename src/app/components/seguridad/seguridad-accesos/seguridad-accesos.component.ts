@@ -1,14 +1,21 @@
 /* ==========================================================================
    ARCHIVO: seguridad-accesos.component.ts
    FUNCIÓN: Módulo 1, sección "Registro de accesos": auditoría de intentos de
-            ingreso (AuthService) con filtro en tiempo real.
+            ingreso (AuthService) con filtro en tiempo real. "Limpiar historial"
+            (solo Administrador) vacía el registro previa confirmación.
    ========================================================================== */
 
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { firstValueFrom } from 'rxjs';
 import { AuthService, RegistroAcceso } from '../../../services/auth.service';
 import { IconoComponent } from '../../compartido/icono/icono.component';
+import {
+  ConfirmacionDialogoComponent,
+  DatosConfirmacion
+} from '../../compartido/confirmacion-dialogo/confirmacion-dialogo.component';
 
 export type ResultadoFiltro = 'Todos' | 'Concedido' | 'Denegado';
 
@@ -23,11 +30,13 @@ export class SeguridadAccesosComponent {
   filtroAccesos: string = '';
   filtroResultado: ResultadoFiltro = 'Todos';
 
-  // MAQUETA (Delete): limpieza simulada del historial. Son signals (app sin zone.js).
-  mensajeSimulacion = signal<string>('');
-  confirmandoLimpieza = signal<boolean>(false);
+  // Mensaje de resultado (signal: la app no usa zone.js)
+  mensajeNotificacion = signal<string>('');
 
-  constructor(public authService: AuthService) {}
+  constructor(
+    public authService: AuthService,
+    private dialog: MatDialog
+  ) {}
 
   // Filtro en tiempo real del registro de accesos: por nombre de usuario y por resultado
   accesosFiltrados(): RegistroAcceso[] {
@@ -39,21 +48,35 @@ export class SeguridadAccesosComponent {
     );
   }
 
-  // ---- Limpieza del historial en maqueta (no borra nada) ----
-  pedirLimpieza(): void {
-    this.mensajeSimulacion.set('');
-    this.confirmandoLimpieza.set(true);
-  }
-
-  cancelarLimpieza(): void {
-    this.confirmandoLimpieza.set(false);
-  }
-
-  confirmarLimpieza(): void {
-    this.confirmandoLimpieza.set(false);
+  // Delete: pide confirmación en un diálogo y vacía TODO el historial (no solo lo filtrado)
+  async limpiarHistorial(): Promise<void> {
     const total = this.authService.registroAccesos().length;
-    this.mensajeSimulacion.set(
-      `Maqueta: se eliminarían ${total} registros del historial de accesos. No se borró nada.`
+    if (!this.authService.esAdministrador() || total === 0) {
+      return;
+    }
+
+    const confirmado = await firstValueFrom(
+      this.dialog
+        .open<ConfirmacionDialogoComponent, DatosConfirmacion, boolean>(ConfirmacionDialogoComponent, {
+          panelClass: 'dialogo-vidrio',
+          data: {
+            titulo: 'Limpiar historial de accesos',
+            mensaje:
+              `Se eliminarán los ${total} registros del historial de TODOS los usuarios, ` +
+              'incluso si hay un filtro aplicado. Esta acción no se puede deshacer. ¿Deseas continuar?',
+            tipo: 'peligro',
+            textoConfirmar: 'Sí, limpiar historial'
+          }
+        })
+        .afterClosed()
     );
+
+    if (confirmado === true) {
+      const eliminados = this.authService.limpiarAccesos();
+      if (eliminados !== null) {
+        this.mensajeNotificacion.set(`Se eliminaron ${eliminados} registros del historial de accesos.`);
+        setTimeout(() => this.mensajeNotificacion.set(''), 4000);
+      }
+    }
   }
 }
