@@ -2,46 +2,48 @@
    ARCHIVO: proveedores-directorio.component.ts
    MÓDULO 3: Gestión de Proveedores y Hospedaje (Sebastián Acosta Andrade)
    FUNCIÓN: Sección "Directorio de Proveedores" (/proveedores/directorio).
-            CRUD en memoria de convenios con aerolíneas y transporte terrestre.
-            Incluye filtros por tipo, ciudad y estado del convenio.
+            CRUD completo de convenios con aerolíneas y transporte terrestre:
+            - READ   : tabla con input de filtro superior + filtros combinados
+                       de ciudad, tipo y estado.
+            - CREATE : formulario desplegable.
+            - UPDATE : ventana sobrepuesta (MatDialog con panelClass 'dialogo-vidrio')
+                       que recupera los datos y actualiza la tabla reactivamente.
+            - DELETE : ventana modal sobrepuesta de confirmación (ConfirmacionDialogoComponent).
+            Todos los datos residen en ProveedoresService.
    ========================================================================== */
 
-import { Component, signal } from '@angular/core';
+import { Component, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { IconoComponent } from '../../compartido/icono/icono.component';
 
-export type TipoProveedor = 'Aerolínea' | 'Transporte Terrestre';
-export type EstadoConvenio = 'Activo' | 'Suspendido' | 'En Renovación';
+// Servicio de datos reactivo
+import {
+  ProveedoresService,
+  ConvenioProveedor,
+  BorradorProveedor,
+  TipoProveedor,
+  EstadoConvenio
+} from '../../../services/proveedores.service';
 
-export interface ConvenioProveedor {
-  id: number;
-  nombre: string;
-  tipo: TipoProveedor;
-  ciudad: string;
-  tarifaCorporativa: number;
-  unidadTarifa: 'por trayecto' | 'por persona';
-  frecuencias: string;
-  estado: EstadoConvenio;
-  logoIniciales: string;
-}
+// Diálogo modal sobrepuesto para modificar
+import { ProveedoresEditDialogComponent } from '../proveedores-edit-dialog/proveedores-edit-dialog.component';
 
-export interface BorradorProveedor {
-  nombre: string;
-  tipo: TipoProveedor;
-  ciudad: string;
-  tarifaCorporativa: number | null;
-  unidadTarifa: 'por trayecto' | 'por persona';
-  frecuencias: string;
-  estado: EstadoConvenio;
-}
+// Diálogo modal sobrepuesto para confirmaciones
+import { ConfirmacionDialogoComponent } from '../../compartido/confirmacion-dialogo/confirmacion-dialogo.component';
 
 @Component({
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, IconoComponent],
   selector: 'app-proveedores-directorio',
   styleUrl: './proveedores-directorio.component.css',
   templateUrl: './proveedores-directorio.component.html',
 })
 export class ProveedoresDirectorioComponent {
+  protected readonly svc = inject(ProveedoresService);
+  private readonly dialog = inject(MatDialog);
+
+  // Opciones de configuración
   readonly tiposProveedor: TipoProveedor[] = ['Aerolínea', 'Transporte Terrestre'];
   readonly estadosConvenio: EstadoConvenio[] = ['Activo', 'Suspendido', 'En Renovación'];
   readonly ciudadesDestino: string[] = [
@@ -50,96 +52,39 @@ export class ProveedoresDirectorioComponent {
   ];
   readonly unidades: Array<'por trayecto' | 'por persona'> = ['por trayecto', 'por persona'];
 
-  // Filtros
+  // Two-way binding de filtros
   filtroTexto: string = '';
   filtroCiudad: string = 'Todas';
   filtroTipo: string = 'Todos';
   filtroEstado: string = 'Todos';
 
-  // Control de edición inline
-  proveedorEditandoId = signal<number | null>(null);
-  borradorEdicion = signal<Partial<ConvenioProveedor>>({});
-  mensajeSimulacion = signal<string>('');
-  confirmandoEliminacionId = signal<number | null>(null);
-
-  // Formulario de creación
+  // Control de formulario de registro
   mostrarFormulario: boolean = false;
   nuevoProveedor: BorradorProveedor = this.crearBorrador();
 
-  proveedores: ConvenioProveedor[] = [
-    {
-      id: 1,
-      nombre: 'LATAM Airlines Ecuador',
-      tipo: 'Aerolínea',
-      ciudad: 'Galápagos',
-      tarifaCorporativa: 189,
-      unidadTarifa: 'por trayecto',
-      frecuencias: 'Lun, Mié, Vie — UIO/GPS directo',
-      estado: 'Activo',
-      logoIniciales: 'LA'
-    },
-    {
-      id: 2,
-      nombre: 'Avianca Ecuador',
-      tipo: 'Aerolínea',
-      ciudad: 'Cuenca',
-      tarifaCorporativa: 75,
-      unidadTarifa: 'por trayecto',
-      frecuencias: 'Diario — UIO/CUE',
-      estado: 'Activo',
-      logoIniciales: 'AV'
-    },
-    {
-      id: 3,
-      nombre: 'TransTurismo Baños S.A.',
-      tipo: 'Transporte Terrestre',
-      ciudad: 'Baños',
-      tarifaCorporativa: 12,
-      unidadTarifa: 'por persona',
-      frecuencias: 'Sáb y Dom — Salida 07:00 desde Quito',
-      estado: 'Activo',
-      logoIniciales: 'TB'
-    },
-    {
-      id: 4,
-      nombre: 'Ruta Spondylus Express',
-      tipo: 'Transporte Terrestre',
-      ciudad: 'Montañita',
-      tarifaCorporativa: 18,
-      unidadTarifa: 'por persona',
-      frecuencias: 'Vie y Sáb — Salida 06:30 desde Guayaquil',
-      estado: 'En Renovación',
-      logoIniciales: 'RS'
-    },
-    {
-      id: 5,
-      nombre: 'Aerogal Cargo & Pasajeros',
-      tipo: 'Aerolínea',
-      ciudad: 'Manta',
-      tarifaCorporativa: 95,
-      unidadTarifa: 'por trayecto',
-      frecuencias: 'Mar, Jue — UIO/MEC',
-      estado: 'Suspendido',
-      logoIniciales: 'AG'
-    }
-  ];
-
-  // ── READ: filtrado combinado ──────────────────────────────────────────────
-  proveedoresFiltrados(): ConvenioProveedor[] {
+  // Filtrado computado en tiempo real (Signals)
+  proveedoresFiltrados = computed(() => {
     const texto = this.filtroTexto.trim().toLowerCase();
-    return this.proveedores.filter((p) => {
+    return this.svc.proveedores().filter((p) => {
       const coincideTexto =
         texto === '' ||
         p.nombre.toLowerCase().includes(texto) ||
-        p.ciudad.toLowerCase().includes(texto);
+        p.ciudad.toLowerCase().includes(texto) ||
+        p.tipo.toLowerCase().includes(texto);
       const coincideCiudad = this.filtroCiudad === 'Todas' || p.ciudad === this.filtroCiudad;
       const coincideTipo = this.filtroTipo === 'Todos' || p.tipo === this.filtroTipo;
       const coincideEstado = this.filtroEstado === 'Todos' || p.estado === this.filtroEstado;
       return coincideTexto && coincideCiudad && coincideTipo && coincideEstado;
     });
+  });
+
+  limpiarFiltro(): void {
+    this.filtroTexto = '';
+    this.filtroCiudad = 'Todas';
+    this.filtroTipo = 'Todos';
+    this.filtroEstado = 'Todos';
   }
 
-  // ── CREATE ────────────────────────────────────────────────────────────────
   formularioValido(): boolean {
     const p = this.nuevoProveedor;
     return (
@@ -151,116 +96,58 @@ export class ProveedoresDirectorioComponent {
 
   registrarProveedor(): void {
     if (!this.formularioValido()) return;
-    const siguiente = Math.max(0, ...this.proveedores.map((p) => p.id)) + 1;
-    const iniciales = this.nuevoProveedor.nombre
-      .split(' ')
-      .slice(0, 2)
-      .map((w) => w[0])
-      .join('')
-      .toUpperCase();
-    const nuevo: ConvenioProveedor = {
-      id: siguiente,
-      nombre: this.nuevoProveedor.nombre.trim(),
-      tipo: this.nuevoProveedor.tipo,
-      ciudad: this.nuevoProveedor.ciudad,
-      tarifaCorporativa: Number(this.nuevoProveedor.tarifaCorporativa),
-      unidadTarifa: this.nuevoProveedor.unidadTarifa,
-      frecuencias: this.nuevoProveedor.frecuencias.trim() || 'Sin especificar',
-      estado: this.nuevoProveedor.estado,
-      logoIniciales: iniciales
-    };
-    this.proveedores = [nuevo, ...this.proveedores];
+    this.svc.registrarProveedor(this.nuevoProveedor);
     this.nuevoProveedor = this.crearBorrador();
     this.mostrarFormulario = false;
-    this.mensajeSimulacion.set(`✅ Proveedor "${nuevo.nombre}" registrado correctamente.`);
-    setTimeout(() => this.mensajeSimulacion.set(''), 4000);
   }
 
-  // ── UPDATE ────────────────────────────────────────────────────────────────
-  iniciarEdicion(proveedor: ConvenioProveedor): void {
-    this.proveedorEditandoId.set(proveedor.id);
-    this.borradorEdicion.set({ ...proveedor });
-    this.confirmandoEliminacionId.set(null);
+  // Abre la ventanita modal sobrepuesta para editar (igual que en Módulo 1)
+  abrirDialogEdicion(proveedor: ConvenioProveedor): void {
+    const ref = this.dialog.open(ProveedoresEditDialogComponent, {
+      data: { proveedor },
+      width: '580px',
+      maxWidth: '95vw',
+      disableClose: true,
+      panelClass: 'dialogo-vidrio'
+    });
+
+    ref.afterClosed().subscribe((resultado: ConvenioProveedor | null) => {
+      if (resultado) {
+        this.svc.actualizarProveedor(proveedor.id, resultado);
+      }
+    });
   }
 
-  cancelarEdicion(): void {
-    this.proveedorEditandoId.set(null);
-    this.borradorEdicion.set({});
+  // Abre la ventanita modal sobrepuesta para confirmar eliminación
+  eliminar(proveedor: ConvenioProveedor): void {
+    this.dialog
+      .open(ConfirmacionDialogoComponent, {
+        data: {
+          titulo: 'Eliminar convenio',
+          mensaje: `Se eliminará el convenio con "${proveedor.nombre}" (${proveedor.ciudad}). ¿Deseas continuar?`,
+          tipo: 'peligro',
+          textoConfirmar: 'Sí, eliminar'
+        },
+        panelClass: 'dialogo-vidrio'
+      })
+      .afterClosed()
+      .subscribe((confirmado: boolean) => {
+        if (confirmado) {
+          this.svc.eliminarProveedor(proveedor.id);
+        }
+      });
   }
 
-  guardarEdicion(): void {
-    const id = this.proveedorEditandoId();
-    const borrador = this.borradorEdicion();
-    if (id === null) return;
-    this.proveedores = this.proveedores.map((p) =>
-      p.id === id ? { ...p, ...borrador } as ConvenioProveedor : p
-    );
-    this.proveedorEditandoId.set(null);
-    this.borradorEdicion.set({});
-    this.mensajeSimulacion.set(`✏️ Convenio actualizado correctamente.`);
-    setTimeout(() => this.mensajeSimulacion.set(''), 4000);
-  }
-
-  // ── DELETE ────────────────────────────────────────────────────────────────
-  pedirEliminacion(id: number): void {
-    this.confirmandoEliminacionId.set(id);
-    this.proveedorEditandoId.set(null);
-  }
-
-  cancelarEliminacion(): void {
-    this.confirmandoEliminacionId.set(null);
-  }
-
-  confirmarEliminacion(id: number): void {
-    const proveedor = this.proveedores.find((p) => p.id === id);
-    this.proveedores = this.proveedores.filter((p) => p.id !== id);
-    this.confirmandoEliminacionId.set(null);
-    this.mensajeSimulacion.set(`🗑️ Proveedor "${proveedor?.nombre}" eliminado del directorio.`);
-    setTimeout(() => this.mensajeSimulacion.set(''), 4000);
-  }
-
-  // ── Helpers ───────────────────────────────────────────────────────────────
   claseBadgeEstado(estado: EstadoConvenio): string {
-    const mapa: Record<EstadoConvenio, string> = {
-      'Activo': 'bg-success-subtle text-success-emphasis',
-      'Suspendido': 'bg-danger-subtle text-danger-emphasis',
-      'En Renovación': 'bg-warning-subtle text-warning-emphasis'
-    };
-    return mapa[estado];
+    return this.svc.claseBadgeEstado(estado);
   }
 
   claseBadgeTipo(tipo: TipoProveedor): string {
-    return tipo === 'Aerolínea'
-      ? 'bg-info-subtle text-info-emphasis'
-      : 'bg-secondary-subtle text-secondary-emphasis';
+    return this.svc.claseBadgeTipo(tipo);
   }
 
   iconoTipo(tipo: TipoProveedor): string {
-    return tipo === 'Aerolínea' ? '✈️' : '🚌';
-  }
-
-  get borradorEstadoActual(): EstadoConvenio {
-    return (this.borradorEdicion() as ConvenioProveedor).estado ?? 'Activo';
-  }
-
-  set borradorEstadoActual(val: EstadoConvenio) {
-    this.borradorEdicion.set({ ...this.borradorEdicion(), estado: val });
-  }
-
-  get borradorTarifa(): number | null {
-    return (this.borradorEdicion() as ConvenioProveedor).tarifaCorporativa ?? null;
-  }
-
-  set borradorTarifa(val: number | null) {
-    this.borradorEdicion.set({ ...this.borradorEdicion(), tarifaCorporativa: val ?? 0 });
-  }
-
-  get borradorFrecuencias(): string {
-    return (this.borradorEdicion() as ConvenioProveedor).frecuencias ?? '';
-  }
-
-  set borradorFrecuencias(val: string) {
-    this.borradorEdicion.set({ ...this.borradorEdicion(), frecuencias: val });
+    return this.svc.iconoTipo(tipo);
   }
 
   private crearBorrador(): BorradorProveedor {

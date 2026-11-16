@@ -1,0 +1,133 @@
+<!-- =========================================================================
+   ARCHIVO: hoteles-edit-dialog.component.html
+   MÓDULO 3 / Diálogo: Modificar Convenio Hotelero
+   Ventanita sobrepuesta estilo vidrio (idéntica a la del Módulo 1)
+   ========================================================================== -->
+
+<h2 mat-dialog-title class="dialogo-titulo">
+  Modificar hotel: {{ borrador.nombreHotel }}
+</h2>
+
+<mat-dialog-content>
+  <form id="formHotel" (ngSubmit)="guardar()" novalidate>
+    <div class="row g-3">
+
+      <!-- Nombre del hotel -->
+      <div class="col-12 col-md-6">
+        <label for="dlgHotelNombre" class="form-label small fw-semibold">Nombre del hotel</label>
+        <input
+          id="dlgHotelNombre"
+          name="nombreHotel"
+          type="text"
+          class="form-control"
+          placeholder="Ej.: Decameron Punta Blanca"
+          [(ngModel)]="borrador.nombreHotel"
+          required
+        />
+        <small class="text-danger d-block mt-1" *ngIf="borrador.nombreHotel.trim().length < 4">
+          Debe tener al menos 4 caracteres.
+        </small>
+      </div>
+
+      <!-- Cadena / Marca -->
+      <div class="col-12 col-md-6">
+        <label for="dlgCadena" class="form-label small fw-semibold">Cadena / Marca</label>
+        <input
+          id="dlgCadena"
+          name="cadena"
+          type="text"
+          class="form-control"
+          placeholder="Ej.: Decameron"
+          [(ngModel)]="borrador.cadena"
+          required
+        />
+      </div>
+
+      <!-- Ciudad destino -->
+      <div class="col-12 col-md-6">
+        <label for="dlgHotelCiudad" class="form-label small fw-semibold">Ciudad destino</label>
+        <select id="dlgHotelCiudad" name="ciudad" class="form-select" [(ngModel)]="borrador.ciudad">
+          @for (ciudad of ciudadesDestino; track ciudad) {
+            <option [value]="ciudad">{{ ciudad }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Categoría -->
+      <div class="col-12 col-md-6">
+        <label for="dlgCategoria" class="form-label small fw-semibold">Categoría</label>
+        <select id="dlgCategoria" name="categoria" class="form-select" [(ngModel)]="borrador.categoria">
+          @for (cat of categorias; track cat) {
+            <option [value]="cat">{{ cat }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Tarifa por noche ($) -->
+      <div class="col-12 col-md-6">
+        <label for="dlgTarifaNoche" class="form-label small fw-semibold">Tarifa / noche ($)</label>
+        <input
+          id="dlgTarifaNoche"
+          name="tarifaNoche"
+          type="number"
+          class="form-control"
+          min="1"
+          placeholder="Ej.: 95"
+          [(ngModel)]="borrador.tarifaNoche"
+          required
+        />
+        <small class="text-danger d-block mt-1" *ngIf="borrador.tarifaNoche <= 0">
+          Debe ser mayor a $0.
+        </small>
+      </div>
+
+      <!-- Régimen de alimentación -->
+      <div class="col-12 col-md-6">
+        <label for="dlgRegimen" class="form-label small fw-semibold">Régimen de alimentación</label>
+        <select id="dlgRegimen" name="regimen" class="form-select" [(ngModel)]="borrador.regimen">
+          @for (reg of regimenes; track reg) {
+            <option [value]="reg">{{ reg }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Estado convenio -->
+      <div class="col-12 col-md-6">
+        <label for="dlgHotelEstado" class="form-label small fw-semibold">Estado del convenio</label>
+        <select id="dlgHotelEstado" name="estado" class="form-select" [(ngModel)]="borrador.estado">
+          @for (est of estadosConvenio; track est) {
+            <option [value]="est">{{ est }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Tipos de habitación -->
+      <div class="col-12 col-md-6">
+        <label for="dlgHabitaciones" class="form-label small fw-semibold">Tipos de habitación</label>
+        <input
+          id="dlgHabitaciones"
+          name="habitaciones"
+          type="text"
+          class="form-control"
+          placeholder="Ej.: Doble, Suite vista al mar"
+          [(ngModel)]="borrador.habitaciones"
+        />
+      </div>
+
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button type="button" class="btn btn-outline-secondary btn-sm fw-semibold" (click)="cancelar()">
+    Cancelar
+  </button>
+  <button
+    type="submit"
+    form="formHotel"
+    class="btn btn-dark btn-sm fw-semibold px-3"
+    [disabled]="!formularioValido"
+  >
+    Guardar cambios
+  </button>
+</mat-dialog-actions>

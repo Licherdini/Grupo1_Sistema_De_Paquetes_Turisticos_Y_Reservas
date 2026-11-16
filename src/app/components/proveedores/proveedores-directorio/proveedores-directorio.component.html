@@ -1,138 +1,186 @@
 <!-- =========================================================================
    ARCHIVO: proveedores-directorio.component.html
    MÓDULO 3 / Sección: Directorio de Proveedores (/proveedores/directorio)
-   CRUD: aerolíneas y transporte terrestre con filtros y edición inline.
+   CRUD con ventanas modales sobrepuestas e iconos SVG compartidos
    ========================================================================== -->
 
-<!-- BLOQUE A: Encabezado y barra de filtros (Read) -->
+<!-- BLOQUE A: Encabezado, input de filtrado superior y filtros combinados -->
 <div class="superficie-vidrio p-3 mb-3">
   <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
     <div>
       <span class="pildora-directorio">DIRECTORIO DE PROVEEDORES</span>
-      <small class="d-block text-muted mt-1">Aerolíneas y transporte terrestre aliados</small>
+      <small class="d-block text-muted mt-1">Aerolíneas y transporte terrestre aliados para los paquetes turísticos</small>
     </div>
     <button
       type="button"
-      class="btn btn-dark fw-semibold"
+      class="btn btn-dark fw-semibold d-inline-flex align-items-center gap-1"
       (click)="mostrarFormulario = !mostrarFormulario"
     >
-      {{ mostrarFormulario ? '✕ Cancelar' : '+ Registrar Proveedor' }}
+      @if (mostrarFormulario) {
+        <app-icono nombre="cerrar" /> Cancelar
+      } @else {
+        <app-icono nombre="mas" /> Registrar Proveedor
+      }
     </button>
   </div>
 
-  <!-- Filtros combinados -->
-  <div class="row g-2">
-    <div class="col-12 col-md-4">
-      <input
-        type="text"
-        class="form-control form-control-sm"
-        placeholder="🔍 Buscar por nombre o ciudad..."
-        [(ngModel)]="filtroTexto"
-        aria-label="Filtrar proveedores por nombre o ciudad"
-      />
+  <!-- Input de filtro superior con icono buscar (Requerimiento 1) -->
+  <div class="row g-2 align-items-end mb-2">
+    <div class="col-12 col-md-9">
+      <label for="filtroTexto" class="form-label small fw-semibold">Filtrar proveedores</label>
+      <div class="campo-buscar">
+        <app-icono nombre="buscar" />
+        <input
+          id="filtroTexto"
+          type="text"
+          class="form-control form-control-sm"
+          placeholder="Buscar por nombre, ciudad o tipo de proveedor..."
+          [(ngModel)]="filtroTexto"
+          aria-label="Filtrar proveedores"
+        />
+      </div>
     </div>
-    <div class="col-6 col-md-3">
-      <select class="form-select form-select-sm" [(ngModel)]="filtroCiudad" aria-label="Filtrar por ciudad destino">
-        <option value="Todas">Todas las ciudades</option>
-        <option *ngFor="let ciudad of ciudadesDestino" [value]="ciudad">{{ ciudad }}</option>
-      </select>
-    </div>
-    <div class="col-6 col-md-2">
-      <select class="form-select form-select-sm" [(ngModel)]="filtroTipo" aria-label="Filtrar por tipo de proveedor">
-        <option value="Todos">Todos los tipos</option>
-        <option *ngFor="let tipo of tiposProveedor" [value]="tipo">{{ tipo }}</option>
-      </select>
-    </div>
-    <div class="col-6 col-md-2">
-      <select class="form-select form-select-sm" [(ngModel)]="filtroEstado" aria-label="Filtrar por estado del convenio">
-        <option value="Todos">Todos los estados</option>
-        <option *ngFor="let estado of estadosConvenio" [value]="estado">{{ estado }}</option>
-      </select>
-    </div>
-  </div>
-</div>
-
-<!-- BLOQUE B: Formulario de registro embebido (Create, sin modales) -->
-<div class="superficie-vidrio p-3 mb-3" *ngIf="mostrarFormulario">
-  <h6 class="fw-bold mb-3">Registrar nuevo proveedor</h6>
-  <div class="row g-2 align-items-end">
-    <div class="col-12 col-md-6 col-lg-3">
-      <label for="provNombre" class="form-label small fw-semibold">Nombre del proveedor</label>
-      <input
-        id="provNombre"
-        type="text"
-        class="form-control"
-        placeholder="Ej.: LATAM Airlines Ecuador"
-        [(ngModel)]="nuevoProveedor.nombre"
-      />
-    </div>
-    <div class="col-6 col-md-3 col-lg-2">
-      <label for="provTipo" class="form-label small fw-semibold">Tipo</label>
-      <select id="provTipo" class="form-select" [(ngModel)]="nuevoProveedor.tipo">
-        <option *ngFor="let tipo of tiposProveedor" [value]="tipo">{{ tipo }}</option>
-      </select>
-    </div>
-    <div class="col-6 col-md-3 col-lg-2">
-      <label for="provCiudad" class="form-label small fw-semibold">Ciudad destino</label>
-      <select id="provCiudad" class="form-select" [(ngModel)]="nuevoProveedor.ciudad">
-        <option *ngFor="let ciudad of ciudadesDestino" [value]="ciudad">{{ ciudad }}</option>
-      </select>
-    </div>
-    <div class="col-6 col-md-3 col-lg-2">
-      <label for="provTarifa" class="form-label small fw-semibold">Tarifa corp. ($)</label>
-      <input
-        id="provTarifa"
-        type="number"
-        class="form-control"
-        placeholder="Ej.: 189"
-        min="1"
-        [(ngModel)]="nuevoProveedor.tarifaCorporativa"
-      />
-    </div>
-    <div class="col-6 col-md-3 col-lg-2">
-      <label for="provUnidad" class="form-label small fw-semibold">Unidad tarifa</label>
-      <select id="provUnidad" class="form-select" [(ngModel)]="nuevoProveedor.unidadTarifa">
-        <option *ngFor="let u of unidades" [value]="u">{{ u }}</option>
-      </select>
-    </div>
-    <div class="col-12 col-md-6">
-      <label for="provFrecuencias" class="form-label small fw-semibold">Frecuencias / Rutas</label>
-      <input
-        id="provFrecuencias"
-        type="text"
-        class="form-control"
-        placeholder="Ej.: Lun, Mié, Vie — UIO/GPS directo"
-        [(ngModel)]="nuevoProveedor.frecuencias"
-      />
-    </div>
-    <div class="col-6 col-md-3 col-lg-2">
-      <label for="provEstado" class="form-label small fw-semibold">Estado convenio</label>
-      <select id="provEstado" class="form-select" [(ngModel)]="nuevoProveedor.estado">
-        <option *ngFor="let est of estadosConvenio" [value]="est">{{ est }}</option>
-      </select>
-    </div>
-    <div class="col-12 col-md-3 col-lg-2 d-grid">
-      <button
-        type="button"
-        class="btn btn-dark fw-semibold"
-        [disabled]="!formularioValido()"
-        (click)="registrarProveedor()"
-      >
-        ✓ Registrar
+    <div class="col-12 col-md-3 d-grid">
+      <button type="button" class="btn btn-sm btn-outline-secondary" (click)="limpiarFiltro()">
+        Limpiar filtros
       </button>
     </div>
   </div>
-  <small class="text-muted d-block mt-2">
-    El nombre debe tener mínimo 4 caracteres y la tarifa debe ser mayor a \$0.
-  </small>
+
+  <!-- Filtros secundarios -->
+  <div class="row g-2">
+    <div class="col-12 col-md-4">
+      <select
+        class="form-select form-select-sm"
+        [(ngModel)]="filtroCiudad"
+        aria-label="Filtrar por ciudad destino"
+      >
+        <option value="Todas">Todas las ciudades</option>
+        @for (ciudad of ciudadesDestino; track ciudad) {
+          <option [value]="ciudad">{{ ciudad }}</option>
+        }
+      </select>
+    </div>
+    <div class="col-6 col-md-4">
+      <select
+        class="form-select form-select-sm"
+        [(ngModel)]="filtroTipo"
+        aria-label="Filtrar por tipo de transporte"
+      >
+        <option value="Todos">Todos los tipos</option>
+        @for (tipo of tiposProveedor; track tipo) {
+          <option [value]="tipo">{{ tipo }}</option>
+        }
+      </select>
+    </div>
+    <div class="col-6 col-md-4">
+      <select
+        class="form-select form-select-sm"
+        [(ngModel)]="filtroEstado"
+        aria-label="Filtrar por estado del convenio"
+      >
+        <option value="Todos">Todos los estados</option>
+        @for (estado of estadosConvenio; track estado) {
+          <option [value]="estado">{{ estado }}</option>
+        }
+      </select>
+    </div>
+  </div>
 </div>
 
-<!-- Mensaje de retroalimentación (Create / Update / Delete) -->
-<div class="alert alert-info py-2 small mb-3" role="status" *ngIf="mensajeSimulacion()">
-  {{ mensajeSimulacion() }}
-</div>
+<!-- BLOQUE B: Formulario de alta embebido -->
+@if (mostrarFormulario) {
+  <div class="superficie-vidrio p-3 mb-3">
+    <h6 class="fw-bold mb-3">➕ Registrar nuevo proveedor</h6>
+    <div class="row g-2 align-items-end">
+      <div class="col-12 col-md-6 col-lg-3">
+        <label for="provNombre" class="form-label small fw-semibold">Nombre del proveedor</label>
+        <input
+          id="provNombre"
+          type="text"
+          class="form-control"
+          placeholder="Ej.: LATAM Airlines Ecuador"
+          [(ngModel)]="nuevoProveedor.nombre"
+        />
+      </div>
+      <div class="col-6 col-md-3 col-lg-2">
+        <label for="provTipo" class="form-label small fw-semibold">Tipo</label>
+        <select id="provTipo" class="form-select" [(ngModel)]="nuevoProveedor.tipo">
+          @for (tipo of tiposProveedor; track tipo) {
+            <option [value]="tipo">{{ tipo }}</option>
+          }
+        </select>
+      </div>
+      <div class="col-6 col-md-3 col-lg-2">
+        <label for="provCiudad" class="form-label small fw-semibold">Ciudad destino</label>
+        <select id="provCiudad" class="form-select" [(ngModel)]="nuevoProveedor.ciudad">
+          @for (ciudad of ciudadesDestino; track ciudad) {
+            <option [value]="ciudad">{{ ciudad }}</option>
+          }
+        </select>
+      </div>
+      <div class="col-6 col-md-3 col-lg-2">
+        <label for="provTarifa" class="form-label small fw-semibold">Tarifa corp. ($)</label>
+        <input
+          id="provTarifa"
+          type="number"
+          class="form-control"
+          placeholder="Ej.: 189"
+          min="1"
+          [(ngModel)]="nuevoProveedor.tarifaCorporativa"
+        />
+      </div>
+      <div class="col-6 col-md-3 col-lg-2">
+        <label for="provUnidad" class="form-label small fw-semibold">Unidad tarifa</label>
+        <select id="provUnidad" class="form-select" [(ngModel)]="nuevoProveedor.unidadTarifa">
+          @for (u of unidades; track u) {
+            <option [value]="u">{{ u }}</option>
+          }
+        </select>
+      </div>
+      <div class="col-12 col-md-6">
+        <label for="provFrecuencias" class="form-label small fw-semibold">Frecuencias / Rutas</label>
+        <input
+          id="provFrecuencias"
+          type="text"
+          class="form-control"
+          placeholder="Ej.: Lun, Mié, Vie — UIO/GPS directo"
+          [(ngModel)]="nuevoProveedor.frecuencias"
+        />
+      </div>
+      <div class="col-6 col-md-3 col-lg-2">
+        <label for="provEstado" class="form-label small fw-semibold">Estado convenio</label>
+        <select id="provEstado" class="form-select" [(ngModel)]="nuevoProveedor.estado">
+          @for (est of estadosConvenio; track est) {
+            <option [value]="est">{{ est }}</option>
+          }
+        </select>
+      </div>
+      <div class="col-12 col-md-3 col-lg-2 d-grid">
+        <button
+          type="button"
+          class="btn btn-dark fw-semibold"
+          [disabled]="!formularioValido()"
+          (click)="registrarProveedor()"
+        >
+          ✓ Registrar
+        </button>
+      </div>
+    </div>
+    <small class="text-muted d-block mt-2">
+      El nombre debe tener mínimo 4 caracteres y la tarifa debe ser mayor a $0.
+    </small>
+  </div>
+}
 
-<!-- BLOQUE C: Tabla de convenios (Read / Update / Delete) -->
+<!-- Mensaje de notificación / retroalimentación -->
+@if (svc.mensajeNotificacion()) {
+  <div class="alert alert-info py-2 small mb-3" role="status">
+    {{ svc.mensajeNotificacion() }}
+  </div>
+}
+
+<!-- BLOQUE C: Tabla principal de convenios (7 columnas) -->
 <div class="superficie-vidrio p-3">
   <div class="table-responsive">
     <table class="table tabla-vidrio align-middle mb-0">
@@ -148,133 +196,79 @@
         </tr>
       </thead>
       <tbody>
-        <!-- Fila normal -->
-        <ng-container *ngFor="let prov of proveedoresFiltrados()">
-          <tr *ngIf="proveedorEditandoId() !== prov.id">
+        @for (prov of proveedoresFiltrados(); track prov.id) {
+          <tr>
+            <!-- Columna 1: Proveedor -->
             <td>
               <div class="d-flex align-items-center gap-2">
                 <span class="avatar-proveedor">{{ prov.logoIniciales }}</span>
                 <span class="fw-semibold">{{ prov.nombre }}</span>
               </div>
             </td>
+            <!-- Columna 2: Tipo -->
             <td>
               <span class="badge" [ngClass]="claseBadgeTipo(prov.tipo)">
                 {{ iconoTipo(prov.tipo) }} {{ prov.tipo }}
               </span>
             </td>
+            <!-- Columna 3: Ciudad destino -->
             <td>📍 {{ prov.ciudad }}</td>
+            <!-- Columna 4: Tarifa corporativa -->
             <td class="fw-semibold tarifa-celda">
-              \${{ prov.tarifaCorporativa | number: '1.0-0' }}
+              ${{ prov.tarifaCorporativa | number: '1.0-0' }}
               <small class="text-muted fw-normal d-block">{{ prov.unidadTarifa }}</small>
             </td>
+            <!-- Columna 5: Frecuencias / Rutas -->
             <td class="small text-muted">{{ prov.frecuencias }}</td>
+            <!-- Columna 6: Estado del convenio -->
             <td>
               <span class="badge" [ngClass]="claseBadgeEstado(prov.estado)">
                 {{ prov.estado }}
               </span>
             </td>
+            <!-- Columna 7: Acciones con iconos de la carpeta compartido/icono -->
             <td class="text-end">
-              <div class="d-flex justify-content-end gap-2">
+              <div class="d-flex justify-content-end gap-1">
+                <!-- Botón Modificar con icono 'editar' -->
                 <button
                   type="button"
-                  class="btn btn-sm btn-outline-dark fw-semibold"
-                  title="Editar convenio"
-                  [attr.aria-label]="'Editar convenio de ' + prov.nombre"
-                  (click)="iniciarEdicion(prov)"
+                  class="btn btn-sm btn-outline-dark fw-semibold d-inline-flex align-items-center gap-1"
+                  [attr.aria-label]="'Modificar convenio de ' + prov.nombre"
+                  (click)="abrirDialogEdicion(prov)"
                 >
-                  ✏️
+                  <app-icono nombre="editar" />
+                  Modificar
                 </button>
+                <!-- Botón Eliminar con icono 'papelera' -->
                 <button
                   type="button"
-                  class="btn btn-sm btn-outline-danger"
-                  title="Dar de baja proveedor"
-                  [attr.aria-label]="'Eliminar proveedor ' + prov.nombre"
-                  (click)="pedirEliminacion(prov.id)"
+                  class="btn btn-sm btn-outline-danger fw-semibold d-inline-flex align-items-center gap-1"
+                  [attr.aria-label]="'Eliminar convenio de ' + prov.nombre"
+                  (click)="eliminar(prov)"
                 >
-                  <svg class="icono-papelera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <polyline points="3 6 5 6 21 6" />
-                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-                    <path d="M10 11v6M14 11v6" />
-                    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
-                  </svg>
+                  <app-icono nombre="papelera" />
+                  Eliminar
                 </button>
               </div>
             </td>
           </tr>
-
-          <!-- Fila de edición inline (Update) -->
-          <tr *ngIf="proveedorEditandoId() === prov.id" class="fila-editando">
-            <td colspan="7">
-              <div class="p-2">
-                <div class="row g-2 align-items-end">
-                  <div class="col-12 col-md-4">
-                    <label class="form-label small fw-semibold mb-1">Tarifa corporativa ($)</label>
-                    <input
-                      type="number"
-                      class="form-control form-control-sm"
-                      [(ngModel)]="borradorTarifa"
-                      min="1"
-                    />
-                  </div>
-                  <div class="col-12 col-md-4">
-                    <label class="form-label small fw-semibold mb-1">Frecuencias / Rutas</label>
-                    <input
-                      type="text"
-                      class="form-control form-control-sm"
-                      [(ngModel)]="borradorFrecuencias"
-                    />
-                  </div>
-                  <div class="col-12 col-md-2">
-                    <label class="form-label small fw-semibold mb-1">Estado convenio</label>
-                    <select class="form-select form-select-sm" [(ngModel)]="borradorEstadoActual">
-                      <option *ngFor="let est of estadosConvenio" [value]="est">{{ est }}</option>
-                    </select>
-                  </div>
-                  <div class="col-12 col-md-2 d-flex gap-2">
-                    <button type="button" class="btn btn-sm btn-dark fw-semibold" (click)="guardarEdicion()">
-                      Guardar
-                    </button>
-                    <button type="button" class="btn btn-sm btn-outline-secondary fw-semibold" (click)="cancelarEdicion()">
-                      Cancelar
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </td>
-          </tr>
-
-          <!-- Fila de confirmación de eliminación inline (Delete) -->
-          <tr *ngIf="confirmandoEliminacionId() === prov.id" class="fila-confirmacion">
-            <td colspan="7">
-              <div class="alert alert-warning py-2 small mb-0 d-flex align-items-center flex-wrap gap-3">
-                <span>¿Dar de baja definitivamente a <strong>{{ prov.nombre }}</strong>? Esta acción eliminará el convenio del directorio.</span>
-                <div class="d-flex gap-2">
-                  <button type="button" class="btn btn-sm btn-danger fw-semibold" (click)="confirmarEliminacion(prov.id)">
-                    Confirmar baja
-                  </button>
-                  <button type="button" class="btn btn-sm btn-outline-secondary fw-semibold" (click)="cancelarEliminacion()">
-                    Cancelar
-                  </button>
-                </div>
-              </div>
-            </td>
-          </tr>
-        </ng-container>
+        }
 
         <!-- Estado vacío -->
-        <tr *ngIf="proveedoresFiltrados().length === 0">
-          <td colspan="7" class="text-center text-muted py-4">
-            No se encontraron proveedores con los filtros aplicados.
-          </td>
-        </tr>
+        @if (proveedoresFiltrados().length === 0) {
+          <tr>
+            <td colspan="7" class="text-center text-muted py-4">
+              No se encontraron proveedores con los filtros aplicados.
+            </td>
+          </tr>
+        }
       </tbody>
     </table>
   </div>
 
-  <!-- Contador de resultados -->
   <div class="d-flex justify-content-end mt-2">
     <small class="text-muted">
-      Mostrando {{ proveedoresFiltrados().length }} de {{ proveedores.length }} convenios registrados
+      Mostrando {{ proveedoresFiltrados().length }} de {{ svc.totalProveedores() }} convenios registrados
     </small>
   </div>
 </div>

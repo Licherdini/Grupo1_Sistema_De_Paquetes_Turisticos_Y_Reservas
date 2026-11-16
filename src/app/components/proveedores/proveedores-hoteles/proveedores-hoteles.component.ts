@@ -1,14 +1,20 @@
 /* ==========================================================================
    ARCHIVO: proveedores-hoteles.component.ts
    MÓDULO 3: Gestión de Proveedores y Hospedaje (Sebastián Acosta Andrade)
-   FUNCIÓN: Sección "Cadenas Hoteleras" (/proveedores/hoteles). CRUD en
-            memoria de convenios con cadenas hoteleras aliadas, filtrables
-            por ciudad, categoría y régimen de alimentación.
+   FUNCIÓN: Sección "Cadenas Hoteleras" (/proveedores/hoteles).
+            Convenios con cadenas hoteleras aliadas. La edición y eliminación
+            se realizan mediante ventanas modales sobrepuestas (MatDialog con
+            panelClass 'dialogo-vidrio'), homogéneas con el Módulo 1.
    ========================================================================== */
 
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { IconoComponent } from '../../compartido/icono/icono.component';
+
+import { HotelesEditDialogComponent } from '../hoteles-edit-dialog/hoteles-edit-dialog.component';
+import { ConfirmacionDialogoComponent } from '../../compartido/confirmacion-dialogo/confirmacion-dialogo.component';
 
 export type CategoriaHotel = '⭐⭐' | '⭐⭐⭐' | '⭐⭐⭐⭐' | '⭐⭐⭐⭐⭐';
 export type RegimenAlimentacion = 'Solo alojamiento' | 'Desayuno incluido' | 'Todo incluido';
@@ -38,12 +44,14 @@ export interface BorradorHotel {
 }
 
 @Component({
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, IconoComponent],
   selector: 'app-proveedores-hoteles',
   styleUrl: './proveedores-hoteles.component.css',
   templateUrl: './proveedores-hoteles.component.html',
 })
 export class ProveedoresHotelesComponent {
+  private readonly dialog = inject(MatDialog);
+
   readonly categorias: CategoriaHotel[] = ['⭐⭐', '⭐⭐⭐', '⭐⭐⭐⭐', '⭐⭐⭐⭐⭐'];
   readonly regimenes: RegimenAlimentacion[] = [
     'Solo alojamiento',
@@ -62,11 +70,8 @@ export class ProveedoresHotelesComponent {
   filtroRegimen: string = 'Todos';
   filtroEstado: string = 'Todos';
 
-  // Control de edición y eliminación
-  hotelEditandoId = signal<number | null>(null);
-  borradorEdicion = signal<Partial<ConvenioHotel>>({});
+  // Mensaje de feedback
   mensajeSimulacion = signal<string>('');
-  confirmandoEliminacionId = signal<number | null>(null);
 
   // Formulario de creación
   mostrarFormulario: boolean = false;
@@ -184,47 +189,45 @@ export class ProveedoresHotelesComponent {
     setTimeout(() => this.mensajeSimulacion.set(''), 4000);
   }
 
-  // ── UPDATE ────────────────────────────────────────────────────────────────
-  iniciarEdicion(hotel: ConvenioHotel): void {
-    this.hotelEditandoId.set(hotel.id);
-    this.borradorEdicion.set({ ...hotel });
-    this.confirmandoEliminacionId.set(null);
+  // ── UPDATE: ventana modal sobrepuesta (MatDialog) ─────────────────────────
+  abrirDialogEdicion(hotel: ConvenioHotel): void {
+    const ref = this.dialog.open(HotelesEditDialogComponent, {
+      data: { hotel },
+      width: '580px',
+      maxWidth: '95vw',
+      disableClose: true,
+      panelClass: 'dialogo-vidrio'
+    });
+
+    ref.afterClosed().subscribe((resultado: ConvenioHotel | null) => {
+      if (resultado) {
+        this.hoteles = this.hoteles.map((h) => (h.id === hotel.id ? resultado : h));
+        this.mensajeSimulacion.set(`✏️ Convenio con "${resultado.nombreHotel}" actualizado correctamente.`);
+        setTimeout(() => this.mensajeSimulacion.set(''), 4000);
+      }
+    });
   }
 
-  cancelarEdicion(): void {
-    this.hotelEditandoId.set(null);
-    this.borradorEdicion.set({});
-  }
-
-  guardarEdicion(): void {
-    const id = this.hotelEditandoId();
-    const borrador = this.borradorEdicion();
-    if (id === null) return;
-    this.hoteles = this.hoteles.map((h) =>
-      h.id === id ? { ...h, ...borrador } as ConvenioHotel : h
-    );
-    this.hotelEditandoId.set(null);
-    this.borradorEdicion.set({});
-    this.mensajeSimulacion.set(`✏️ Convenio hotelero actualizado correctamente.`);
-    setTimeout(() => this.mensajeSimulacion.set(''), 4000);
-  }
-
-  // ── DELETE ────────────────────────────────────────────────────────────────
-  pedirEliminacion(id: number): void {
-    this.confirmandoEliminacionId.set(id);
-    this.hotelEditandoId.set(null);
-  }
-
-  cancelarEliminacion(): void {
-    this.confirmandoEliminacionId.set(null);
-  }
-
-  confirmarEliminacion(id: number): void {
-    const hotel = this.hoteles.find((h) => h.id === id);
-    this.hoteles = this.hoteles.filter((h) => h.id !== id);
-    this.confirmandoEliminacionId.set(null);
-    this.mensajeSimulacion.set(`🗑️ Hotel "${hotel?.nombreHotel}" dado de baja del directorio.`);
-    setTimeout(() => this.mensajeSimulacion.set(''), 4000);
+  // ── DELETE: ventana modal de confirmación sobrepuesta ─────────────────────
+  eliminar(hotel: ConvenioHotel): void {
+    this.dialog
+      .open(ConfirmacionDialogoComponent, {
+        data: {
+          titulo: 'Eliminar hotel aliado',
+          mensaje: `Se eliminará el convenio con el hotel "${hotel.nombreHotel}" (${hotel.ciudad}). ¿Deseas continuar?`,
+          tipo: 'peligro',
+          textoConfirmar: 'Sí, eliminar'
+        },
+        panelClass: 'dialogo-vidrio'
+      })
+      .afterClosed()
+      .subscribe((confirmado: boolean) => {
+        if (confirmado) {
+          this.hoteles = this.hoteles.filter((h) => h.id !== hotel.id);
+          this.mensajeSimulacion.set(`🗑️ Hotel "${hotel.nombreHotel}" dado de baja del directorio.`);
+          setTimeout(() => this.mensajeSimulacion.set(''), 4000);
+        }
+      });
   }
 
   // ── Helpers ───────────────────────────────────────────────────────────────
@@ -244,38 +247,6 @@ export class ProveedoresHotelesComponent {
       'Todo incluido': 'bg-success-subtle text-success-emphasis'
     };
     return mapa[regimen];
-  }
-
-  get borradorTarifa(): number | null {
-    return (this.borradorEdicion() as ConvenioHotel).tarifaNoche ?? null;
-  }
-
-  set borradorTarifa(val: number | null) {
-    this.borradorEdicion.set({ ...this.borradorEdicion(), tarifaNoche: val ?? 0 });
-  }
-
-  get borradorRegimenActual(): RegimenAlimentacion {
-    return (this.borradorEdicion() as ConvenioHotel).regimen ?? 'Solo alojamiento';
-  }
-
-  set borradorRegimenActual(val: RegimenAlimentacion) {
-    this.borradorEdicion.set({ ...this.borradorEdicion(), regimen: val });
-  }
-
-  get borradorEstadoActual(): EstadoConvenioHotel {
-    return (this.borradorEdicion() as ConvenioHotel).estado ?? 'Activo';
-  }
-
-  set borradorEstadoActual(val: EstadoConvenioHotel) {
-    this.borradorEdicion.set({ ...this.borradorEdicion(), estado: val });
-  }
-
-  get borradorHabitaciones(): string {
-    return (this.borradorEdicion() as ConvenioHotel).habitaciones ?? '';
-  }
-
-  set borradorHabitaciones(val: string) {
-    this.borradorEdicion.set({ ...this.borradorEdicion(), habitaciones: val });
   }
 
   private crearBorrador(): BorradorHotel {

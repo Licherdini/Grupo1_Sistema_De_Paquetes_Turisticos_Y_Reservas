@@ -1,0 +1,11 @@
+/* ==========================================================================
+   ARCHIVO: hoteles-edit-dialog.component.css
+   MÓDULO 3 / Diálogo: Modificar Convenio Hotelero
+   ========================================================================== */
+
+.dialogo-titulo {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-titulo);
+  margin-bottom: 0.5rem;
+}

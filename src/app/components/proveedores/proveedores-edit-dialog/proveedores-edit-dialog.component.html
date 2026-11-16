@@ -1,0 +1,120 @@
+<!-- =========================================================================
+   ARCHIVO: proveedores-edit-dialog.component.html
+   MÓDULO 3 / Diálogo: Modificar Convenio de Proveedor
+   Ventanita sobrepuesta estilo vidrio (idéntica a la del Módulo 1)
+   ========================================================================== -->
+
+<h2 mat-dialog-title class="dialogo-titulo">
+  Modificar convenio: {{ borrador.nombre }}
+</h2>
+
+<mat-dialog-content>
+  <form id="formProveedor" (ngSubmit)="guardar()" novalidate>
+    <div class="row g-3">
+
+      <!-- Nombre del proveedor -->
+      <div class="col-12 col-md-6">
+        <label for="dlgNombre" class="form-label small fw-semibold">Nombre del proveedor</label>
+        <input
+          id="dlgNombre"
+          name="nombre"
+          type="text"
+          class="form-control"
+          placeholder="Ej.: LATAM Airlines Ecuador"
+          [(ngModel)]="borrador.nombre"
+          required
+        />
+        <small class="text-danger d-block mt-1" *ngIf="borrador.nombre.trim().length < 4">
+          Debe tener al menos 4 caracteres.
+        </small>
+      </div>
+
+      <!-- Tipo de transporte / proveedor -->
+      <div class="col-12 col-md-6">
+        <label for="dlgTipo" class="form-label small fw-semibold">Tipo de transporte</label>
+        <select id="dlgTipo" name="tipo" class="form-select" [(ngModel)]="borrador.tipo">
+          @for (tipo of tiposProveedor; track tipo) {
+            <option [value]="tipo">{{ tipo }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Ciudad destino -->
+      <div class="col-12 col-md-6">
+        <label for="dlgCiudad" class="form-label small fw-semibold">Ciudad destino</label>
+        <select id="dlgCiudad" name="ciudad" class="form-select" [(ngModel)]="borrador.ciudad">
+          @for (ciudad of ciudadesDestino; track ciudad) {
+            <option [value]="ciudad">{{ ciudad }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Tarifa corporativa -->
+      <div class="col-12 col-md-6">
+        <label for="dlgTarifa" class="form-label small fw-semibold">Tarifa corporativa ($)</label>
+        <input
+          id="dlgTarifa"
+          name="tarifaCorporativa"
+          type="number"
+          class="form-control"
+          min="1"
+          placeholder="Ej.: 189"
+          [(ngModel)]="borrador.tarifaCorporativa"
+          required
+        />
+        <small class="text-danger d-block mt-1" *ngIf="borrador.tarifaCorporativa <= 0">
+          La tarifa debe ser mayor a $0.
+        </small>
+      </div>
+
+      <!-- Unidad de cobro -->
+      <div class="col-12 col-md-6">
+        <label for="dlgUnidad" class="form-label small fw-semibold">Unidad de cobro</label>
+        <select id="dlgUnidad" name="unidadTarifa" class="form-select" [(ngModel)]="borrador.unidadTarifa">
+          @for (u of unidades; track u) {
+            <option [value]="u">{{ u }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Estado del convenio -->
+      <div class="col-12 col-md-6">
+        <label for="dlgEstado" class="form-label small fw-semibold">Estado del convenio</label>
+        <select id="dlgEstado" name="estado" class="form-select" [(ngModel)]="borrador.estado">
+          @for (est of estadosConvenio; track est) {
+            <option [value]="est">{{ est }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Frecuencias / Rutas -->
+      <div class="col-12">
+        <label for="dlgFrecuencias" class="form-label small fw-semibold">Frecuencias / Rutas asignadas</label>
+        <input
+          id="dlgFrecuencias"
+          name="frecuencias"
+          type="text"
+          class="form-control"
+          placeholder="Ej.: Lun, Mié, Vie — UIO/GPS directo"
+          [(ngModel)]="borrador.frecuencias"
+          required
+        />
+      </div>
+
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button type="button" class="btn btn-outline-secondary btn-sm fw-semibold" (click)="cancelar()">
+    Cancelar
+  </button>
+  <button
+    type="submit"
+    form="formProveedor"
+    class="btn btn-dark btn-sm fw-semibold px-3"
+    [disabled]="!formularioValido"
+  >
+    Guardar cambios
+  </button>
+</mat-dialog-actions>
