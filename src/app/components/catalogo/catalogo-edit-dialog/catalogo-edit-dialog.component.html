@@ -1,0 +1,230 @@
+<!-- =========================================================================
+   ARCHIVO: catalogo-edit-dialog.component.html
+   MÓDULO 2 / Diálogo: Modificar Paquete Turístico
+   Ventanita sobrepuesta estilo vidrio (idéntica a la del Módulo 3)
+   ========================================================================== -->
+
+<h2 mat-dialog-title class="dialogo-titulo">
+  <app-icono nombre="editar" />
+  Modificar paquete: {{ borrador.nombre }}
+</h2>
+
+<mat-dialog-content>
+  <form id="formPaquete" (ngSubmit)="guardar()" novalidate>
+    <div class="row g-3">
+
+      <!-- Nombre del paquete -->
+      <div class="col-12 col-md-8">
+        <label for="dlgNombre" class="form-label small fw-semibold">Nombre del paquete</label>
+        <input
+          id="dlgNombre"
+          name="nombre"
+          type="text"
+          class="form-control"
+          placeholder="Ej.: Galápagos Imperial (5D/4N)"
+          [(ngModel)]="borrador.nombre"
+          required
+        />
+        <small class="text-danger d-block mt-1" *ngIf="borrador.nombre.trim().length < 3">
+          Debe tener al menos 3 caracteres.
+        </small>
+      </div>
+
+      <!-- Región -->
+      <div class="col-12 col-md-4">
+        <label for="dlgRegion" class="form-label small fw-semibold">Región</label>
+        <select id="dlgRegion" name="region" class="form-select" [(ngModel)]="borrador.region">
+          <option *ngFor="let region of regiones" [value]="region">{{ region }}</option>
+        </select>
+      </div>
+
+      <!-- Destino -->
+      <div class="col-12 col-md-8">
+        <label for="dlgDestino" class="form-label small fw-semibold">Destino o circuito</label>
+        <input
+          id="dlgDestino"
+          name="destino"
+          type="text"
+          class="form-control"
+          placeholder="Ej.: Islas Galápagos"
+          [(ngModel)]="borrador.destino"
+          required
+        />
+        <small class="text-danger d-block mt-1" *ngIf="borrador.destino.trim().length < 2">
+          Debe tener al menos 2 caracteres.
+        </small>
+      </div>
+
+      <!-- Duración -->
+      <div class="col-12 col-md-4">
+        <label for="dlgDuracion" class="form-label small fw-semibold">
+          Duración (días) · {{ borrador.duracionDias - 1 }} noches
+        </label>
+        <input
+          id="dlgDuracion"
+          name="duracionDias"
+          type="number"
+          class="form-control"
+          min="1"
+          max="15"
+          [ngModel]="borrador.duracionDias"
+          (ngModelChange)="cambiarDuracion($event)"
+        />
+      </div>
+
+      <!-- Descripción -->
+      <div class="col-12">
+        <label for="dlgDescripcion" class="form-label small fw-semibold">Descripción</label>
+        <textarea
+          id="dlgDescripcion"
+          name="descripcion"
+          class="form-control"
+          rows="2"
+          [(ngModel)]="borrador.descripcion"
+        ></textarea>
+      </div>
+
+      <!-- Tarifa baja -->
+      <div class="col-6 col-md-3">
+        <label for="dlgTarifaBaja" class="form-label small fw-semibold">Tarifa temporada baja (USD)</label>
+        <input
+          id="dlgTarifaBaja"
+          name="tarifaBaja"
+          type="number"
+          class="form-control"
+          min="0"
+          step="0.01"
+          [(ngModel)]="borrador.tarifaBaja"
+          required
+        />
+      </div>
+
+      <!-- Tarifa alta -->
+      <div class="col-6 col-md-3">
+        <label for="dlgTarifaAlta" class="form-label small fw-semibold">Tarifa temporada alta (USD)</label>
+        <input
+          id="dlgTarifaAlta"
+          name="tarifaAlta"
+          type="number"
+          class="form-control"
+          min="0"
+          step="0.01"
+          [(ngModel)]="borrador.tarifaAlta"
+          required
+        />
+      </div>
+
+      <!-- Cupos totales -->
+      <div class="col-6 col-md-3">
+        <label for="dlgCuposTotales" class="form-label small fw-semibold">Cupos totales</label>
+        <input
+          id="dlgCuposTotales"
+          name="cuposTotales"
+          type="number"
+          class="form-control"
+          min="1"
+          [(ngModel)]="borrador.cuposTotales"
+          required
+        />
+      </div>
+
+      <!-- Cupos disponibles -->
+      <div class="col-6 col-md-3">
+        <label for="dlgCuposDisponibles" class="form-label small fw-semibold">Cupos disponibles</label>
+        <input
+          id="dlgCuposDisponibles"
+          name="cuposDisponibles"
+          type="number"
+          class="form-control"
+          min="0"
+          [max]="borrador.cuposTotales"
+          [(ngModel)]="borrador.cuposDisponibles"
+          required
+        />
+      </div>
+
+      <!-- Cronograma de actividades diarias -->
+      <div class="col-12">
+        <label class="form-label small fw-semibold d-block">Cronograma de actividades diarias</label>
+        <div class="itinerario-scroll">
+          <div class="row g-2">
+            <div class="col-12" *ngFor="let dia of borrador.itinerario; let indice = index">
+              <div class="fila-dia p-2">
+                <span class="badge bg-dark mb-2">Día {{ indice + 1 }}</span>
+                <input
+                  type="text"
+                  class="form-control form-control-sm mb-2"
+                  placeholder="Título del día"
+                  [attr.aria-label]="'Título del día ' + (indice + 1)"
+                  [(ngModel)]="dia.titulo"
+                  [name]="'diaTitulo' + indice"
+                />
+                <textarea
+                  class="form-control form-control-sm"
+                  rows="2"
+                  placeholder="Actividades del día"
+                  [attr.aria-label]="'Actividades del día ' + (indice + 1)"
+                  [(ngModel)]="dia.actividades"
+                  [name]="'diaActividades' + indice"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Servicios incluidos -->
+      <div class="col-12">
+        <label for="dlgServicio" class="form-label small fw-semibold">Servicios incluidos</label>
+        <div class="input-group mb-2">
+          <input
+            id="dlgServicio"
+            name="nuevoServicio"
+            type="text"
+            class="form-control"
+            placeholder="Ej.: Hospedaje 2 noches"
+            [(ngModel)]="nuevoServicio"
+            (keydown.enter)="agregarServicio(); $event.preventDefault()"
+          />
+          <button
+            type="button"
+            class="btn btn-outline-dark"
+            [disabled]="nuevoServicio.trim() === ''"
+            (click)="agregarServicio()"
+          >
+            Agregar
+          </button>
+        </div>
+        <div class="d-flex flex-wrap gap-1">
+          <span
+            class="badge bg-primary-subtle text-primary-emphasis d-inline-flex align-items-center gap-2"
+            *ngFor="let servicio of borrador.servicios; let indice = index"
+          >
+            {{ servicio }}
+            <button
+              type="button"
+              class="btn-close btn-close-sm"
+              [attr.aria-label]="'Quitar ' + servicio"
+              (click)="quitarServicio(indice)"
+            ></button>
+          </span>
+        </div>
+      </div>
+
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button type="button" class="btn btn-outline-secondary btn-sm fw-semibold" (click)="cancelar()">
+    Cancelar
+  </button>
+  <button
+    type="button"
+    class="btn btn-dark btn-sm fw-semibold px-3"
+    [disabled]="!formularioValido"
+    (click)="guardar()"
+  >
+    Guardar cambios
+  </button>
+</mat-dialog-actions>

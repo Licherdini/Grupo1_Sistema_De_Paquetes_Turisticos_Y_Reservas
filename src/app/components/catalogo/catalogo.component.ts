@@ -1,11 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { IconoComponent } from '../compartido/icono/icono.component';
+import { CatalogoEditDialogComponent } from './catalogo-edit-dialog/catalogo-edit-dialog.component';
+import { ConfirmacionDialogoComponent } from '../compartido/confirmacion-dialogo/confirmacion-dialogo.component';
 
 export type RegionEcuador = 'Costa' | 'Sierra' | 'Amazonía' | 'Insular';
 export type EstadoCupos = 'Disponible' | 'Últimos cupos' | 'Agotado';
-export type VistaCatalogo = 'lista' | 'formulario' | 'itinerario' | 'eliminar';
+export type VistaCatalogo = 'lista' | 'formulario' | 'itinerario';
 
 export interface DiaItinerario {
   titulo: string;
@@ -35,6 +38,8 @@ export interface PaqueteTuristico {
   styleUrl: './catalogo.component.css'
 })
 export class ModuloCatalogoComponent {
+  private readonly dialog = inject(MatDialog);
+
   readonly regiones: RegionEcuador[] = ['Costa', 'Sierra', 'Amazonía', 'Insular'];
 
   paquetes: PaqueteTuristico[] = [
@@ -117,7 +122,6 @@ export class ModuloCatalogoComponent {
 
   vista: VistaCatalogo = 'lista';
   paqueteActivo: PaqueteTuristico | null = null;
-  menuAbiertoId: number | null = null;
   mensajeNotificacion: string = '';
 
   textoBusqueda: string = '';
@@ -170,19 +174,13 @@ export class ModuloCatalogoComponent {
     return region === 'Amazonía' ? 'region-amazonia' : `region-${region.toLowerCase()}`;
   }
 
-  alternarMenu(id: number): void {
-    this.menuAbiertoId = this.menuAbiertoId === id ? null : id;
-  }
-
   volverALista(): void {
     this.vista = 'lista';
     this.paqueteActivo = null;
-    this.menuAbiertoId = null;
   }
 
   verItinerario(paquete: PaqueteTuristico): void {
     this.paqueteActivo = paquete;
-    this.menuAbiertoId = null;
     this.vista = 'itinerario';
   }
 
@@ -193,38 +191,55 @@ export class ModuloCatalogoComponent {
     this.vista = 'formulario';
   }
 
+  // Abre la ventanita modal sobrepuesta para editar (MatDialog con panelClass 'dialogo-vidrio')
   abrirEdicion(paquete: PaqueteTuristico): void {
-    this.borrador = structuredClone(paquete);
-    this.editando = true;
-    this.nuevoServicio = '';
-    this.menuAbiertoId = null;
-    this.mensajeNotificacion = `Modificando paquete "${paquete.nombre}". Edite los campos y presione Guardar cambios.`;
-    this.vista = 'formulario';
+    const ref = this.dialog.open(CatalogoEditDialogComponent, {
+      data: { paquete },
+      width: '720px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      disableClose: true,
+      panelClass: 'dialogo-vidrio'
+    });
+
+    ref.afterClosed().subscribe((resultado: PaqueteTuristico | null) => {
+      if (resultado) {
+        this.paquetes = this.paquetes.map((item) => (item.id === resultado.id ? resultado : item));
+        this.mostrarNotificacion(`Paquete "${resultado.nombre}" actualizado correctamente.`);
+      }
+    });
   }
 
+  // Abre la ventanita modal sobrepuesta para confirmar eliminación
   solicitarEliminar(paquete: PaqueteTuristico): void {
-    this.paqueteActivo = paquete;
-    this.menuAbiertoId = null;
-    this.vista = 'eliminar';
-  }
-
-  confirmarEliminar(): void {
-    if (!this.paqueteActivo) {
-      return;
-    }
-    const id = this.paqueteActivo.id;
-    const nombre = this.paqueteActivo.nombre;
-    this.paquetes = this.paquetes.filter((item) => item.id !== id);
-    this.mensajeNotificacion = `Paquete "${nombre}" eliminado correctamente.`;
-    this.volverALista();
-    setTimeout(() => (this.mensajeNotificacion = ''), 4000);
+    this.dialog
+      .open(ConfirmacionDialogoComponent, {
+        data: {
+          titulo: 'Eliminar paquete turístico',
+          mensaje: `Se eliminará el paquete "${paquete.nombre}" (${paquete.destino}) del catálogo. Esta acción no se puede deshacer. ¿Deseas continuar?`,
+          tipo: 'peligro',
+          textoConfirmar: 'Sí, eliminar paquete'
+        },
+        panelClass: 'dialogo-vidrio'
+      })
+      .afterClosed()
+      .subscribe((confirmado: boolean) => {
+        if (confirmado) {
+          const nombre = paquete.nombre;
+          this.paquetes = this.paquetes.filter((item) => item.id !== paquete.id);
+          this.mostrarNotificacion(`Paquete "${nombre}" eliminado correctamente.`);
+        }
+      });
   }
 
   cambiarDuracion(dias: number): void {
     const cantidad = Math.min(15, Math.max(1, Math.floor(Number(dias) || 1)));
     this.borrador.duracionDias = cantidad;
     while (this.borrador.itinerario.length < cantidad) {
-      this.borrador.itinerario.push({ titulo: '', actividades: '' });
+      this.borrador.itinerario.push({
+        titulo: `Día ${this.borrador.itinerario.length + 1}`,
+        actividades: ''
+      });
     }
     this.borrador.itinerario.length = cantidad;
   }
@@ -243,17 +258,15 @@ export class ModuloCatalogoComponent {
   }
 
   formularioValido(): boolean {
-    const paquete = this.borrador;
+    const p = this.borrador;
     return (
-      paquete.nombre.trim().length >= 5 &&
-      paquete.destino.trim().length >= 3 &&
-      Number(paquete.tarifaBaja) > 0 &&
-      Number(paquete.tarifaAlta) >= Number(paquete.tarifaBaja) &&
-      Number(paquete.cuposTotales) >= 1 &&
-      Number(paquete.cuposDisponibles) >= 0 &&
-      Number(paquete.cuposDisponibles) <= Number(paquete.cuposTotales) &&
-      paquete.servicios.length > 0 &&
-      paquete.itinerario.every((dia) => dia.titulo.trim() !== '' && dia.actividades.trim() !== '')
+      (p.nombre?.trim().length ?? 0) >= 3 &&
+      (p.destino?.trim().length ?? 0) >= 2 &&
+      Number(p.tarifaBaja) > 0 &&
+      Number(p.tarifaAlta) >= Number(p.tarifaBaja) &&
+      Number(p.cuposTotales) >= 1 &&
+      Number(p.cuposDisponibles) >= 0 &&
+      Number(p.cuposDisponibles) <= Number(p.cuposTotales)
     );
   }
 
@@ -261,22 +274,27 @@ export class ModuloCatalogoComponent {
     if (!this.formularioValido()) {
       return;
     }
-    if (this.editando) {
-      this.paquetes = this.paquetes.map((item) => (item.id === this.borrador.id ? this.borrador : item));
-      this.mensajeNotificacion = `Paquete "${this.borrador.nombre}" actualizado correctamente.`;
-      setTimeout(() => (this.mensajeNotificacion = ''), 4000);
-    } else {
-      const siguiente = Math.max(0, ...this.paquetes.map((item) => item.id)) + 1;
-      this.paquetes = [...this.paquetes, { ...this.borrador, id: siguiente }];
-      this.mensajeNotificacion = `Paquete "${this.borrador.nombre}" registrado correctamente.`;
-      setTimeout(() => (this.mensajeNotificacion = ''), 4000);
-    }
+    // Asegurar itinerario con títulos por defecto si están vacíos
+    this.borrador.itinerario.forEach((dia, idx) => {
+      if (!dia.titulo.trim()) {
+        dia.titulo = `Día ${idx + 1}`;
+      }
+    });
+
+    const siguiente = Math.max(0, ...this.paquetes.map((item) => item.id)) + 1;
+    this.paquetes = [...this.paquetes, { ...this.borrador, id: siguiente }];
+    this.mostrarNotificacion(`Paquete "${this.borrador.nombre}" registrado correctamente.`);
     this.volverALista();
   }
 
   limpiarFiltros(): void {
     this.textoBusqueda = '';
     this.regionFiltro = 'Todas';
+  }
+
+  private mostrarNotificacion(mensaje: string): void {
+    this.mensajeNotificacion = mensaje;
+    setTimeout(() => (this.mensajeNotificacion = ''), 4000);
   }
 
   private crearBorrador(): PaqueteTuristico {
@@ -288,15 +306,15 @@ export class ModuloCatalogoComponent {
       duracionDias: 3,
       descripcion: '',
       itinerario: [
-        { titulo: '', actividades: '' },
-        { titulo: '', actividades: '' },
-        { titulo: '', actividades: '' }
+        { titulo: 'Día 1: Bienvenida y llegada', actividades: 'Llegada al destino y check-in en el hotel.' },
+        { titulo: 'Día 2: Recorrido y excursión', actividades: 'Actividades turísticas guiadas.' },
+        { titulo: 'Día 3: Mañana libre y retorno', actividades: 'Tiempo libre para compras y regreso.' }
       ],
-      servicios: [],
-      tarifaBaja: 0,
-      tarifaAlta: 0,
-      cuposTotales: 10,
-      cuposDisponibles: 10
+      servicios: ['Hospedaje', 'Guía turístico'],
+      tarifaBaja: 150,
+      tarifaAlta: 200,
+      cuposTotales: 15,
+      cuposDisponibles: 15
     };
   }
 }

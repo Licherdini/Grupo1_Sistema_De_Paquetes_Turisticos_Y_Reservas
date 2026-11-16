@@ -1,0 +1,32 @@
+/* ==========================================================================
+   ARCHIVO: catalogo-edit-dialog.component.css
+   MÓDULO 2 / Diálogo: Modificar Paquete Turístico
+   ========================================================================== */
+
+.dialogo-titulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-titulo);
+  margin-bottom: 0.5rem;
+}
+
+.fila-dia {
+  background: rgba(var(--vidrio-color-rgb), 0.45);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 12px;
+}
+
+.itinerario-scroll {
+  max-height: 260px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.btn-close-sm {
+  width: 0.5rem;
+  height: 0.5rem;
+  padding: 0.15rem;
+}
