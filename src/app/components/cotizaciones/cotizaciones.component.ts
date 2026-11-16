@@ -3,15 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-
-export interface PaqueteCotizable {
-  id: string;
-  nombre: string;
-  region: string;
-  duracion: string;
-  precioBase: number;
-  cuposDisponibles: number;
-}
+import { PaqueteCotizable, ReservasService } from '../../services/reservas.service';
 
 export interface ServicioAdicional {
   id: string;
@@ -31,41 +23,6 @@ export interface ServicioAdicional {
 export class ModuloCotizacionesComponent {
   objetivo: string =
     'Proporcionar un calculador de tarifas en tiempo real y coordinar el bloqueo temporal de cupos para los usuarios.';
-
-  paquetes: PaqueteCotizable[] = [
-    {
-      id: 'PKG-GAL-01',
-      nombre: 'Galápagos Imperial (5D/4N)',
-      region: 'Insular',
-      duracion: '5 días / 4 noches',
-      precioBase: 674,
-      cuposDisponibles: 12
-    },
-    {
-      id: 'PKG-SIE-02',
-      nombre: 'Ruta de los Volcanes: Cotopaxi, Quilotoa y Baños (3D/2N)',
-      region: 'Sierra',
-      duracion: '3 días / 2 noches',
-      precioBase: 260,
-      cuposDisponibles: 18
-    },
-    {
-      id: 'PKG-AMA-03',
-      nombre: 'Expedición Amazónica: Tena y Cuyabeno (4D/3N)',
-      region: 'Amazonía',
-      duracion: '4 días / 3 noches',
-      precioBase: 340,
-      cuposDisponibles: 10
-    },
-    {
-      id: 'PKG-COS-04',
-      nombre: 'Ruta del Spondylus: Montañita y Puerto López (3D/2N)',
-      region: 'Costa',
-      duracion: '3 días / 2 noches',
-      precioBase: 210,
-      cuposDisponibles: 15
-    }
-  ];
 
   serviciosAdicionales: ServicioAdicional[] = [
     {
@@ -99,16 +56,18 @@ export class ModuloCotizacionesComponent {
 
   constructor(
     private router: Router,
-    public authService: AuthService
+    public authService: AuthService,
+    public reservasService: ReservasService
   ) {}
 
   get paquetesDisponibles(): PaqueteCotizable[] {
-    return this.paquetes;
+    return this.reservasService.paquetes();
   }
 
   get paqueteSeleccionado(): PaqueteCotizable {
     return (
-      this.paquetes.find((p) => p.id === this.paqueteIdSeleccionado) ?? this.paquetes[0]
+      this.reservasService.paquetes().find((p) => p.id === this.paqueteIdSeleccionado) ??
+      this.reservasService.paquetes()[0]
     );
   }
 
@@ -157,7 +116,6 @@ export class ModuloCotizacionesComponent {
     );
   }
 
-  // Navegación corregida a la ruta hija del módulo 4
   generarPreReserva(): void {
     if (!this.formularioValido()) {
       return;
@@ -165,25 +123,17 @@ export class ModuloCotizacionesComponent {
 
     const paquete = this.paqueteSeleccionado;
     const cantidad = Number(this.pasajeros);
-    paquete.cuposDisponibles -= cantidad;
 
-    const titularActivo = (
-      this.authService.usuarioActual() ||
-      this.nombreCliente.trim() ||
-      'ADMIN'
-    ).toUpperCase();
-
-    this.router.navigate(['/cotizaciones/reservas'], {
-      state: {
-        nuevaReserva: {
-          titular: titularActivo,
-          destino: paquete.nombre,
-          pasajeros: cantidad,
-          total: this.calcularTotal(),
-          estado: 'Confirmada'
-        }
-      }
+    this.reservasService.registrarReserva({
+      cliente: this.nombreCliente.trim(),
+      paqueteId: paquete.id,
+      fechaSalida: this.fechaSalida,
+      temporada: this.temporadaSeleccionada,
+      pasajeros: cantidad,
+      total: this.calcularTotal()
     });
+
+    this.router.navigate(['/cotizaciones/reservas']);
   }
 
   irAListadoReservas(): void {

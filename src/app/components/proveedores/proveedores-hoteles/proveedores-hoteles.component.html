@@ -13,10 +13,14 @@
     </div>
     <button
       type="button"
-      class="btn btn-dark fw-semibold"
+      class="btn btn-dark fw-semibold d-inline-flex align-items-center gap-1"
       (click)="mostrarFormulario = !mostrarFormulario"
     >
-      {{ mostrarFormulario ? '✕ Cancelar' : '+ Agregar Hotel' }}
+      @if (mostrarFormulario) {
+        <app-icono nombre="cerrar" /> Cancelar
+      } @else {
+        <app-icono nombre="mas" /> Agregar Hotel
+      }
     </button>
   </div>
 
@@ -64,7 +68,10 @@
 <!-- BLOQUE B: Formulario de alta hotelera (Create) -->
 @if (mostrarFormulario) {
   <div class="superficie-vidrio p-3 mb-3">
-    <h6 class="fw-bold mb-3">🏨 Registrar nueva cadena hotelera</h6>
+    <h6 class="fw-bold mb-3 d-flex align-items-center gap-2">
+      <app-icono nombre="hotel" />
+      Registrar nueva cadena hotelera
+    </h6>
     <div class="row g-2 align-items-end">
       <div class="col-12 col-md-4">
         <label for="hotelNombre" class="form-label small fw-semibold">Nombre del hotel</label>
@@ -142,11 +149,12 @@
       <div class="col-12 col-md-2 d-grid">
         <button
           type="button"
-          class="btn btn-dark fw-semibold"
+          class="btn btn-dark fw-semibold d-inline-flex align-items-center justify-content-center gap-1"
           [disabled]="!formularioValido()"
           (click)="registrarHotel()"
         >
-          ✓ Registrar
+          <app-icono nombre="check" />
+          Registrar
         </button>
       </div>
     </div>
@@ -181,18 +189,19 @@
         <!-- Detalles del convenio -->
         <div class="d-flex flex-wrap gap-2 mb-3">
           <span class="categoria-hotel">{{ hotel.categoria }}</span>
-          <span class="badge" [ngClass]="claseColorRegimen(hotel.regimen)">
-            🍽️ {{ hotel.regimen }}
+          <span class="badge d-inline-flex align-items-center gap-1" [ngClass]="claseColorRegimen(hotel.regimen)">
+            <app-icono nombre="cubiertos" />
+            {{ hotel.regimen }}
           </span>
         </div>
 
         <div class="detalle-hotel mb-3">
           <div class="d-flex align-items-center gap-1 mb-1">
-            <span class="text-muted small">📍</span>
+            <span class="text-muted small d-inline-flex"><app-icono nombre="ubicacion" /></span>
             <span class="small fw-semibold">{{ hotel.ciudad }}</span>
           </div>
           <div class="d-flex align-items-center gap-1 mb-1">
-            <span class="text-muted small">🛏️</span>
+            <span class="text-muted small d-inline-flex"><app-icono nombre="cama" /></span>
             <span class="small text-muted">{{ hotel.habitaciones }}</span>
           </div>
         </div>
@@ -234,7 +243,9 @@
   @if (hotelesFiltrados().length === 0) {
     <div class="col-12">
       <div class="superficie-vidrio text-center text-muted py-5">
-        <div class="mb-2" style="font-size:2rem;">🏨</div>
+        <div class="mb-2 fs-2 text-muted">
+          <app-icono nombre="hotel" />
+        </div>
         No se encontraron hoteles con los filtros aplicados.
       </div>
     </div>

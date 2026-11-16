@@ -136,7 +136,7 @@ export class ProveedoresService {
     };
 
     this.proveedores.update((lista) => [nuevo, ...lista]);
-    this.mensajeNotificacion.set(`✅ Proveedor "${nuevo.nombre}" registrado correctamente.`);
+    this.mensajeNotificacion.set(`Proveedor "${nuevo.nombre}" registrado correctamente.`);
     setTimeout(() => this.mensajeNotificacion.set(''), 4500);
     return nuevo;
   }
@@ -146,7 +146,7 @@ export class ProveedoresService {
     this.proveedores.update((lista) =>
       lista.map((p) => (p.id === id ? { ...p, ...cambios } : p))
     );
-    this.mensajeNotificacion.set(`✏️ Convenio actualizado correctamente.`);
+    this.mensajeNotificacion.set(`Convenio actualizado correctamente.`);
     setTimeout(() => this.mensajeNotificacion.set(''), 4500);
   }
 
@@ -155,7 +155,7 @@ export class ProveedoresService {
     const encontrado = this.proveedores().find((p) => p.id === id);
     this.proveedores.update((lista) => lista.filter((p) => p.id !== id));
     this.mensajeNotificacion.set(
-      `🗑️ Proveedor "${encontrado?.nombre ?? id}" eliminado del directorio.`
+      `Proveedor "${encontrado?.nombre ?? id}" eliminado del directorio.`
     );
     setTimeout(() => this.mensajeNotificacion.set(''), 4500);
   }

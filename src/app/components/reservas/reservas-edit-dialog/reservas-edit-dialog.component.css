@@ -1,0 +1,11 @@
+/* ==========================================================================
+   ARCHIVO: src/app/components/reservas/reservas-edit-dialog/reservas-edit-dialog.component.css
+   MÓDULO 4 / Diálogo: Modificar Reserva (Kenny Ormaza Padilla)
+   ========================================================================== */
+
+.dialogo-titulo {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-titulo);
+  margin-bottom: 0.5rem;
+}

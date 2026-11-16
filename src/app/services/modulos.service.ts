@@ -75,7 +75,7 @@ export class ModulosService {
       responsable: 'Kenny Ormaza Padilla',
       icono: 'calendario',
       descripcion: 'Motor de cálculo de tarifas por pasajeros, fechas de salida y bloqueo de cupos.',
-      estado: 'En bosquejo',
+      estado: 'Funcional',
       secciones: [
         { ruta: 'cotizador', etiqueta: 'Cotizador' },
         { ruta: 'reservas', etiqueta: 'Reservas' }

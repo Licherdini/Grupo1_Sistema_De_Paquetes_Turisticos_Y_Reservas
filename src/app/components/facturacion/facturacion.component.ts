@@ -28,7 +28,7 @@ import { FacturacionDialogoComponent } from './facturacion-dialogo/facturacion-d
   styleUrl: './facturacion.component.css'
 })
 export class ModuloFacturacionComponent {
-  private facturacionService = inject(FacturacionService);
+  readonly facturacionService = inject(FacturacionService);
   private dialog = inject(MatDialog);
   private notificaciones = inject(MatSnackBar);
 
@@ -62,6 +62,9 @@ export class ModuloFacturacionComponent {
 
   // Modificar registro mediante diálogo modal
   abrirModificar(factura: Factura): void {
+    this.facturacionService.mensajeNotificacion.set(
+      `Modificando factura "${factura.idFactura}" (${factura.cliente})...`
+    );
     this.dialog
       .open<FacturacionDialogoComponent, Factura, Factura | null>(FacturacionDialogoComponent, {
         width: '560px',
@@ -74,11 +77,15 @@ export class ModuloFacturacionComponent {
       .subscribe(resultado => {
         if (resultado) {
           this.facturacionService.actualizarFactura(resultado.idFactura, resultado);
+          this.facturacionService.mensajeNotificacion.set(`Factura "${resultado.idFactura}" modificada exitosamente.`);
+          setTimeout(() => this.facturacionService.mensajeNotificacion.set(''), 4000);
           this.notificaciones.open(
             `Factura "${resultado.idFactura}" modificada exitosamente.`,
             'Cerrar',
             { duration: 4000, horizontalPosition: 'center', verticalPosition: 'bottom' }
           );
+        } else {
+          this.facturacionService.mensajeNotificacion.set('');
         }
       });
   }
@@ -104,6 +111,8 @@ export class ModuloFacturacionComponent {
 
     if (confirmado === true) {
       this.facturacionService.eliminarFactura(id);
+      this.facturacionService.mensajeNotificacion.set(`Factura "${id}" eliminada correctamente.`);
+      setTimeout(() => this.facturacionService.mensajeNotificacion.set(''), 4000);
       this.notificaciones.open(
         `Factura "${id}" eliminada correctamente.`,
         'Cerrar',

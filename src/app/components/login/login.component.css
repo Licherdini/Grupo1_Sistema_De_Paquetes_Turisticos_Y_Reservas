@@ -98,6 +98,7 @@
 
 
 .input-icon {
+  font-size: 1.15rem;
   width: 18px;
   height: 18px;
   color: var(--icono-color);

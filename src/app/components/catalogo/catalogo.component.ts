@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { IconoComponent } from '../compartido/icono/icono.component';
 
 export type RegionEcuador = 'Costa' | 'Sierra' | 'Amazonía' | 'Insular';
 export type EstadoCupos = 'Disponible' | 'Últimos cupos' | 'Agotado';
@@ -29,7 +30,7 @@ export interface PaqueteTuristico {
 @Component({
   selector: 'app-modulo-catalogo',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, IconoComponent],
   templateUrl: './catalogo.component.html',
   styleUrl: './catalogo.component.css'
 })
@@ -117,6 +118,7 @@ export class ModuloCatalogoComponent {
   vista: VistaCatalogo = 'lista';
   paqueteActivo: PaqueteTuristico | null = null;
   menuAbiertoId: number | null = null;
+  mensajeNotificacion: string = '';
 
   textoBusqueda: string = '';
   regionFiltro: RegionEcuador | 'Todas' = 'Todas';
@@ -196,6 +198,7 @@ export class ModuloCatalogoComponent {
     this.editando = true;
     this.nuevoServicio = '';
     this.menuAbiertoId = null;
+    this.mensajeNotificacion = `Modificando paquete "${paquete.nombre}". Edite los campos y presione Guardar cambios.`;
     this.vista = 'formulario';
   }
 
@@ -210,8 +213,11 @@ export class ModuloCatalogoComponent {
       return;
     }
     const id = this.paqueteActivo.id;
+    const nombre = this.paqueteActivo.nombre;
     this.paquetes = this.paquetes.filter((item) => item.id !== id);
+    this.mensajeNotificacion = `Paquete "${nombre}" eliminado correctamente.`;
     this.volverALista();
+    setTimeout(() => (this.mensajeNotificacion = ''), 4000);
   }
 
   cambiarDuracion(dias: number): void {
@@ -257,9 +263,13 @@ export class ModuloCatalogoComponent {
     }
     if (this.editando) {
       this.paquetes = this.paquetes.map((item) => (item.id === this.borrador.id ? this.borrador : item));
+      this.mensajeNotificacion = `Paquete "${this.borrador.nombre}" actualizado correctamente.`;
+      setTimeout(() => (this.mensajeNotificacion = ''), 4000);
     } else {
       const siguiente = Math.max(0, ...this.paquetes.map((item) => item.id)) + 1;
       this.paquetes = [...this.paquetes, { ...this.borrador, id: siguiente }];
+      this.mensajeNotificacion = `Paquete "${this.borrador.nombre}" registrado correctamente.`;
+      setTimeout(() => (this.mensajeNotificacion = ''), 4000);
     }
     this.volverALista();
   }

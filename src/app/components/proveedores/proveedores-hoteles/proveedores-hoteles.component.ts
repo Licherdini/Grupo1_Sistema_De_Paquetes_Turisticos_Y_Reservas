@@ -185,7 +185,7 @@ export class ProveedoresHotelesComponent {
     this.hoteles = [nuevo, ...this.hoteles];
     this.nuevoHotel = this.crearBorrador();
     this.mostrarFormulario = false;
-    this.mensajeSimulacion.set(`✅ Hotel "${nuevo.nombreHotel}" registrado correctamente.`);
+    this.mensajeSimulacion.set(`Hotel "${nuevo.nombreHotel}" registrado correctamente.`);
     setTimeout(() => this.mensajeSimulacion.set(''), 4000);
   }
 
@@ -202,7 +202,7 @@ export class ProveedoresHotelesComponent {
     ref.afterClosed().subscribe((resultado: ConvenioHotel | null) => {
       if (resultado) {
         this.hoteles = this.hoteles.map((h) => (h.id === hotel.id ? resultado : h));
-        this.mensajeSimulacion.set(`✏️ Convenio con "${resultado.nombreHotel}" actualizado correctamente.`);
+        this.mensajeSimulacion.set(`Convenio con "${resultado.nombreHotel}" actualizado correctamente.`);
         setTimeout(() => this.mensajeSimulacion.set(''), 4000);
       }
     });
@@ -224,7 +224,7 @@ export class ProveedoresHotelesComponent {
       .subscribe((confirmado: boolean) => {
         if (confirmado) {
           this.hoteles = this.hoteles.filter((h) => h.id !== hotel.id);
-          this.mensajeSimulacion.set(`🗑️ Hotel "${hotel.nombreHotel}" dado de baja del directorio.`);
+          this.mensajeSimulacion.set(`Hotel "${hotel.nombreHotel}" dado de baja del directorio.`);
           setTimeout(() => this.mensajeSimulacion.set(''), 4000);
         }
       });

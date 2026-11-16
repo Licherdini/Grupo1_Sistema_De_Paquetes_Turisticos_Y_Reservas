@@ -17,3 +17,55 @@
   padding-bottom: 0.85rem;
   color: var(--color-titulo);
 }
+
+/* campo-vidrio: igual al de cotizaciones, necesario aquí por encapsulamiento */
+.campo-vidrio {
+  background-color: rgba(var(--vidrio-color-rgb), 0.88);
+  border: 1px solid rgba(148, 163, 184, 0.42);
+  border-radius: 12px;
+  color: var(--color-titulo);
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.campo-vidrio::placeholder {
+  color: var(--color-subtitulo);
+}
+
+.campo-vidrio:focus {
+  background-color: #ffffff;
+  border-color: var(--input-borde-foco);
+  box-shadow: 0 0 0 0.2rem rgba(56, 189, 248, 0.22);
+  color: var(--color-titulo);
+}
+
+/* btn-andestravel: necesario aquí ya que cotizaciones.css está encapsulado */
+.btn.btn-andestravel {
+  background: linear-gradient(180deg, var(--btn-degradado-arriba) 0%, var(--btn-degradado-abajo) 100%);
+  color: var(--btn-texto-color);
+  border: 1px solid rgba(15, 23, 42, 0.2);
+  border-radius: 12px;
+  min-height: 44px;
+  padding: 0.55rem 1.15rem;
+  font-weight: 600;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.16);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+}
+
+.btn.btn-andestravel:hover:not(:disabled) {
+  color: var(--btn-texto-color);
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.22);
+}
+
+.btn.btn-andestravel:focus-visible {
+  outline: 2px solid var(--input-borde-foco);
+  outline-offset: 2px;
+}
+
+.btn.btn-andestravel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}

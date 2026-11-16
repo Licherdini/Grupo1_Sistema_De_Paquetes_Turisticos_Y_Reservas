@@ -4,10 +4,11 @@
    FUNCIÓN: Sección "Cupones de Descuento" (/promociones/cupones). 
    ========================================================================== */
 
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { IconoComponent } from '../../compartido/icono/icono.component';
 
 export type EstadoCupon = 'Vigente' | 'Expirado';
 export type FiltroEstadoCupon = 'Todos' | EstadoCupon;
@@ -31,12 +32,13 @@ export interface BorradorCupon {
 }
 
 @Component({
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, IconoComponent],
   selector: 'app-promociones-cupones',
   styleUrl: './promociones-cupones.component.css',
   templateUrl: './promociones-cupones.component.html',
 })
 export class PromocionesCuponesComponent {
+  mensajeNotificacion = signal<string>('');
   readonly descuentoMinimo: number = 5;
   readonly descuentoMaximo: number = 70;
 
@@ -143,6 +145,8 @@ export class PromocionesCuponesComponent {
         },
         ...this.cupones
       ];
+      this.mensajeNotificacion.set(`Cupón "${this.codigoNormalizado()}" registrado correctamente.`);
+      setTimeout(() => this.mensajeNotificacion.set(''), 4000);
     } else {
       const cupon = this.cupones.find((item) => item.id === this.editandoId);
       if (cupon) {
@@ -158,6 +162,8 @@ export class PromocionesCuponesComponent {
           this.cuponAplicado = null;
         }
       }
+      this.mensajeNotificacion.set(`Cupón "${this.codigoNormalizado()}" actualizado correctamente.`);
+      setTimeout(() => this.mensajeNotificacion.set(''), 4000);
     }
     this.cancelarEdicion();
   }
@@ -172,6 +178,7 @@ export class PromocionesCuponesComponent {
       usosTotales: cupon.usosTotales,
       estado: cupon.estado
     };
+    this.mensajeNotificacion.set(`Modificando cupón "${cupon.codigo}" (${cupon.campana}). Edite los campos y guarde los cambios.`);
   }
 
   cancelarEdicion(): void {
@@ -193,7 +200,10 @@ export class PromocionesCuponesComponent {
 
   // Event binding (click): Delete
   eliminar(cupon: CuponPromocional): void {
+    const codigo = cupon.codigo;
     this.cupones = this.cupones.filter((item) => item.id !== cupon.id);
+    this.mensajeNotificacion.set(`Cupón "${codigo}" eliminado correctamente.`);
+    setTimeout(() => this.mensajeNotificacion.set(''), 4000);
     if (this.editandoId === cupon.id) {
       this.cancelarEdicion();
     }

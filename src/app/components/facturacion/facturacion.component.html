@@ -43,6 +43,13 @@
 
 
 
+  <!-- Mensaje de notificación / retroalimentación -->
+  @if (facturacionService.mensajeNotificacion()) {
+    <div class="alert alert-info py-2 small mb-3" role="status">
+      {{ facturacionService.mensajeNotificacion() }}
+    </div>
+  }
+
   <!-- TABLA RESPONSIVA DE FACTURAS -->
   <div class="panel-blanco rounded-3 overflow-hidden shadow-sm">
     <div class="table-responsive">
@@ -87,7 +94,7 @@
               <div class="btn-group btn-group-sm">
                 <button
                   type="button"
-                  class="btn btn-outline-dark fw-medium d-inline-flex align-items-center gap-1"
+                  class="btn btn-outline-dark fw-semibold d-inline-flex align-items-center gap-1"
                   (click)="abrirModificar(f)"
                 >
                   <app-icono nombre="editar" />
@@ -95,7 +102,7 @@
                 </button>
                 <button
                   type="button"
-                  class="btn btn-outline-danger fw-medium d-inline-flex align-items-center gap-1"
+                  class="btn btn-outline-danger fw-semibold d-inline-flex align-items-center gap-1"
                   (click)="eliminar(f.idFactura)"
                 >
                   <app-icono nombre="papelera" />

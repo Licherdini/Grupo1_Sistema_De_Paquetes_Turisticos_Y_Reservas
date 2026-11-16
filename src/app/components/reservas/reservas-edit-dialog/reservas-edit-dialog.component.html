@@ -1,0 +1,128 @@
+<!-- =========================================================================
+   ARCHIVO: src/app/components/reservas/reservas-edit-dialog/reservas-edit-dialog.component.html
+   MÓDULO 4 / Diálogo: Modificar Reserva Turística (Kenny Ormaza)
+   Ventanita modal sobrepuesta estilo vidrio (idéntica a la de Sebastián Acosta)
+   ========================================================================== -->
+
+<h2 mat-dialog-title class="dialogo-titulo">
+  Modificar reserva: {{ borrador.codigo }}
+</h2>
+
+<mat-dialog-content>
+  <form id="formReserva" (ngSubmit)="guardar()" novalidate>
+    <div class="row g-3">
+
+      <!-- Titular de la reserva -->
+      <div class="col-12 col-md-6">
+        <label for="dlgCliente" class="form-label small fw-semibold">Titular de la reserva</label>
+        <input
+          id="dlgCliente"
+          name="cliente"
+          type="text"
+          class="form-control"
+          placeholder="Ej.: CLIENTE CORPORATIVO UG"
+          [(ngModel)]="borrador.cliente"
+          required
+        />
+        <small class="text-danger d-block mt-1" *ngIf="borrador.cliente.trim().length < 3">
+          Debe tener al menos 3 caracteres.
+        </small>
+      </div>
+
+      <!-- Paquete turístico multidestino -->
+      <div class="col-12 col-md-6">
+        <label for="dlgPaquete" class="form-label small fw-semibold">Paquete multidestino</label>
+        <select
+          id="dlgPaquete"
+          name="paqueteId"
+          class="form-select"
+          [(ngModel)]="borrador.paqueteId"
+          (ngModelChange)="onPaqueteChange()"
+        >
+          @for (pkg of paquetes; track pkg.id) {
+            <option [value]="pkg.id">{{ pkg.nombre }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Fecha estimada de salida -->
+      <div class="col-12 col-md-6">
+        <label for="dlgFecha" class="form-label small fw-semibold">Fecha estimada de salida</label>
+        <input
+          id="dlgFecha"
+          name="fechaSalida"
+          type="date"
+          class="form-control"
+          [(ngModel)]="borrador.fechaSalida"
+          required
+        />
+      </div>
+
+      <!-- Temporada tarifaria -->
+      <div class="col-12 col-md-6">
+        <label for="dlgTemporada" class="form-label small fw-semibold">Temporada tarifaria</label>
+        <select
+          id="dlgTemporada"
+          name="temporada"
+          class="form-select"
+          [(ngModel)]="borrador.temporada"
+          (ngModelChange)="recalcularTotal()"
+        >
+          <option value="Baja">Temporada Baja (-10% desc.)</option>
+          <option value="Media">Temporada Media (Tarifa base)</option>
+          <option value="Alta">Temporada Alta (+20% recargo)</option>
+        </select>
+      </div>
+
+      <!-- Número de pasajeros -->
+      <div class="col-12 col-md-6">
+        <label for="dlgPasajeros" class="form-label small fw-semibold">Número de pasajeros (1 a 20)</label>
+        <input
+          id="dlgPasajeros"
+          name="pasajeros"
+          type="number"
+          class="form-control"
+          min="1"
+          max="20"
+          [(ngModel)]="borrador.pasajeros"
+          (ngModelChange)="recalcularTotal()"
+          required
+        />
+      </div>
+
+      <!-- Estado de la reserva -->
+      <div class="col-12 col-md-6">
+        <label for="dlgEstado" class="form-label small fw-semibold">Estado de la reserva</label>
+        <select id="dlgEstado" name="estado" class="form-select" [(ngModel)]="borrador.estado">
+          @for (est of estados; track est) {
+            <option [value]="est">{{ est }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Total estimado (USD) -->
+      <div class="col-12">
+        <label class="form-label small fw-semibold">Total estimado de la reserva</label>
+        <div class="p-2 px-3 rounded-2 bg-light border d-flex justify-content-between align-items-center">
+          <span class="small text-muted">Monto total calculado (USD):</span>
+          <span class="fs-5 fw-bold text-success">${{ borrador.total | number: '1.2-2' }}</span>
+        </div>
+      </div>
+
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button type="button" class="btn btn-outline-secondary btn-sm fw-semibold" (click)="cancelar()">
+    Cancelar
+  </button>
+  <button
+    type="submit"
+    form="formReserva"
+    class="btn btn-dark btn-sm fw-semibold px-3"
+    [disabled]="!formularioValido"
+  >
+    Guardar cambios
+  </button>
+</mat-dialog-actions>

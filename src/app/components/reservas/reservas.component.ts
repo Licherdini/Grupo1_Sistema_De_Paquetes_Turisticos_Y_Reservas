@@ -2,23 +2,31 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { firstValueFrom } from 'rxjs';
 import { PreReserva, ReservasService } from '../../services/reservas.service';
 import { AuthService } from '../../services/auth.service';
+import {
+  ConfirmacionDialogoComponent,
+  DatosConfirmacion
+} from '../compartido/confirmacion-dialogo/confirmacion-dialogo.component';
+import { IconoComponent } from '../compartido/icono/icono.component';
+import { ReservasEditDialogComponent } from './reservas-edit-dialog/reservas-edit-dialog.component';
 
 @Component({
   selector: 'app-reservas',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, IconoComponent],
   templateUrl: './reservas.component.html',
   styleUrl: './reservas.component.css'
 })
-export class ReservasComponent implements OnInit {
+export class ReservasComponent {
   public reservasService = inject(ReservasService);
   public authService = inject(AuthService);
   private router = inject(Router);
-
-  // Navegación superior tipo pill
-  tabActiva: 'cotizador' | 'reservas' = 'reservas';
+  private dialog = inject(MatDialog);
+  private snackBar = inject(MatSnackBar);
 
   // Filtros reactivos en tiempo real (READ)
   public textoBusqueda = signal<string>('');
@@ -28,14 +36,6 @@ export class ReservasComponent implements OnInit {
   public codigoEnEdicion = signal<string | null>(null);
   public pasajerosEdit = signal<number>(1);
   public estadoEdit = signal<'Confirmada' | 'Pendiente' | 'Modificada'>('Confirmada');
-
-  ngOnInit(): void {
-    // Captura nueva reserva enviada por state desde el cotizador si aplica
-    const nuevaReserva = history.state?.['nuevaReserva'] as Partial<PreReserva> | undefined;
-    if (nuevaReserva && nuevaReserva.paqueteNombre) {
-      // Ya se registra en el servicio al hacer clic en generar
-    }
-  }
 
   // Filtrado reactivo combinado por texto y región
   public reservasFiltradas = computed(() => {
@@ -55,37 +55,83 @@ export class ReservasComponent implements OnInit {
     });
   });
 
+  // Abre la ventanita modal sobrepuesta para editar (igual que en Módulo 3 y Módulo 1)
+  public abrirDialogEdicion(reserva: PreReserva): void {
+    const ref = this.dialog.open(ReservasEditDialogComponent, {
+      data: { reserva },
+      width: '580px',
+      maxWidth: '95vw',
+      disableClose: true,
+      panelClass: 'dialogo-vidrio'
+    });
+
+    ref.afterClosed().subscribe((resultado: PreReserva | null) => {
+      if (resultado) {
+        this.reservasService.actualizarReservaCompleta(reserva.codigo, resultado);
+        this.snackBar.open(
+          `Reserva ${resultado.codigo} de "${resultado.cliente}" actualizada correctamente.`,
+          'Cerrar',
+          {
+            duration: 4000,
+            panelClass: ['snack-exito'],
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom'
+          }
+        );
+      }
+    });
+  }
+
   public iniciarEdicion(reserva: PreReserva): void {
-    this.codigoEnEdicion.set(reserva.codigo);
-    this.pasajerosEdit.set(reserva.pasajeros);
-    this.estadoEdit.set(reserva.estado);
+    this.abrirDialogEdicion(reserva);
   }
 
   public guardarEdicion(codigo: string): void {
     this.reservasService.actualizarReserva(codigo, this.pasajerosEdit(), this.estadoEdit());
-    this.cancelarEdicion();
+    this.codigoEnEdicion.set(null);
+    this.snackBar.open(`Reserva ${codigo} actualizada correctamente.`, 'Cerrar', {
+      duration: 3500,
+      panelClass: ['snack-exito'],
+      horizontalPosition: 'center',
+      verticalPosition: 'bottom'
+    });
   }
 
   public cancelarEdicion(): void {
+    const cod = this.codigoEnEdicion();
     this.codigoEnEdicion.set(null);
+    if (cod) {
+      this.reservasService.mensajeNotificacion.set(`Edición de la reserva "${cod}" cancelada.`);
+      setTimeout(() => this.reservasService.mensajeNotificacion.set(''), 3000);
+    } else {
+      this.reservasService.mensajeNotificacion.set('');
+    }
   }
 
-  public eliminar(codigo: string): void {
-    if (confirm(`¿Está seguro de eliminar la reserva ${codigo}? Se liberarán los cupos correspondientes.`)) {
+  public async eliminar(codigo: string): Promise<void> {
+    const confirmado = await firstValueFrom(
+      this.dialog
+        .open<ConfirmacionDialogoComponent, DatosConfirmacion, boolean>(
+          ConfirmacionDialogoComponent,
+          {
+            data: {
+              titulo: 'Eliminar reserva',
+              mensaje: `¿Está seguro de eliminar la reserva ${codigo}? Se liberarán los cupos correspondientes.`,
+              tipo: 'peligro',
+              textoConfirmar: 'Sí, eliminar'
+            },
+            panelClass: 'dialogo-vidrio'
+          }
+        )
+        .afterClosed()
+    );
+
+    if (confirmado === true) {
       this.reservasService.eliminarReserva(codigo);
     }
   }
 
   public irACotizador(): void {
-    this.tabActiva = 'cotizador';
-    this.router.navigate(['/principal'], { queryParams: { modulo: 4 } });
-  }
-
-  public seleccionarReservas(): void {
-    this.tabActiva = 'reservas';
-  }
-
-  public volverAlPanel(): void {
-    this.router.navigate(['/principal']);
+    this.router.navigate(['/cotizaciones', 'cotizador']);
   }
 }

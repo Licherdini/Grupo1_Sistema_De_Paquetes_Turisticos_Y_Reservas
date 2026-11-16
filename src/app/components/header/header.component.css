@@ -44,6 +44,7 @@
   font-weight: 700;
   box-shadow: 0 4px 10px var(--card-sombra-color);
   flex-shrink: 0;
+  font-size: 1.25rem;
 }
 
 .icono-avion {

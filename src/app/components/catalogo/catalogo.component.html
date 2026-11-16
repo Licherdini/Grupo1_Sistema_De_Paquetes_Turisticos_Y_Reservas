@@ -1,3 +1,9 @@
+@if (mensajeNotificacion) {
+  <div class="alert alert-info py-2 small mb-3" role="status">
+    {{ mensajeNotificacion }}
+  </div>
+}
+
 <ng-container *ngIf="vista === 'lista'">
   <div class="row g-3 mb-4">
     <div class="col-6 col-lg-3">
@@ -29,13 +35,16 @@
   <div class="row g-2 align-items-end mb-4">
     <div class="col-12 col-md-5">
       <label for="catalogoBusqueda" class="form-label small fw-semibold">Buscar paquete o destino</label>
-      <input
-        id="catalogoBusqueda"
-        type="text"
-        class="form-control"
-        placeholder="🔍 Ej.: Galápagos, Baños, Montañita"
-        [(ngModel)]="textoBusqueda"
-      />
+      <div class="campo-buscar">
+        <app-icono nombre="buscar" />
+        <input
+          id="catalogoBusqueda"
+          type="text"
+          class="form-control"
+          placeholder="Ej.: Galápagos, Baños, Montañita"
+          [(ngModel)]="textoBusqueda"
+        />
+      </div>
     </div>
     <div class="col-6 col-md-3">
       <label for="catalogoRegion" class="form-label small fw-semibold">Región</label>
@@ -48,7 +57,10 @@
       <button type="button" class="btn btn-outline-secondary" (click)="limpiarFiltros()">Limpiar</button>
     </div>
     <div class="col-12 col-md-2 d-grid">
-      <button type="button" class="btn btn-dark fw-semibold" (click)="abrirNuevo()">+ Nuevo paquete</button>
+      <button type="button" class="btn btn-dark fw-semibold d-inline-flex align-items-center justify-content-center gap-1" (click)="abrirNuevo()">
+        <app-icono nombre="mas" />
+        Nuevo paquete
+      </button>
     </div>
   </div>
 
@@ -75,7 +87,10 @@
         </div>
 
         <h6 class="fw-bold mb-1">{{ paquete.nombre }}</h6>
-        <p class="small text-muted mb-2">📍 {{ paquete.destino }}</p>
+        <p class="small text-muted mb-2 d-flex align-items-center gap-1">
+          <app-icono nombre="ubicacion" />
+          {{ paquete.destino }}
+        </p>
         <p class="small mb-3">{{ paquete.descripcion }}</p>
 
         <div class="row g-2 mb-3">
@@ -130,8 +145,22 @@
         <div class="menu-acciones mt-3 pt-3" *ngIf="menuAbiertoId === paquete.id">
           <div class="d-flex flex-wrap gap-2">
             <button type="button" class="btn btn-sm btn-outline-dark" (click)="verItinerario(paquete)">Ver itinerario</button>
-            <button type="button" class="btn btn-sm btn-outline-primary" (click)="abrirEdicion(paquete)">Editar</button>
-            <button type="button" class="btn btn-sm btn-outline-danger" (click)="solicitarEliminar(paquete)">Eliminar</button>
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-dark fw-semibold d-inline-flex align-items-center gap-1"
+              (click)="abrirEdicion(paquete)"
+            >
+              <app-icono nombre="editar" />
+              Modificar
+            </button>
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-danger fw-semibold d-inline-flex align-items-center gap-1"
+              (click)="solicitarEliminar(paquete)"
+            >
+              <app-icono nombre="papelera" />
+              Eliminar
+            </button>
           </div>
         </div>
       </article>
@@ -147,7 +176,10 @@
 
 <ng-container *ngIf="vista === 'itinerario' && paqueteActivo as paquete">
   <div class="superficie-vidrio tarjeta-paquete p-3 p-md-4" [ngClass]="claseRegion(paquete.region)">
-    <button type="button" class="btn btn-sm btn-outline-secondary mb-3" (click)="volverALista()">← Volver al catálogo</button>
+    <button type="button" class="btn btn-sm btn-outline-secondary mb-3 d-inline-flex align-items-center gap-1" (click)="volverALista()">
+      <app-icono nombre="flecha-izquierda" />
+      Volver al catálogo
+    </button>
 
     <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
       <div class="d-flex flex-wrap gap-1">
@@ -169,7 +201,10 @@
     </div>
 
     <h5 class="fw-bold mb-1">{{ paquete.nombre }}</h5>
-    <p class="small text-muted mb-2">📍 {{ paquete.destino }}</p>
+    <p class="small text-muted mb-2 d-flex align-items-center gap-1">
+      <app-icono nombre="ubicacion" />
+      {{ paquete.destino }}
+    </p>
     <p class="small mb-4">{{ paquete.descripcion }}</p>
 
     <div class="row g-2 mb-4">
@@ -203,8 +238,9 @@
 
     <h6 class="fw-bold small text-uppercase mb-2">Servicios incluidos</h6>
     <div class="d-flex flex-wrap gap-1 mb-4">
-      <span class="badge bg-primary-subtle text-primary-emphasis" *ngFor="let servicio of paquete.servicios">
-        ✓ {{ servicio }}
+      <span class="badge bg-primary-subtle text-primary-emphasis d-inline-flex align-items-center gap-1" *ngFor="let servicio of paquete.servicios">
+        <app-icono nombre="check" />
+        {{ servicio }}
       </span>
     </div>
 
@@ -216,7 +252,10 @@
 
 <ng-container *ngIf="vista === 'eliminar' && paqueteActivo as paquete">
   <div class="superficie-vidrio tarjeta-paquete p-3 p-md-4" [ngClass]="claseRegion(paquete.region)">
-    <button type="button" class="btn btn-sm btn-outline-secondary mb-3" (click)="volverALista()">← Volver al catálogo</button>
+    <button type="button" class="btn btn-sm btn-outline-secondary mb-3 d-inline-flex align-items-center gap-1" (click)="volverALista()">
+      <app-icono nombre="flecha-izquierda" />
+      Volver al catálogo
+    </button>
 
     <h5 class="fw-bold mb-3">Eliminar paquete turístico</h5>
 
@@ -232,7 +271,10 @@
         </span>
       </div>
       <strong class="d-block">{{ paquete.nombre }}</strong>
-      <small class="text-muted d-block mb-2">📍 {{ paquete.destino }}</small>
+      <small class="text-muted d-block mb-2 d-flex align-items-center gap-1">
+        <app-icono nombre="ubicacion" />
+        {{ paquete.destino }}
+      </small>
       <small class="d-block">
         Tarifas: ${{ paquete.tarifaBaja | number: '1.2-2' }} (baja) · ${{ paquete.tarifaAlta | number: '1.2-2' }} (alta)
       </small>
@@ -248,7 +290,10 @@
 
 <ng-container *ngIf="vista === 'formulario'">
   <div class="superficie-vidrio p-3 p-md-4">
-    <button type="button" class="btn btn-sm btn-outline-secondary mb-3" (click)="volverALista()">← Volver al catálogo</button>
+    <button type="button" class="btn btn-sm btn-outline-secondary mb-3 d-inline-flex align-items-center gap-1" (click)="volverALista()">
+      <app-icono nombre="flecha-izquierda" />
+      Volver al catálogo
+    </button>
 
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
       <h6 class="fw-bold mb-0">{{ editando ? 'Editar paquete turístico' : 'Nuevo paquete turístico' }}</h6>

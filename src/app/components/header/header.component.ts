@@ -10,11 +10,12 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { ProyectoInfoService } from '../../services/proyecto-info.service';
+import { IconoComponent } from '../compartido/icono/icono.component';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, IconoComponent],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })

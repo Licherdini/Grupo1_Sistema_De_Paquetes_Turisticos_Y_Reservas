@@ -22,6 +22,9 @@ export interface Factura {
   providedIn: 'root'
 })
 export class FacturacionService {
+  // Signal de retroalimentación inline (mensaje temporal para el usuario)
+  readonly mensajeNotificacion = signal<string>('');
+
   // Signal con los registros iniciales coherentes con la agencia AndesTravel
   readonly comprobantesSignal = signal<Factura[]>([
     {

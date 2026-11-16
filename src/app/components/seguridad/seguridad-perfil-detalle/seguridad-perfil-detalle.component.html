@@ -45,7 +45,8 @@
     <!-- ACCIONES: Editar, estado y baja son reales; reiniciar intentos sigue en maqueta -->
     <hr class="my-4" />
     <div class="d-flex flex-wrap align-items-center gap-2">
-      <button type="button" class="btn btn-sm btn-dark fw-semibold" (click)="editar()">
+      <button type="button" class="btn btn-sm btn-dark fw-semibold d-inline-flex align-items-center gap-1" (click)="editar()">
+        <app-icono nombre="editar" />
         Editar perfil
       </button>
       <button type="button" class="btn btn-sm btn-outline-dark fw-semibold" (click)="reiniciarIntentos()">
@@ -54,7 +55,8 @@
       <button type="button" class="btn btn-sm btn-outline-dark fw-semibold" (click)="cambiarEstado()">
         {{ perfil.estado === 'Activo' ? 'Bloquear cuenta' : 'Activar cuenta' }}
       </button>
-      <button type="button" class="btn btn-sm btn-outline-danger fw-semibold" (click)="darDeBaja()">
+      <button type="button" class="btn btn-sm btn-outline-danger fw-semibold d-inline-flex align-items-center gap-1" (click)="darDeBaja()">
+        <app-icono nombre="papelera" />
         Dar de baja
       </button>
     </div>

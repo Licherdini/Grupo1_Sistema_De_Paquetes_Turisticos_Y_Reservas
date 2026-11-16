@@ -4,8 +4,9 @@
       <h6 class="fw-bold mb-1">Perfiles registrados</h6>
       <p class="small text-muted mb-0">Pulsa un perfil para ver su ficha, o usa Modificar / Eliminar.</p>
     </div>
-    <button type="button" class="btn btn-sm btn-dark fw-semibold" (click)="nuevoPerfil()">
-      + Nuevo perfil
+    <button type="button" class="btn btn-sm btn-dark fw-semibold d-inline-flex align-items-center gap-1" (click)="nuevoPerfil()">
+      <app-icono nombre="mas" />
+      Nuevo perfil
     </button>
   </div>
 
@@ -73,18 +74,20 @@
         >
           <button
             type="button"
-            class="btn btn-sm btn-outline-dark fw-semibold me-1"
+            class="btn btn-sm btn-outline-dark fw-semibold me-1 d-inline-flex align-items-center gap-1"
             [attr.aria-label]="'Modificar perfil ' + fila.usuario"
             (click)="modificar(fila)"
           >
+            <app-icono nombre="editar" />
             Modificar
           </button>
           <button
             type="button"
-            class="btn btn-sm btn-outline-danger fw-semibold"
+            class="btn btn-sm btn-outline-danger fw-semibold d-inline-flex align-items-center gap-1"
             [attr.aria-label]="'Eliminar perfil ' + fila.usuario"
             (click)="eliminar(fila)"
           >
+            <app-icono nombre="papelera" />
             Eliminar
           </button>
         </td>

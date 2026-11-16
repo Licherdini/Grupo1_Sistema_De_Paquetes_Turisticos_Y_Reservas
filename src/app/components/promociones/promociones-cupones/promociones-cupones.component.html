@@ -1,6 +1,13 @@
+<!-- Mensaje de notificación / retroalimentación -->
+@if (mensajeNotificacion()) {
+  <div class="alert alert-info py-2 small mb-3" role="status">
+    {{ mensajeNotificacion() }}
+  </div>
+}
+
 <!-- Aviso de cupón activado para la cotización actual -->
 <div
-  class="alert alert-success d-flex justify-content-between align-items-center py-2 px-3 small fw-semibold"
+  class="alert alert-info d-flex justify-content-between align-items-center py-2 px-3 small fw-semibold"
   role="status"
   *ngIf="cuponAplicado"
 >
@@ -89,13 +96,16 @@
 <div class="row g-2 align-items-end mb-3">
   <div class="col-12 col-md-6">
     <label for="cuponBusqueda" class="form-label small fw-semibold">Buscar por código o campaña</label>
-    <input
-      id="cuponBusqueda"
-      type="text"
-      class="form-control"
-      placeholder="🔍 Ej.: UGVIAJA20 o Galápagos"
-      [(ngModel)]="textoBusqueda"
-    />
+    <div class="campo-buscar">
+      <app-icono nombre="buscar" />
+      <input
+        id="cuponBusqueda"
+        type="text"
+        class="form-control"
+        placeholder="Ej.: UGVIAJA20 o Galápagos"
+        [(ngModel)]="textoBusqueda"
+      />
+    </div>
   </div>
   <div class="col-6 col-md-3">
     <label for="cuponFiltroEstado" class="form-label small fw-semibold">Estado de vigencia</label>
@@ -169,8 +179,13 @@
               >
                 Aplicar en Cotizador
               </button>
-              <button type="button" class="btn btn-sm btn-outline-dark" title="Editar cupón" (click)="editar(cupon)">
-                Editar
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-dark fw-semibold d-inline-flex align-items-center gap-1"
+                title="Modificar cupón"
+                (click)="editar(cupon)"
+              >
+                <app-icono nombre="editar" /> Modificar
               </button>
               <button
                 type="button"
@@ -181,8 +196,13 @@
               >
                 Cambiar estado
               </button>
-              <button type="button" class="btn btn-sm btn-danger" title="Eliminar cupón" (click)="eliminar(cupon)">
-                Eliminar
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-danger fw-semibold d-inline-flex align-items-center gap-1"
+                title="Eliminar cupón"
+                (click)="eliminar(cupon)"
+              >
+                <app-icono nombre="papelera" /> Eliminar
               </button>
             </div>
           </td>

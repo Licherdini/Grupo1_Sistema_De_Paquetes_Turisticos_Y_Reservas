@@ -91,7 +91,10 @@
 <!-- BLOQUE B: Formulario de alta embebido -->
 @if (mostrarFormulario) {
   <div class="superficie-vidrio p-3 mb-3">
-    <h6 class="fw-bold mb-3">➕ Registrar nuevo proveedor</h6>
+    <h6 class="fw-bold mb-3 d-flex align-items-center gap-1">
+      <app-icono nombre="mas" />
+      Registrar nuevo proveedor
+    </h6>
     <div class="row g-2 align-items-end">
       <div class="col-12 col-md-6 col-lg-3">
         <label for="provNombre" class="form-label small fw-semibold">Nombre del proveedor</label>
@@ -159,11 +162,12 @@
       <div class="col-12 col-md-3 col-lg-2 d-grid">
         <button
           type="button"
-          class="btn btn-dark fw-semibold"
+          class="btn btn-dark fw-semibold d-inline-flex align-items-center justify-content-center gap-1"
           [disabled]="!formularioValido()"
           (click)="registrarProveedor()"
         >
-          ✓ Registrar
+          <app-icono nombre="check" />
+          Registrar
         </button>
       </div>
     </div>
@@ -207,12 +211,18 @@
             </td>
             <!-- Columna 2: Tipo -->
             <td>
-              <span class="badge" [ngClass]="claseBadgeTipo(prov.tipo)">
-                {{ iconoTipo(prov.tipo) }} {{ prov.tipo }}
+              <span class="badge d-inline-flex align-items-center gap-1" [ngClass]="claseBadgeTipo(prov.tipo)">
+                <app-icono [nombre]="prov.tipo === 'Aerolínea' ? 'avion' : 'bus'" />
+                {{ prov.tipo }}
               </span>
             </td>
             <!-- Columna 3: Ciudad destino -->
-            <td>📍 {{ prov.ciudad }}</td>
+            <td>
+              <span class="d-inline-flex align-items-center gap-1">
+                <app-icono nombre="ubicacion" />
+                {{ prov.ciudad }}
+              </span>
+            </td>
             <!-- Columna 4: Tarifa corporativa -->
             <td class="fw-semibold tarifa-celda">
               ${{ prov.tarifaCorporativa | number: '1.0-0' }}

@@ -6,9 +6,10 @@
             Los datos viven en este componente (sin servicio propio).
    ========================================================================== */
 
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { IconoComponent } from '../../compartido/icono/icono.component';
 import { Router } from '@angular/router';
 
 export interface CampanaOferta {
@@ -29,12 +30,13 @@ export interface BorradorCampana {
 }
 
 @Component({
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, IconoComponent],
   selector: 'app-promociones-ofertas',
   styleUrl: './promociones-ofertas.component.css',
   templateUrl: './promociones-ofertas.component.html',
 })
 export class PromocionesOfertasComponent {
+  mensajeNotificacion = signal<string>('');
   readonly alianzas: string[] = [
     'Banco Pacífico — Diferido sin intereses',
     'Banco Pichincha — Descuento directo',
@@ -128,11 +130,15 @@ export class PromocionesOfertasComponent {
     };
     this.campanas = [nueva, ...this.campanas];
     this.nuevaCampana = this.crearBorrador();
+    this.mensajeNotificacion.set(`Campaña "${nueva.titulo}" publicada correctamente.`);
+    setTimeout(() => this.mensajeNotificacion.set(''), 4000);
   }
 
   // Event binding (click): Delete
   finalizarCampana(campana: CampanaOferta): void {
     this.campanas = this.campanas.filter((item) => item.id !== campana.id);
+    this.mensajeNotificacion.set(`Campaña "${campana.titulo}" finalizada y eliminada.`);
+    setTimeout(() => this.mensajeNotificacion.set(''), 4000);
   }
 
   // Event binding (click): abre /promociones/cupones con el código como parámetro de consulta
