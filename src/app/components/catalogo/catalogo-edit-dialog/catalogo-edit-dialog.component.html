@@ -1,19 +1,12 @@
-<!-- =========================================================================
-   ARCHIVO: catalogo-edit-dialog.component.html
-   MÓDULO 2 / Diálogo: Modificar Paquete Turístico
-   Ventanita sobrepuesta estilo vidrio (idéntica a la del Módulo 3)
-   ========================================================================== -->
-
 <h2 mat-dialog-title class="dialogo-titulo">
-  <app-icono nombre="editar" />
-  Modificar paquete: {{ borrador.nombre }}
+  <app-icono [nombre]="modo === 'crear' ? 'mas' : 'editar'" />
+  {{ modo === 'crear' ? 'Nuevo paquete turístico' : 'Modificar paquete: ' + borrador.nombre }}
 </h2>
 
 <mat-dialog-content>
   <form id="formPaquete" (ngSubmit)="guardar()" novalidate>
     <div class="row g-3">
 
-      <!-- Nombre del paquete -->
       <div class="col-12 col-md-8">
         <label for="dlgNombre" class="form-label small fw-semibold">Nombre del paquete</label>
         <input
@@ -30,7 +23,6 @@
         </small>
       </div>
 
-      <!-- Región -->
       <div class="col-12 col-md-4">
         <label for="dlgRegion" class="form-label small fw-semibold">Región</label>
         <select id="dlgRegion" name="region" class="form-select" [(ngModel)]="borrador.region">
@@ -38,7 +30,6 @@
         </select>
       </div>
 
-      <!-- Destino -->
       <div class="col-12 col-md-8">
         <label for="dlgDestino" class="form-label small fw-semibold">Destino o circuito</label>
         <input
@@ -55,7 +46,6 @@
         </small>
       </div>
 
-      <!-- Duración -->
       <div class="col-12 col-md-4">
         <label for="dlgDuracion" class="form-label small fw-semibold">
           Duración (días) · {{ borrador.duracionDias - 1 }} noches
@@ -72,7 +62,6 @@
         />
       </div>
 
-      <!-- Descripción -->
       <div class="col-12">
         <label for="dlgDescripcion" class="form-label small fw-semibold">Descripción</label>
         <textarea
@@ -84,7 +73,6 @@
         ></textarea>
       </div>
 
-      <!-- Tarifa baja -->
       <div class="col-6 col-md-3">
         <label for="dlgTarifaBaja" class="form-label small fw-semibold">Tarifa temporada baja (USD)</label>
         <input
@@ -99,7 +87,6 @@
         />
       </div>
 
-      <!-- Tarifa alta -->
       <div class="col-6 col-md-3">
         <label for="dlgTarifaAlta" class="form-label small fw-semibold">Tarifa temporada alta (USD)</label>
         <input
@@ -114,7 +101,6 @@
         />
       </div>
 
-      <!-- Cupos totales -->
       <div class="col-6 col-md-3">
         <label for="dlgCuposTotales" class="form-label small fw-semibold">Cupos totales</label>
         <input
@@ -128,7 +114,6 @@
         />
       </div>
 
-      <!-- Cupos disponibles -->
       <div class="col-6 col-md-3">
         <label for="dlgCuposDisponibles" class="form-label small fw-semibold">Cupos disponibles</label>
         <input
@@ -143,7 +128,6 @@
         />
       </div>
 
-      <!-- Cronograma de actividades diarias -->
       <div class="col-12">
         <label class="form-label small fw-semibold d-block">Cronograma de actividades diarias</label>
         <div class="itinerario-scroll">
@@ -173,7 +157,6 @@
         </div>
       </div>
 
-      <!-- Servicios incluidos -->
       <div class="col-12">
         <label for="dlgServicio" class="form-label small fw-semibold">Servicios incluidos</label>
         <div class="input-group mb-2">
@@ -225,6 +208,6 @@
     [disabled]="!formularioValido"
     (click)="guardar()"
   >
-    Guardar cambios
+    {{ modo === 'crear' ? 'Crear paquete' : 'Guardar cambios' }}
   </button>
 </mat-dialog-actions>

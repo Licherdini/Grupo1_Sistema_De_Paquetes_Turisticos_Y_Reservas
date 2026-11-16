@@ -1,11 +1,3 @@
-/* ==========================================================================
-   ARCHIVO: catalogo-edit-dialog.component.ts
-   MÓDULO 2: Catálogo de Paquetes Turísticos (Angie López)
-   FUNCIÓN: Diálogo modal (MatDialog) sobrepuesto con estilo vidrio para MODIFICAR
-            los datos de un paquete turístico.
-            Recupera la información del paquete, valida y devuelve los cambios.
-   ========================================================================== */
-
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -17,31 +9,15 @@ import {
   MAT_DIALOG_DATA
 } from '@angular/material/dialog';
 import { IconoComponent } from '../../compartido/icono/icono.component';
-
-export type RegionEcuador = 'Costa' | 'Sierra' | 'Amazonía' | 'Insular';
-
-export interface DiaItinerario {
-  titulo: string;
-  actividades: string;
-}
-
-export interface PaqueteTuristico {
-  id: number;
-  nombre: string;
-  destino: string;
-  region: RegionEcuador;
-  duracionDias: number;
-  descripcion: string;
-  itinerario: DiaItinerario[];
-  servicios: string[];
-  tarifaBaja: number;
-  tarifaAlta: number;
-  cuposTotales: number;
-  cuposDisponibles: number;
-}
+import {
+  PaqueteTuristico,
+  REGIONES,
+  RegionEcuador,
+  crearPaqueteVacio
+} from '../../../services/catalogo.service';
 
 export interface DialogDataPaquete {
-  paquete: PaqueteTuristico;
+  paquete: PaqueteTuristico | null;
 }
 
 @Component({
@@ -55,10 +31,12 @@ export class CatalogoEditDialogComponent {
   private readonly dialogRef = inject<MatDialogRef<CatalogoEditDialogComponent, PaqueteTuristico | null>>(MatDialogRef);
   public readonly data: DialogDataPaquete = inject(MAT_DIALOG_DATA);
 
-  readonly regiones: RegionEcuador[] = ['Costa', 'Sierra', 'Amazonía', 'Insular'];
+  readonly regiones: RegionEcuador[] = REGIONES;
+  readonly modo: 'crear' | 'editar' = this.data.paquete ? 'editar' : 'crear';
 
-  // Recupera la información del paquete y crea una copia profunda de edición (borrador)
-  public borrador: PaqueteTuristico = structuredClone(this.data.paquete);
+  public borrador: PaqueteTuristico = this.data.paquete
+    ? structuredClone(this.data.paquete)
+    : crearPaqueteVacio();
   public nuevoServicio: string = '';
 
   get formularioValido(): boolean {
@@ -97,7 +75,16 @@ export class CatalogoEditDialogComponent {
   }
 
   guardar(): void {
-    if (!this.formularioValido) return;
+    if (!this.formularioValido) {
+      return;
+    }
+    this.borrador.nombre = this.borrador.nombre.trim();
+    this.borrador.destino = this.borrador.destino.trim();
+    this.borrador.itinerario.forEach((dia, indice) => {
+      if (!dia.titulo.trim()) {
+        dia.titulo = `Día ${indice + 1}`;
+      }
+    });
     this.dialogRef.close(this.borrador);
   }
 

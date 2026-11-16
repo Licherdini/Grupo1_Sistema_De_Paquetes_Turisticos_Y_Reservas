@@ -1,15 +1,15 @@
-@if (mensajeNotificacion) {
+@if (mensajeNotificacion()) {
   <div class="alert alert-info py-2 small mb-3" role="status">
-    {{ mensajeNotificacion }}
+    {{ mensajeNotificacion() }}
   </div>
 }
 
-<ng-container *ngIf="vista === 'lista'">
+<ng-container *ngIf="vista() === 'lista'">
   <div class="row g-3 mb-4">
     <div class="col-6 col-lg-3">
       <div class="superficie-vidrio indicador p-3 h-100">
         <small class="indicador-etiqueta">Paquetes en catálogo</small>
-        <strong class="indicador-valor">{{ paquetes.length }}</strong>
+        <strong class="indicador-valor">{{ paquetes().length }}</strong>
       </div>
     </div>
     <div class="col-6 col-lg-3">
@@ -133,7 +133,6 @@
           </div>
         </div>
 
-        <!-- Botones de acción directos con iconos -->
         <div class="d-flex flex-wrap gap-2">
           <button type="button" class="btn btn-sm btn-outline-dark" (click)="verItinerario(paquete)">
             <app-icono nombre="calendario" />
@@ -168,12 +167,12 @@
 
   <div class="d-flex justify-content-end mt-2">
     <small class="text-muted">
-      Mostrando {{ paquetesFiltrados().length }} de {{ paquetes.length }} paquetes registrados
+      Mostrando {{ paquetesFiltrados().length }} de {{ paquetes().length }} paquetes registrados
     </small>
   </div>
 </ng-container>
 
-<ng-container *ngIf="vista === 'itinerario' && paqueteActivo as paquete">
+<ng-container *ngIf="vista() === 'itinerario' && paqueteActivo() as paquete">
   <div class="superficie-vidrio tarjeta-paquete p-3 p-md-4" [ngClass]="claseRegion(paquete.region)">
     <button type="button" class="btn btn-sm btn-outline-secondary mb-3 d-inline-flex align-items-center gap-1" (click)="volverALista()">
       <app-icono nombre="flecha-izquierda" />
@@ -245,141 +244,6 @@
 
     <div class="d-flex justify-content-end">
       <button type="button" class="btn btn-dark fw-semibold px-4" (click)="volverALista()">Volver al catálogo</button>
-    </div>
-  </div>
-</ng-container>
-
-<ng-container *ngIf="vista === 'formulario'">
-  <div class="superficie-vidrio p-3 p-md-4">
-    <button type="button" class="btn btn-sm btn-outline-secondary mb-3 d-inline-flex align-items-center gap-1" (click)="volverALista()">
-      <app-icono nombre="flecha-izquierda" />
-      Volver al catálogo
-    </button>
-
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-      <h6 class="fw-bold mb-0">Nuevo paquete turístico</h6>
-    </div>
-
-    <div class="row g-3">
-      <div class="col-md-8">
-        <label for="paqueteNombre" class="form-label small fw-semibold">Nombre del paquete</label>
-        <input id="paqueteNombre" type="text" class="form-control" [(ngModel)]="borrador.nombre" />
-      </div>
-      <div class="col-md-4">
-        <label for="paqueteRegion" class="form-label small fw-semibold">Región</label>
-        <select id="paqueteRegion" class="form-select" [(ngModel)]="borrador.region">
-          <option *ngFor="let region of regiones" [value]="region">{{ region }}</option>
-        </select>
-      </div>
-      <div class="col-md-8">
-        <label for="paqueteDestino" class="form-label small fw-semibold">Destino o circuito</label>
-        <input id="paqueteDestino" type="text" class="form-control" [(ngModel)]="borrador.destino" />
-      </div>
-      <div class="col-md-4">
-        <label for="paqueteDuracion" class="form-label small fw-semibold">
-          Duración (días) · {{ borrador.duracionDias - 1 }} noches
-        </label>
-        <input
-          id="paqueteDuracion"
-          type="number"
-          class="form-control"
-          min="1"
-          max="15"
-          [ngModel]="borrador.duracionDias"
-          (ngModelChange)="cambiarDuracion($event)"
-        />
-      </div>
-      <div class="col-12">
-        <label for="paqueteDescripcion" class="form-label small fw-semibold">Descripción</label>
-        <textarea id="paqueteDescripcion" class="form-control" rows="2" [(ngModel)]="borrador.descripcion"></textarea>
-      </div>
-
-      <div class="col-6 col-md-3">
-        <label for="paqueteTarifaBaja" class="form-label small fw-semibold">Tarifa temporada baja (USD)</label>
-        <input id="paqueteTarifaBaja" type="number" class="form-control" min="0" step="0.01" [(ngModel)]="borrador.tarifaBaja" />
-      </div>
-      <div class="col-6 col-md-3">
-        <label for="paqueteTarifaAlta" class="form-label small fw-semibold">Tarifa temporada alta (USD)</label>
-        <input id="paqueteTarifaAlta" type="number" class="form-control" min="0" step="0.01" [(ngModel)]="borrador.tarifaAlta" />
-      </div>
-      <div class="col-6 col-md-3">
-        <label for="paqueteCuposTotales" class="form-label small fw-semibold">Cupos totales</label>
-        <input id="paqueteCuposTotales" type="number" class="form-control" min="1" [(ngModel)]="borrador.cuposTotales" />
-      </div>
-      <div class="col-6 col-md-3">
-        <label for="paqueteCuposDisponibles" class="form-label small fw-semibold">Cupos disponibles</label>
-        <input
-          id="paqueteCuposDisponibles"
-          type="number"
-          class="form-control"
-          min="0"
-          [max]="borrador.cuposTotales"
-          [(ngModel)]="borrador.cuposDisponibles"
-        />
-      </div>
-
-      <div class="col-12">
-        <label class="form-label small fw-semibold d-block">Cronograma de actividades diarias</label>
-        <div class="row g-2">
-          <div class="col-12" *ngFor="let dia of borrador.itinerario; let indice = index">
-            <div class="fila-dia p-2">
-              <span class="badge bg-dark mb-2">Día {{ indice + 1 }}</span>
-              <input
-                type="text"
-                class="form-control form-control-sm mb-2"
-                placeholder="Título del día"
-                [attr.aria-label]="'Título del día ' + (indice + 1)"
-                [(ngModel)]="dia.titulo"
-              />
-              <textarea
-                class="form-control form-control-sm"
-                rows="2"
-                placeholder="Actividades del día"
-                [attr.aria-label]="'Actividades del día ' + (indice + 1)"
-                [(ngModel)]="dia.actividades"
-              ></textarea>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-12">
-        <label for="paqueteServicio" class="form-label small fw-semibold">Servicios incluidos</label>
-        <div class="input-group mb-2">
-          <input
-            id="paqueteServicio"
-            type="text"
-            class="form-control"
-            placeholder="Ej.: Hospedaje 2 noches"
-            [(ngModel)]="nuevoServicio"
-            (keydown.enter)="agregarServicio()"
-          />
-          <button type="button" class="btn btn-outline-dark" [disabled]="nuevoServicio.trim() === ''" (click)="agregarServicio()">
-            Agregar
-          </button>
-        </div>
-        <div class="d-flex flex-wrap gap-1">
-          <span
-            class="badge bg-primary-subtle text-primary-emphasis d-inline-flex align-items-center gap-2"
-            *ngFor="let servicio of borrador.servicios; let indice = index"
-          >
-            {{ servicio }}
-            <button
-              type="button"
-              class="btn-close btn-close-sm"
-              [attr.aria-label]="'Quitar ' + servicio"
-              (click)="quitarServicio(indice)"
-            ></button>
-          </span>
-        </div>
-      </div>
-    </div>
-
-    <div class="d-flex justify-content-end gap-2 mt-4">
-      <button type="button" class="btn btn-outline-secondary" (click)="volverALista()">Cancelar</button>
-      <button type="button" class="btn btn-dark fw-semibold px-4" [disabled]="!formularioValido()" (click)="guardar()">
-        Crear paquete
-      </button>
     </div>
   </div>
 </ng-container>
