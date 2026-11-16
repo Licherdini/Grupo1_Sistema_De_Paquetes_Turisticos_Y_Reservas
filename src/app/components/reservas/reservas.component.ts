@@ -1,84 +1,91 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { PreReserva, ReservasService } from '../../services/reservas.service';
 import { AuthService } from '../../services/auth.service';
-
-export interface ReservaGenerada {
-  codigo: string;
-  titular: string;
-  destino: string;
-  pasajeros: number;
-  total: number;
-  estado: string;
-}
 
 @Component({
   selector: 'app-reservas',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './reservas.component.html',
   styleUrl: './reservas.component.css'
 })
 export class ReservasComponent implements OnInit {
-  private readonly storageKey = 'andestravel_reservas_2026';
+  public reservasService = inject(ReservasService);
+  public authService = inject(AuthService);
+  private router = inject(Router);
+
+  // Navegación superior tipo pill
   tabActiva: 'cotizador' | 'reservas' = 'reservas';
 
-  reservas: ReservaGenerada[] = [
-    {
-      codigo: 'RES-2026-01',
-      titular: 'ADMIN',
-      destino: 'Galápagos Imperial (5D/4N)',
-      pasajeros: 2,
-      total: 1398,
-      estado: 'Confirmada'
-    }
-  ];
+  // Filtros reactivos en tiempo real (READ)
+  public textoBusqueda = signal<string>('');
+  public regionFiltro = signal<string>('Todas');
 
-  constructor(
-    public authService: AuthService,
-    private router: Router
-  ) {}
+  // Estado temporal para edición (UPDATE)
+  public codigoEnEdicion = signal<string | null>(null);
+  public pasajerosEdit = signal<number>(1);
+  public estadoEdit = signal<'Confirmada' | 'Pendiente' | 'Modificada'>('Confirmada');
 
   ngOnInit(): void {
-    const guardadas = sessionStorage.getItem(this.storageKey);
-    if (guardadas) {
-      try {
-        this.reservas = JSON.parse(guardadas) as ReservaGenerada[];
-      } catch {
-        sessionStorage.removeItem(this.storageKey);
-      }
-    }
-
-    const nuevaReserva = history.state?.['nuevaReserva'] as Partial<ReservaGenerada> | undefined;
-    if (nuevaReserva && nuevaReserva.destino) {
-      const siguienteNumero = String(this.reservas.length + 1).padStart(2, '0');
-      const registroCompleto: ReservaGenerada = {
-        codigo: nuevaReserva.codigo || `RES-2026-${siguienteNumero}`,
-        titular: (nuevaReserva.titular || this.authService.usuarioActual() || 'ADMIN').toUpperCase(),
-        destino: nuevaReserva.destino,
-        pasajeros: Number(nuevaReserva.pasajeros) || 1,
-        total: Math.round(Number(nuevaReserva.total) || 0),
-        estado: nuevaReserva.estado || 'Confirmada'
-      };
-
-      const yaExiste = this.reservas.some((r) => r.codigo === registroCompleto.codigo);
-      if (!yaExiste) {
-        this.reservas.push(registroCompleto);
-        sessionStorage.setItem(this.storageKey, JSON.stringify(this.reservas));
-      }
+    // Captura nueva reserva enviada por state desde el cotizador si aplica
+    const nuevaReserva = history.state?.['nuevaReserva'] as Partial<PreReserva> | undefined;
+    if (nuevaReserva && nuevaReserva.paqueteNombre) {
+      // Ya se registra en el servicio al hacer clic en generar
     }
   }
 
-  irACotizador(): void {
+  // Filtrado reactivo combinado por texto y región
+  public reservasFiltradas = computed(() => {
+    const termino = this.textoBusqueda().trim().toLowerCase();
+    const region = this.regionFiltro();
+
+    return this.reservasService.reservas().filter((reserva) => {
+      const coincideRegion = region === 'Todas' || reserva.region === region;
+      const coincideTexto =
+        !termino ||
+        reserva.codigo.toLowerCase().includes(termino) ||
+        reserva.cliente.toLowerCase().includes(termino) ||
+        reserva.paqueteNombre.toLowerCase().includes(termino) ||
+        reserva.estado.toLowerCase().includes(termino);
+
+      return coincideRegion && coincideTexto;
+    });
+  });
+
+  public iniciarEdicion(reserva: PreReserva): void {
+    this.codigoEnEdicion.set(reserva.codigo);
+    this.pasajerosEdit.set(reserva.pasajeros);
+    this.estadoEdit.set(reserva.estado);
+  }
+
+  public guardarEdicion(codigo: string): void {
+    this.reservasService.actualizarReserva(codigo, this.pasajerosEdit(), this.estadoEdit());
+    this.cancelarEdicion();
+  }
+
+  public cancelarEdicion(): void {
+    this.codigoEnEdicion.set(null);
+  }
+
+  public eliminar(codigo: string): void {
+    if (confirm(`¿Está seguro de eliminar la reserva ${codigo}? Se liberarán los cupos correspondientes.`)) {
+      this.reservasService.eliminarReserva(codigo);
+    }
+  }
+
+  public irACotizador(): void {
     this.tabActiva = 'cotizador';
-    this.router.navigate(['/principal']);
+    this.router.navigate(['/principal'], { queryParams: { modulo: 4 } });
   }
 
-  seleccionarReservas(): void {
+  public seleccionarReservas(): void {
     this.tabActiva = 'reservas';
   }
 
-  volverAlPanel(): void {
+  public volverAlPanel(): void {
     this.router.navigate(['/principal']);
   }
 }

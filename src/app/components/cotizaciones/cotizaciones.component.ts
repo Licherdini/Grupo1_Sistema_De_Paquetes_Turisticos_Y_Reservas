@@ -157,6 +157,7 @@ export class ModuloCotizacionesComponent {
     );
   }
 
+  // Navegación corregida a la ruta hija del módulo 4
   generarPreReserva(): void {
     if (!this.formularioValido()) {
       return;
@@ -172,7 +173,7 @@ export class ModuloCotizacionesComponent {
       'ADMIN'
     ).toUpperCase();
 
-    this.router.navigate(['/reservas'], {
+    this.router.navigate(['/cotizaciones/reservas'], {
       state: {
         nuevaReserva: {
           titular: titularActivo,
@@ -186,7 +187,7 @@ export class ModuloCotizacionesComponent {
   }
 
   irAListadoReservas(): void {
-    this.router.navigate(['/reservas']);
+    this.router.navigate(['/cotizaciones/reservas']);
   }
 
   limpiarCotizacion(): void {
