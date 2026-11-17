@@ -3,6 +3,7 @@ import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/route
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { of } from 'rxjs';
+import { vi } from 'vitest';
 import { PromocionesCuponesComponent } from './promociones-cupones.component';
 import { PromocionesService } from '../../../services/promociones.service';
 
@@ -122,7 +123,7 @@ describe('PromocionesCuponesComponent', () => {
     
     // Simular confirmación en diálogo de eliminación
     const dialog = TestBed.inject(MatDialog);
-    spyOn(dialog, 'open').and.returnValue({
+    vi.spyOn(dialog, 'open').mockReturnValue({
       afterClosed: () => of(true)
     } as any);
 
