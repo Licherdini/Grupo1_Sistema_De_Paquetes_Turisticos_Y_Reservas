@@ -1,4 +1,4 @@
-﻿/* ==========================================================================
+/* ==========================================================================
    ARCHIVO: src/app/services/modulos.service.ts
    TEORÍA DEL CURSO: Servicio para compartir datos entre los componentes
    FUNCIÓN: Fuente única de los 5 módulos (título, responsable, estado, URL y
@@ -98,7 +98,7 @@ export class ModulosService {
       responsable: 'Matews Abrahan Narvaez Cabeza',
       icono: 'cupon',
       descripcion: 'Ofertas de temporada por alianza bancaria y gestión de cupones de descuento.',
-      estado: 'En bosquejo',
+      estado: 'Funcional',
       secciones: [
         { ruta: 'ofertas', etiqueta: 'Ofertas de Temporada' },
         { ruta: 'cupones', etiqueta: 'Cupones de Descuento' }

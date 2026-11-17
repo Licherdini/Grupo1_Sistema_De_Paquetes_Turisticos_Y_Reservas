@@ -1,26 +1,20 @@
 /* ==========================================================================
    ARCHIVO: promociones-ofertas.component.ts
    MÓDULO 6: Promociones y Cupones (Matews Abrahan Narvaez Cabeza).
-   FUNCIÓN: Sección "Ofertas de Temporada" (/promociones/ofertas). CRUD en
-            memoria de campañas relámpago con filtro por alianza bancaria.
-            Los datos viven en este componente (sin servicio propio).
+   FUNCIÓN: Sección "Ofertas de Temporada" (/promociones/ofertas). Gestión de
+            campañas relámpago con filtro por alianza bancaria conectada al
+            servicio centralizado PromocionesService.
    ========================================================================== */
 
-import { Component, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IconoComponent } from '../../compartido/icono/icono.component';
 import { Router } from '@angular/router';
-
-export interface CampanaOferta {
-  id: number;
-  titulo: string;
-  descripcion: string;
-  alianza: string;
-  descuento: number;
-  codigo: string;
-  diasRestantes: number;
-}
+import { IconoComponent } from '../../compartido/icono/icono.component';
+import {
+  CampanaOferta,
+  PromocionesService
+} from '../../../services/promociones.service';
 
 export interface BorradorCampana {
   titulo: string;
@@ -30,13 +24,16 @@ export interface BorradorCampana {
 }
 
 @Component({
-  imports: [CommonModule, FormsModule, IconoComponent],
   selector: 'app-promociones-ofertas',
-  styleUrl: './promociones-ofertas.component.css',
+  standalone: true,
+  imports: [CommonModule, FormsModule, IconoComponent],
   templateUrl: './promociones-ofertas.component.html',
+  styleUrl: './promociones-ofertas.component.css'
 })
 export class PromocionesOfertasComponent {
-  mensajeNotificacion = signal<string>('');
+  public promocionesService = inject(PromocionesService);
+  private router = inject(Router);
+
   readonly alianzas: string[] = [
     'Banco Pacífico — Diferido sin intereses',
     'Banco Pichincha — Descuento directo',
@@ -46,43 +43,23 @@ export class PromocionesOfertasComponent {
   readonly descuentoMaximo: number = 70;
   private readonly diasPorDefecto: number = 15;
 
-  // Two-way binding del filtro por alianza ('Todos' = sin filtro)
+  // Filtro por alianza ('Todos' = sin filtro)
   filtroAlianza: string = 'Todos';
 
-  campanas: CampanaOferta[] = [
-    {
-      id: 1,
-      titulo: 'Cyber Travel Galápagos',
-      descripcion: 'Galápagos Imperial (5D/4N) con vuelo y hospedaje incluidos.',
-      alianza: this.alianzas[0],
-      descuento: 20,
-      codigo: 'UGVIAJA20',
-      diasRestantes: 3
-    },
-    {
-      id: 2,
-      titulo: 'Feriado Ruta de los Volcanes',
-      descripcion: 'Cotopaxi, Quilotoa y Baños (3D/2N) en fechas de feriado.',
-      alianza: this.alianzas[1],
-      descuento: 15,
-      codigo: 'ANDES15',
-      diasRestantes: 5
-    },
-    {
-      id: 3,
-      titulo: 'Escapada Ruta del Spondylus',
-      descripcion: 'Montañita y Puerto López (3D/2N) con tour a Isla de la Plata.',
-      alianza: this.alianzas[2],
-      descuento: 10,
-      codigo: 'SPONDY10',
-      diasRestantes: 8
-    }  
-  ];
-
-  // Two-way binding del formulario embebido (sin modales)
+  // Formulario reactivo embebido
   nuevaCampana: BorradorCampana = this.crearBorrador();
 
-  constructor(private router: Router) {}
+  get campanas(): CampanaOferta[] {
+    return this.promocionesService.campanas();
+  }
+
+  set campanas(lista: CampanaOferta[]) {
+    this.promocionesService.campanas.set(lista);
+  }
+
+  get mensajeNotificacion() {
+    return this.promocionesService.mensajeNotificacion;
+  }
 
   campanasFiltradas(): CampanaOferta[] {
     return this.filtroAlianza === 'Todos'
@@ -90,9 +67,8 @@ export class PromocionesOfertasComponent {
       : this.campanas.filter((campana) => campana.alianza === this.filtroAlianza);
   }
 
-  // El código se guarda en mayúsculas y sin espacios
   codigoNormalizado(): string {
-    return this.nuevaCampana.codigo.toUpperCase().replace(/\s+/g, '');
+    return (this.nuevaCampana.codigo || '').toUpperCase().replace(/\s+/g, '');
   }
 
   codigoRepetido(): boolean {
@@ -113,35 +89,27 @@ export class PromocionesOfertasComponent {
     );
   }
 
-  // Event binding (click): Create
+  // CREATE: Registrar y publicar campaña
   publicarCampana(): void {
-    if (!this.formularioValido()) {
-      return;
-    }
-    const siguiente = Math.max(0, ...this.campanas.map((campana) => campana.id)) + 1;
-    const nueva: CampanaOferta = {
-      id: siguiente,
+    if (!this.formularioValido()) return;
+
+    this.promocionesService.crearCampana({
       titulo: this.nuevaCampana.titulo.trim(),
       descripcion: 'Campaña vigente de AndesTravel UG para paquetes seleccionados.',
       alianza: this.nuevaCampana.alianza,
       descuento: Number(this.nuevaCampana.descuento),
       codigo: this.codigoNormalizado(),
       diasRestantes: this.diasPorDefecto
-    };
-    this.campanas = [nueva, ...this.campanas];
+    });
+
     this.nuevaCampana = this.crearBorrador();
-    this.mensajeNotificacion.set(`Campaña "${nueva.titulo}" publicada correctamente.`);
-    setTimeout(() => this.mensajeNotificacion.set(''), 4000);
   }
 
-  // Event binding (click): Delete
+  // DELETE: Finalizar campaña
   finalizarCampana(campana: CampanaOferta): void {
-    this.campanas = this.campanas.filter((item) => item.id !== campana.id);
-    this.mensajeNotificacion.set(`Campaña "${campana.titulo}" finalizada y eliminada.`);
-    setTimeout(() => this.mensajeNotificacion.set(''), 4000);
+    this.promocionesService.eliminarCampana(campana.id);
   }
 
-  // Event binding (click): abre /promociones/cupones con el código como parámetro de consulta
   gestionarCupon(campana: CampanaOferta): void {
     this.router.navigate(['/promociones', 'cupones'], { queryParams: { codigo: campana.codigo } });
   }

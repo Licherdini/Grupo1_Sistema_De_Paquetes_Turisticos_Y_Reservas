@@ -1,27 +1,31 @@
 /* ==========================================================================
    ARCHIVO: promociones-cupones.component.ts
    MÓDULO 6: Promociones y Cupones (Matews Abrahan Narvaez Cabeza).
-   FUNCIÓN: Sección "Cupones de Descuento" (/promociones/cupones). 
+   FUNCIÓN: Gestión de Cupones de Descuento (/promociones/cupones).
+            Implementa CRUD completo mediante variables de servicio reactivas (Signals),
+            tabla interactiva de 6 columnas con filtros y Angular Material Dialog
+            para la recuperación y edición de datos (Requisitos 1, 2, 3 y 4).
    ========================================================================== */
 
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { firstValueFrom } from 'rxjs';
 import { IconoComponent } from '../../compartido/icono/icono.component';
-
-export type EstadoCupon = 'Vigente' | 'Expirado';
-export type FiltroEstadoCupon = 'Todos' | EstadoCupon;
-
-export interface CuponPromocional {
-  id: number;
-  codigo: string;
-  campana: string;
-  descuento: number;
-  usosTotales: number;
-  usosDisponibles: number;
-  estado: EstadoCupon;
-}
+import {
+  ConfirmacionDialogoComponent,
+  DatosConfirmacion
+} from '../../compartido/confirmacion-dialogo/confirmacion-dialogo.component';
+import {
+  CuponPromocional,
+  EstadoCupon,
+  FiltroEstadoCupon,
+  PromocionesService
+} from '../../../services/promociones.service';
+import { CuponEditDialogComponent } from '../cupon-edit-dialog/cupon-edit-dialog.component';
 
 export interface BorradorCupon {
   codigo: string;
@@ -32,45 +36,55 @@ export interface BorradorCupon {
 }
 
 @Component({
-  imports: [CommonModule, FormsModule, IconoComponent],
   selector: 'app-promociones-cupones',
-  styleUrl: './promociones-cupones.component.css',
+  standalone: true,
+  imports: [CommonModule, FormsModule, IconoComponent],
   templateUrl: './promociones-cupones.component.html',
+  styleUrl: './promociones-cupones.component.css'
 })
 export class PromocionesCuponesComponent {
-  mensajeNotificacion = signal<string>('');
+  public promocionesService = inject(PromocionesService);
+  private dialog = inject(MatDialog);
+  private snackBar = inject(MatSnackBar);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+
   readonly descuentoMinimo: number = 5;
   readonly descuentoMaximo: number = 70;
 
-  cupones: CuponPromocional[] = [
-    { id: 1, codigo: 'UGVIAJA20', campana: 'Cyber Travel Galápagos', descuento: 20, usosTotales: 50, usosDisponibles: 18, estado: 'Vigente' },
-    { id: 2, codigo: 'ANDES15', campana: 'Feriado Ruta de los Volcanes', descuento: 15, usosTotales: 100, usosDisponibles: 64, estado: 'Vigente' },
-    { id: 3, codigo: 'SPONDY10', campana: 'Escapada Ruta del Spondylus', descuento: 10, usosTotales: 30, usosDisponibles: 30, estado: 'Vigente' },
-    { id: 4, codigo: 'SELVA12', campana: 'Aventura en la Amazonía', descuento: 12, usosTotales: 15, usosDisponibles: 0, estado: 'Vigente' },
-    { id: 5, codigo: 'NAVIDAD25', campana: 'Promo Navidad anterior', descuento: 25, usosTotales: 20, usosDisponibles: 7, estado: 'Expirado' }
-  ];
-
-  // Two-way binding de los filtros (Zona 2)
+  // Filtros reactivos en tiempo real (READ)
   textoBusqueda: string = '';
   estadoFiltro: FiltroEstadoCupon = 'Todos';
 
-  // Formulario embebido (Zona 1): modo creación o edición
+  // Cupón activado para cotización
+  cuponAplicado: CuponPromocional | null = null;
+
+  // Compatibilidad para creación/edición programática y pruebas
   borrador: BorradorCupon = this.crearBorrador();
   editandoId: number | null = null;
 
-  // Cupón activado para la cotización actual (aviso superior)
-  cuponAplicado: CuponPromocional | null = null;
-
-  constructor(route: ActivatedRoute) {
-    // Llega desde "Gestionar / Usar Cupón" de las ofertas: /promociones/cupones?codigo=XXX
-    this.textoBusqueda = route.snapshot.queryParamMap.get('codigo') ?? '';
+  constructor() {
+    this.textoBusqueda = this.route.snapshot.queryParamMap.get('codigo') ?? '';
   }
 
-  // Un cupón sin usos disponibles se considera expirado aunque su estado diga Vigente
+  // Lista conectada a la variable del servicio
+  get cupones(): CuponPromocional[] {
+    return this.promocionesService.cupones();
+  }
+
+  set cupones(lista: CuponPromocional[]) {
+    this.promocionesService.cupones.set(lista);
+  }
+
+  get mensajeNotificacion() {
+    return this.promocionesService.mensajeNotificacion;
+  }
+
   estadoEfectivo(cupon: CuponPromocional): EstadoCupon {
-    return cupon.usosDisponibles <= 0 ? 'Expirado' : cupon.estado;
+    return this.promocionesService.estadoEfectivo(cupon);
   }
 
+  // Filtrado reactivo en tiempo real por texto (código o campaña) y por estado
   cuponesFiltrados(): CuponPromocional[] {
     const texto = this.textoBusqueda.trim().toLowerCase();
     return this.cupones.filter((cupon) => {
@@ -85,9 +99,7 @@ export class PromocionesCuponesComponent {
   }
 
   porcentajeRestante(cupon: CuponPromocional): number {
-    if (cupon.usosTotales <= 0) {
-      return 0;
-    }
+    if (cupon.usosTotales <= 0) return 0;
     return Math.min(100, Math.max(0, Math.round((cupon.usosDisponibles / cupon.usosTotales) * 100)));
   }
 
@@ -96,132 +108,191 @@ export class PromocionesCuponesComponent {
     this.estadoFiltro = 'Todos';
   }
 
-  // El código se guarda en mayúsculas, solo letras y números
-  codigoNormalizado(): string {
-    return this.borrador.codigo.toUpperCase().replace(/[^A-Z0-9]/g, '');
-  }
+  // REQUISITO 3: Abrir diálogo modal con MatDialog para MODIFICAR los datos del cupón
+  abrirDialogEdicion(cupon: CuponPromocional): void {
+    const dialogRef = this.dialog.open(CuponEditDialogComponent, {
+      data: { cupon },
+      width: '580px',
+      maxWidth: '95vw',
+      disableClose: true,
+      panelClass: 'dialogo-vidrio'
+    });
 
-  codigoDuplicado(): boolean {
-    const codigo = this.codigoNormalizado();
-    return (
-      codigo !== '' &&
-      this.cupones.some((cupon) => cupon.codigo === codigo && cupon.id !== this.editandoId)
-    );
-  }
-
-  formularioValido(): boolean {
-    const borrador = this.borrador;
-    const descuento = Number(borrador.descuento);
-    const usos = Number(borrador.usosTotales);
-    return (
-      this.codigoNormalizado().length >= 3 &&
-      !this.codigoDuplicado() &&
-      borrador.campana.trim().length >= 3 &&
-      descuento >= this.descuentoMinimo &&
-      descuento <= this.descuentoMaximo &&
-      Number.isInteger(usos) &&
-      usos >= 1
-    );
-  }
-
-  // Event binding (click): Create o Update según el modo del formulario
-  guardar(): void {
-    if (!this.formularioValido()) {
-      return;
-    }
-    const total = Number(this.borrador.usosTotales);
-
-    if (this.editandoId === null) {
-      const siguiente = Math.max(0, ...this.cupones.map((cupon) => cupon.id)) + 1;
-      this.cupones = [
-        {
-          id: siguiente,
-          codigo: this.codigoNormalizado(),
-          campana: this.borrador.campana.trim(),
-          descuento: Number(this.borrador.descuento),
-          usosTotales: total,
-          usosDisponibles: total,
-          estado: this.borrador.estado
-        },
-        ...this.cupones
-      ];
-      this.mensajeNotificacion.set(`Cupón "${this.codigoNormalizado()}" registrado correctamente.`);
-      setTimeout(() => this.mensajeNotificacion.set(''), 4000);
-    } else {
-      const cupon = this.cupones.find((item) => item.id === this.editandoId);
-      if (cupon) {
-        // Si cambia el límite, los usos disponibles se ajustan por la diferencia
-        const diferencia = total - cupon.usosTotales;
-        cupon.codigo = this.codigoNormalizado();
-        cupon.campana = this.borrador.campana.trim();
-        cupon.descuento = Number(this.borrador.descuento);
-        cupon.usosTotales = total;
-        cupon.usosDisponibles = Math.min(total, Math.max(0, cupon.usosDisponibles + diferencia));
-        cupon.estado = this.borrador.estado;
-        if (this.cuponAplicado?.id === cupon.id && this.estadoEfectivo(cupon) === 'Expirado') {
+    dialogRef.afterClosed().subscribe((resultado: CuponPromocional | null) => {
+      if (resultado) {
+        this.promocionesService.actualizarCupon(cupon.id, resultado);
+        if (this.cuponAplicado?.id === cupon.id && this.estadoEfectivo(resultado) === 'Expirado') {
           this.cuponAplicado = null;
         }
+        this.snackBar.open(
+          `Cupón "${resultado.codigo}" actualizado correctamente.`,
+          'Cerrar',
+          {
+            duration: 3500,
+            panelClass: ['snack-exito'],
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom'
+          }
+        );
       }
-      this.mensajeNotificacion.set(`Cupón "${this.codigoNormalizado()}" actualizado correctamente.`);
-      setTimeout(() => this.mensajeNotificacion.set(''), 4000);
+    });
+  }
+
+  // Modal para CREAR un nuevo cupón
+  abrirDialogCrear(): void {
+    const dialogRef = this.dialog.open(CuponEditDialogComponent, {
+      data: { cupon: null },
+      width: '580px',
+      maxWidth: '95vw',
+      disableClose: true,
+      panelClass: 'dialogo-vidrio'
+    });
+
+    dialogRef.afterClosed().subscribe((resultado: CuponPromocional | null) => {
+      if (resultado) {
+        const creado = this.promocionesService.crearCupon({
+          codigo: resultado.codigo,
+          campana: resultado.campana,
+          descuento: resultado.descuento,
+          usosTotales: resultado.usosTotales,
+          usosDisponibles: resultado.usosDisponibles,
+          estado: resultado.estado
+        });
+        this.snackBar.open(
+          `Cupón "${creado.codigo}" registrado exitosamente.`,
+          'Cerrar',
+          {
+            duration: 3500,
+            panelClass: ['snack-exito'],
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom'
+          }
+        );
+      }
+    });
+  }
+
+  // REQUISITO 4: Botón Eliminar con confirmación modal reutilizable
+  async eliminar(cupon: CuponPromocional): Promise<void> {
+    const confirmado = await firstValueFrom(
+      this.dialog
+        .open<ConfirmacionDialogoComponent, DatosConfirmacion, boolean>(
+          ConfirmacionDialogoComponent,
+          {
+            data: {
+              titulo: 'Eliminar cupón promocional',
+              mensaje: `¿Está seguro de eliminar el cupón "${cupon.codigo}" (${cupon.campana})? Se quitará definitivamente de la tabla.`,
+              tipo: 'peligro',
+              textoConfirmar: 'Sí, eliminar'
+            },
+            panelClass: 'dialogo-vidrio'
+          }
+        )
+        .afterClosed()
+    );
+
+    if (confirmado === true) {
+      this.promocionesService.eliminarCupon(cupon.id);
+      if (this.cuponAplicado?.id === cupon.id) {
+        this.cuponAplicado = null;
+      }
+      if (this.editandoId === cupon.id) {
+        this.cancelarEdicion();
+      }
+      this.snackBar.open(`Cupón "${cupon.codigo}" eliminado de la tabla.`, 'Cerrar', {
+        duration: 3500,
+        panelClass: ['snack-exito'],
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom'
+      });
     }
-    this.cancelarEdicion();
   }
 
-  // Event binding (click): carga la fila en el formulario (Update)
-  editar(cupon: CuponPromocional): void {
-    this.editandoId = cupon.id;
-    this.borrador = {
-      codigo: cupon.codigo,
-      campana: cupon.campana,
-      descuento: cupon.descuento,
-      usosTotales: cupon.usosTotales,
-      estado: cupon.estado
-    };
-    this.mensajeNotificacion.set(`Modificando cupón "${cupon.codigo}" (${cupon.campana}). Edite los campos y guarde los cambios.`);
-  }
-
-  cancelarEdicion(): void {
-    this.editandoId = null;
-    this.borrador = this.crearBorrador();
-  }
-
-  // Event binding (click): alterna Vigente / Expirado (Update rápido).
-  // Un cupón sin usos disponibles no se puede reactivar.
+  // Alternar rápidamente entre Vigente y Expirado
   alternarEstado(cupon: CuponPromocional): void {
-    if (cupon.usosDisponibles <= 0) {
-      return;
-    }
-    cupon.estado = cupon.estado === 'Vigente' ? 'Expirado' : 'Vigente';
+    if (cupon.usosDisponibles <= 0) return;
+    this.promocionesService.alternarEstado(cupon.id);
     if (this.cuponAplicado?.id === cupon.id && cupon.estado === 'Expirado') {
       this.cuponAplicado = null;
     }
   }
 
-  // Event binding (click): Delete
-  eliminar(cupon: CuponPromocional): void {
-    const codigo = cupon.codigo;
-    this.cupones = this.cupones.filter((item) => item.id !== cupon.id);
-    this.mensajeNotificacion.set(`Cupón "${codigo}" eliminado correctamente.`);
-    setTimeout(() => this.mensajeNotificacion.set(''), 4000);
-    if (this.editandoId === cupon.id) {
-      this.cancelarEdicion();
-    }
-    if (this.cuponAplicado?.id === cupon.id) {
-      this.cuponAplicado = null;
-    }
-  }
-
-  // Event binding (click): activa el cupón para la cotización (envío real: fase 2)
+  // Aplicar en cotizador / módulo 4
   aplicarEnCotizador(cupon: CuponPromocional): void {
-    if (this.estadoEfectivo(cupon) === 'Expirado') {
-      return;
-    }
+    if (this.estadoEfectivo(cupon) === 'Expirado') return;
     this.cuponAplicado = cupon;
   }
 
   cerrarAviso(): void {
     this.cuponAplicado = null;
+  }
+
+  // Métodos de apoyo y compatibilidad directa con pruebas existentes
+  editar(cupon: CuponPromocional): void {
+    this.abrirDialogEdicion(cupon);
+  }
+
+  codigoNormalizado(): string {
+    return (this.borrador.codigo || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  }
+
+  codigoDuplicado(): boolean {
+    const cod = this.codigoNormalizado();
+    return (
+      cod !== '' &&
+      this.cupones.some((c) => c.codigo.toUpperCase() === cod && c.id !== this.editandoId)
+    );
+  }
+
+  formularioValido(): boolean {
+    const b = this.borrador;
+    const desc = Number(b.descuento);
+    const usos = Number(b.usosTotales);
+    return (
+      this.codigoNormalizado().length >= 3 &&
+      !this.codigoDuplicado() &&
+      b.campana.trim().length >= 3 &&
+      desc >= this.descuentoMinimo &&
+      desc <= this.descuentoMaximo &&
+      Number.isInteger(usos) &&
+      usos >= 1
+    );
+  }
+
+  guardar(): void {
+    if (!this.formularioValido()) return;
+    const total = Number(this.borrador.usosTotales);
+
+    if (this.editandoId === null) {
+      this.promocionesService.crearCupon({
+        codigo: this.codigoNormalizado(),
+        campana: this.borrador.campana.trim(),
+        descuento: Number(this.borrador.descuento),
+        usosTotales: total,
+        usosDisponibles: total,
+        estado: this.borrador.estado
+      });
+    } else {
+      const actual = this.cupones.find((c) => c.id === this.editandoId);
+      if (actual) {
+        const diferencia = total - actual.usosTotales;
+        const nuevosDisponibles = Math.min(total, Math.max(0, actual.usosDisponibles + diferencia));
+        this.promocionesService.actualizarCupon(actual.id, {
+          codigo: this.codigoNormalizado(),
+          campana: this.borrador.campana.trim(),
+          descuento: Number(this.borrador.descuento),
+          usosTotales: total,
+          usosDisponibles: nuevosDisponibles,
+          estado: this.borrador.estado
+        });
+      }
+    }
+    this.cancelarEdicion();
+  }
+
+  cancelarEdicion(): void {
+    this.editandoId = null;
+    this.borrador = this.crearBorrador();
   }
 
   private crearBorrador(): BorradorCupon {

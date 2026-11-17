@@ -1,0 +1,126 @@
+<h2 mat-dialog-title class="dialogo-titulo d-flex align-items-center gap-2">
+  <app-icono [nombre]="modo === 'crear' ? 'mas' : 'editar'" />
+  <span>{{ modo === 'crear' ? 'Registrar Nuevo Cupón' : 'Modificar Cupón: ' + borrador.codigo }}</span>
+</h2>
+
+<mat-dialog-content class="dialogo-contenido">
+  <form id="formCupon" (ngSubmit)="guardar()" novalidate class="mt-2">
+    <div class="row g-3">
+      <!-- CÓDIGO DEL CUPÓN -->
+      <div class="col-12 col-md-6">
+        <label for="dlgCodigo" class="form-label small fw-semibold">Código del cupón</label>
+        <input
+          id="dlgCodigo"
+          name="codigo"
+          type="text"
+          class="form-control campo-codigo"
+          placeholder="Ej.: UGVIAJA20"
+          [(ngModel)]="borrador.codigo"
+          required
+        />
+        <small class="text-danger d-block mt-1" *ngIf="codigoDuplicado">
+          El código {{ codigoNormalizado }} ya existe. Usa otro código.
+        </small>
+        <small class="text-danger d-block mt-1" *ngIf="codigoNormalizado.length > 0 && codigoNormalizado.length < 3">
+          Debe tener al menos 3 caracteres alfanuméricos.
+        </small>
+      </div>
+
+      <!-- DESCUENTO (%) -->
+      <div class="col-12 col-md-6">
+        <label for="dlgDescuento" class="form-label small fw-semibold">Porcentaje de descuento</label>
+        <div class="input-group">
+          <input
+            id="dlgDescuento"
+            name="descuento"
+            type="number"
+            class="form-control"
+            placeholder="5 a 70"
+            [min]="descuentoMinimo"
+            [max]="descuentoMaximo"
+            [(ngModel)]="borrador.descuento"
+            required
+          />
+          <span class="input-group-text fw-bold text-primary">% OFF</span>
+        </div>
+        <small class="text-muted d-block mt-1">Válido entre {{ descuentoMinimo }}% y {{ descuentoMaximo }}%</small>
+      </div>
+
+      <!-- CAMPAÑA / DESTINO -->
+      <div class="col-12">
+        <label for="dlgCampana" class="form-label small fw-semibold">Campaña o destino asociado</label>
+        <input
+          id="dlgCampana"
+          name="campana"
+          type="text"
+          class="form-control"
+          placeholder="Ej.: Cyber Travel Galápagos (5D/4N)"
+          [(ngModel)]="borrador.campana"
+          required
+        />
+        <small class="text-danger d-block mt-1" *ngIf="borrador.campana.trim().length > 0 && borrador.campana.trim().length < 3">
+          Debe contener al menos 3 caracteres descriptivos.
+        </small>
+      </div>
+
+      <!-- LÍMITE DE USOS TOTALES -->
+      <div class="col-12 col-md-4">
+        <label for="dlgUsosTotales" class="form-label small fw-semibold">Límite de usos totales</label>
+        <input
+          id="dlgUsosTotales"
+          name="usosTotales"
+          type="number"
+          class="form-control"
+          min="1"
+          [ngModel]="borrador.usosTotales"
+          (ngModelChange)="borrador.usosTotales = $event; onTotalesChange($event)"
+          required
+        />
+      </div>
+
+      <!-- USOS DISPONIBLES -->
+      <div class="col-12 col-md-4">
+        <label for="dlgUsosDisponibles" class="form-label small fw-semibold">Usos disponibles</label>
+        <input
+          id="dlgUsosDisponibles"
+          name="usosDisponibles"
+          type="number"
+          class="form-control"
+          min="0"
+          [max]="borrador.usosTotales"
+          [(ngModel)]="borrador.usosDisponibles"
+          required
+        />
+        <small class="text-muted d-block mt-1">Máximo: {{ borrador.usosTotales }}</small>
+      </div>
+
+      <!-- ESTADO DE VIGENCIA -->
+      <div class="col-12 col-md-4">
+        <label for="dlgEstado" class="form-label small fw-semibold">Estado de vigencia</label>
+        <select
+          id="dlgEstado"
+          name="estado"
+          class="form-select"
+          [(ngModel)]="borrador.estado"
+        >
+          <option *ngFor="let estado of estados" [value]="estado">{{ estado }}</option>
+        </select>
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="dialogo-acciones gap-2 p-3">
+  <button type="button" class="btn btn-outline-secondary btn-sm fw-semibold" (click)="cancelar()">
+    Cancelar
+  </button>
+  <button
+    type="button"
+    class="btn btn-dark btn-sm fw-semibold px-3 d-inline-flex align-items-center gap-1"
+    [disabled]="!formularioValido"
+    (click)="guardar()"
+  >
+    <app-icono [nombre]="modo === 'crear' ? 'mas' : 'check'" />
+    {{ modo === 'crear' ? 'Crear Cupón' : 'Guardar Cambios' }}
+  </button>
+</mat-dialog-actions>

@@ -1,150 +1,144 @@
-<!-- Mensaje de notificación / retroalimentación -->
+<!-- MENSAJE DE RETROALIMENTACIÓN / NOTIFICACIÓN -->
 @if (mensajeNotificacion()) {
-  <div class="alert alert-info py-2 small mb-3" role="status">
-    {{ mensajeNotificacion() }}
+  <div class="alert alert-info py-2 small mb-3 d-flex justify-content-between align-items-center" role="status">
+    <div>
+      <app-icono nombre="informacion" class="me-1" />
+      {{ mensajeNotificacion() }}
+    </div>
+    <button
+      type="button"
+      class="btn-close btn-close-sm ms-2"
+      aria-label="Cerrar notificación"
+      (click)="promocionesService.mensajeNotificacion.set('')"
+    ></button>
   </div>
 }
 
-<!-- Aviso de cupón activado para la cotización actual -->
+<!-- AVISO DE CUPÓN ACTIVADO PARA COTIZACIÓN -->
 <div
-  class="alert alert-info d-flex justify-content-between align-items-center py-2 px-3 small fw-semibold"
+  class="alert alert-info d-flex justify-content-between align-items-center py-2 px-3 small fw-semibold mb-3"
   role="status"
   *ngIf="cuponAplicado"
 >
-  <span>Cupón {{ cuponAplicado.codigo }} (-{{ cuponAplicado.descuento }}%) activado para la cotización actual</span>
+  <div class="d-flex align-items-center gap-2">
+    <app-icono nombre="check" />
+    <span>Cupón <strong>{{ cuponAplicado.codigo }}</strong> (-{{ cuponAplicado.descuento }}% OFF) activado para cotizaciones.</span>
+  </div>
   <button type="button" class="btn-close btn-close-sm" aria-label="Cerrar aviso" (click)="cerrarAviso()"></button>
 </div>
 
-<!-- ZONA 1: formulario embebido de creación y edición (Create / Update) -->
-<div class="superficie-vidrio formulario-cupon p-3 mb-3" [ngClass]="{ 'modo-edicion': editandoId !== null }">
-  <div class="d-flex align-items-center gap-2 mb-3">
-    <h6 class="fw-bold mb-0">
-      {{ editandoId === null ? 'Registrar nuevo cupón promocional' : 'Editando cupón seleccionado' }}
-    </h6>
-    <span class="badge bg-warning-subtle text-warning-emphasis" *ngIf="editandoId !== null">Modo edición</span>
+<!-- TARJETA PRINCIPAL DEL CRUD (Módulo 6: Matews Abrahan Narvaez Cabeza) -->
+<div class="superficie-vidrio p-3 p-md-4 mb-4">
+  
+  <!-- CABECERA: TÍTULO Y BOTÓN DE NUEVO CUPÓN -->
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 pb-3 mb-3 border-bottom">
+    <div>
+      <h4 class="fw-bold mb-1">Catálogo de Cupones de Descuento</h4>
+      <small class="text-muted">
+        Módulo 6: Promociones y Fidelización · Responsable: <strong>Matews Abrahan Narvaez Cabeza</strong>
+      </small>
+    </div>
+
+    <!-- Botón para registrar cupón usando el componente Dialog (MatDialog) -->
+    <button
+      type="button"
+      class="btn btn-dark btn-sm fw-semibold d-inline-flex align-items-center gap-1 shadow-sm px-3 py-2"
+      (click)="abrirDialogCrear()"
+    >
+      <app-icono nombre="mas" />
+      Nuevo Cupón
+    </button>
   </div>
 
-  <div class="row g-2 align-items-end">
-    <div class="col-6 col-lg-2">
-      <label for="cuponCodigo" class="form-label small fw-semibold">Código del cupón</label>
-      <input
-        id="cuponCodigo"
-        type="text"
-        class="form-control campo-codigo"
-        placeholder="ANDES15"
-        [(ngModel)]="borrador.codigo"
-      />
+  <!-- FILTRADO REACTIVO EN TIEMPO REAL (Requisito 1: Input de filtrado superior) -->
+  <div class="row g-2 align-items-end mb-4">
+    <div class="col-12 col-md-6">
+      <label for="cuponBusqueda" class="form-label small fw-semibold">
+        Filtrar por código de cupón o campaña asociada
+      </label>
+      <div class="campo-buscar">
+        <app-icono nombre="buscar" />
+        <input
+          id="cuponBusqueda"
+          type="text"
+          class="form-control"
+          placeholder="Ej.: UGVIAJA20, Feriado, Galápagos..."
+          [(ngModel)]="textoBusqueda"
+          aria-label="Filtrar cupones por texto o campaña"
+        />
+      </div>
     </div>
-    <div class="col-12 col-lg-3">
-      <label for="cuponCampana" class="form-label small fw-semibold">Campaña o destino asociado</label>
-      <input
-        id="cuponCampana"
-        type="text"
-        class="form-control"
-        placeholder="Ej.: Feriado Ruta de los Volcanes"
-        [(ngModel)]="borrador.campana"
-      />
-    </div>
-    <div class="col-6 col-lg-2">
-      <label for="cuponDescuento" class="form-label small fw-semibold">Descuento (%)</label>
-      <input
-        id="cuponDescuento"
-        type="number"
-        class="form-control"
-        placeholder="5 a 70"
-        [min]="descuentoMinimo"
-        [max]="descuentoMaximo"
-        [(ngModel)]="borrador.descuento"
-      />
-    </div>
-    <div class="col-6 col-lg-2">
-      <label for="cuponUsos" class="form-label small fw-semibold">Límite de usos</label>
-      <input
-        id="cuponUsos"
-        type="number"
-        class="form-control"
-        placeholder="Ej.: 50"
-        min="1"
-        [(ngModel)]="borrador.usosTotales"
-      />
-    </div>
-    <div class="col-6 col-lg-1">
-      <label for="cuponEstado" class="form-label small fw-semibold">Estado</label>
-      <select id="cuponEstado" class="form-select px-2" [(ngModel)]="borrador.estado">
-        <option value="Vigente">Vigente</option>
-        <option value="Expirado">Expirado</option>
+
+    <div class="col-6 col-md-3">
+      <label for="cuponFiltroEstado" class="form-label small fw-semibold">
+        Filtrar por estado de vigencia
+      </label>
+      <select
+        id="cuponFiltroEstado"
+        class="form-select"
+        [(ngModel)]="estadoFiltro"
+        aria-label="Filtrar por estado de vigencia"
+      >
+        <option value="Todos">Todos los estados</option>
+        <option value="Vigente">Solo Vigentes</option>
+        <option value="Expirado">Solo Expirados</option>
       </select>
     </div>
-    <div class="col-12 col-lg-2 d-grid gap-2">
-      <button type="button" class="btn btn-success fw-semibold" [disabled]="!formularioValido()" (click)="guardar()">
-        {{ editandoId === null ? 'Crear Cupón' : 'Actualizar Cupón' }}
-      </button>
-      <button type="button" class="btn btn-outline-secondary btn-sm" *ngIf="editandoId !== null" (click)="cancelarEdicion()">
-        Cancelar
+
+    <div class="col-6 col-md-3 d-grid">
+      <button
+        type="button"
+        class="btn btn-outline-secondary btn-sm fw-semibold py-2"
+        (click)="limpiarFiltros()"
+      >
+        Limpiar filtros
       </button>
     </div>
   </div>
-  <small class="text-danger d-block mt-2" *ngIf="codigoDuplicado()">
-    El código {{ codigoNormalizado() }} ya existe. Usa otro código.
-  </small>
-  <small class="text-muted d-block mt-2">
-    Descuento entre {{ descuentoMinimo }}% y {{ descuentoMaximo }}%. El código admite solo letras y números.
-  </small>
-</div>
 
-<!-- ZONA 2: búsqueda y filtrado reactivo (Read) -->
-<div class="row g-2 align-items-end mb-3">
-  <div class="col-12 col-md-6">
-    <label for="cuponBusqueda" class="form-label small fw-semibold">Buscar por código o campaña</label>
-    <div class="campo-buscar">
-      <app-icono nombre="buscar" />
-      <input
-        id="cuponBusqueda"
-        type="text"
-        class="form-control"
-        placeholder="Ej.: UGVIAJA20 o Galápagos"
-        [(ngModel)]="textoBusqueda"
-      />
-    </div>
-  </div>
-  <div class="col-6 col-md-3">
-    <label for="cuponFiltroEstado" class="form-label small fw-semibold">Estado de vigencia</label>
-    <select id="cuponFiltroEstado" class="form-select" [(ngModel)]="estadoFiltro">
-      <option value="Todos">Todos los estados</option>
-      <option value="Vigente">Solo Vigentes</option>
-      <option value="Expirado">Solo Expirados</option>
-    </select>
-  </div>
-  <div class="col-6 col-md-3 d-grid">
-    <button type="button" class="btn btn-outline-secondary" (click)="limpiarFiltros()">Limpiar filtros</button>
-  </div>
-</div>
-
-<!-- ZONA 3: tabla de vidrio con acciones por fila -->
-<div class="superficie-vidrio p-2">
+  <!-- TABLA DE DATOS PRINCIPAL (Requisitos 1, 2, 3 y 4: Mínimo 5 columnas de datos + Acciones) -->
   <div class="table-responsive">
     <table class="table tabla-vidrio align-middle mb-0">
       <thead>
         <tr>
-          <th>Código</th>
-          <th>Campaña / Beneficio</th>
-          <th>Descuento</th>
-          <th>Usos disponibles</th>
-          <th>Vigencia</th>
-          <th class="text-end">Acciones</th>
+          <th>CÓDIGO</th>
+          <th>CAMPAÑA / DESTINO ASOCIADO</th>
+          <th class="text-center">DESCUENTO</th>
+          <th>USOS DISPONIBLES</th>
+          <th class="text-center">VIGENCIA</th>
+          <th class="text-end">ACCIONES</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let cupon of cuponesFiltrados()" [ngClass]="{ 'fila-edicion': cupon.id === editandoId }">
-          <td><span class="badge bg-dark codigo-cupon">{{ cupon.codigo }}</span></td>
-          <td>{{ cupon.campana }}</td>
-          <td class="fw-bold texto-descuento">{{ cupon.descuento }}% OFF</td>
+        <tr *ngFor="let cupon of cuponesFiltrados()">
+          <!-- COLUMNA 1: Código -->
+          <td>
+            <span class="badge bg-dark codigo-cupon font-monospace">{{ cupon.codigo }}</span>
+          </td>
+
+          <!-- COLUMNA 2: Campaña -->
+          <td>
+            <div class="fw-semibold">{{ cupon.campana }}</div>
+            <small class="text-muted">Descuento aplicable a reservas turísticas</small>
+          </td>
+
+          <!-- COLUMNA 3: Porcentaje Descuento -->
+          <td class="text-center">
+            <span class="badge bg-primary-subtle text-primary-emphasis px-2 py-1 fs-6 fw-bold">
+              {{ cupon.descuento }}% OFF
+            </span>
+          </td>
+
+          <!-- COLUMNA 4: Usos Disponibles / Totales -->
           <td class="celda-usos">
-            <small class="d-block">{{ cupon.usosDisponibles }} / {{ cupon.usosTotales }} usos restantes</small>
+            <div class="d-flex justify-content-between small mb-1">
+              <span>{{ cupon.usosDisponibles }} disponibles</span>
+              <span class="text-muted">de {{ cupon.usosTotales }}</span>
+            </div>
             <div
               class="progress barra-usos"
               role="progressbar"
-              aria-label="Usos restantes"
+              aria-label="Porcentaje de usos restantes"
               [attr.aria-valuenow]="porcentajeRestante(cupon)"
               aria-valuemin="0"
               aria-valuemax="100"
@@ -156,9 +150,11 @@
               ></div>
             </div>
           </td>
-          <td>
+
+          <!-- COLUMNA 5: Estado / Vigencia -->
+          <td class="text-center">
             <span
-              class="badge"
+              class="badge px-3 py-1"
               [ngClass]="
                 estadoEfectivo(cupon) === 'Vigente'
                   ? 'bg-success-subtle text-success-emphasis'
@@ -168,51 +164,71 @@
               {{ estadoEfectivo(cupon) }}
             </span>
           </td>
-          <td>
-            <div class="acciones-cupon d-flex justify-content-end flex-wrap gap-1">
-              <button
-                type="button"
-                class="btn btn-sm btn-primary"
-                title="Aplicar en Cotizador"
-                [disabled]="estadoEfectivo(cupon) === 'Expirado'"
-                (click)="aplicarEnCotizador(cupon)"
-              >
-                Aplicar en Cotizador
-              </button>
+
+          <!-- COLUMNA 6: Botones de Acción (Requisito 2: Modificar y Eliminar) -->
+          <td class="text-end">
+            <div class="acciones-cupon d-flex justify-content-end align-items-center flex-wrap gap-1">
+              <!-- Requisito 3: Botón MODIFICAR que abre el Dialog -->
               <button
                 type="button"
                 class="btn btn-sm btn-outline-dark fw-semibold d-inline-flex align-items-center gap-1"
-                title="Modificar cupón"
-                (click)="editar(cupon)"
+                [attr.aria-label]="'Modificar cupón ' + cupon.codigo"
+                title="Modificar cupón con ventana modal"
+                (click)="abrirDialogEdicion(cupon)"
               >
-                <app-icono nombre="editar" /> Modificar
+                <app-icono nombre="editar" />
+                Modificar
               </button>
-              <button
-                type="button"
-                class="btn btn-sm btn-warning"
-                title="Cambiar estado entre Vigente y Expirado"
-                [disabled]="cupon.usosDisponibles <= 0"
-                (click)="alternarEstado(cupon)"
-              >
-                Cambiar estado
-              </button>
+
+              <!-- Requisito 4: Botón ELIMINAR que borra el registro de la tabla -->
               <button
                 type="button"
                 class="btn btn-sm btn-outline-danger fw-semibold d-inline-flex align-items-center gap-1"
-                title="Eliminar cupón"
+                [attr.aria-label]="'Eliminar cupón ' + cupon.codigo"
+                title="Eliminar cupón de la tabla"
                 (click)="eliminar(cupon)"
               >
-                <app-icono nombre="papelera" /> Eliminar
+                <app-icono nombre="papelera" />
+                Eliminar
+              </button>
+
+              <!-- Botón rápido para alternar vigencia -->
+              <button
+                type="button"
+                class="btn btn-sm btn-outline-secondary fw-semibold"
+                title="Alternar estado entre Vigente y Expirado"
+                [disabled]="cupon.usosDisponibles <= 0"
+                (click)="alternarEstado(cupon)"
+              >
+                Estado
+              </button>
+
+              <!-- Botón para aplicar cupón en cotizaciones -->
+              <button
+                type="button"
+                class="btn btn-sm btn-primary"
+                title="Aplicar este cupón en el cotizador"
+                [disabled]="estadoEfectivo(cupon) === 'Expirado'"
+                (click)="aplicarEnCotizador(cupon)"
+              >
+                Usar
               </button>
             </div>
           </td>
         </tr>
+
+        <!-- ESTADO VACÍO -->
         <tr *ngIf="cuponesFiltrados().length === 0">
-          <td colspan="6" class="text-center text-muted py-4">
-            No hay cupones que coincidan con el filtro aplicado.
+          <td colspan="6" class="text-center text-muted py-5">
+            <p class="fw-semibold mb-1">No hay cupones que coincidan con el filtro aplicado.</p>
+            <small class="d-block mb-3">Modifica el término de búsqueda o limpia los filtros para volver a ver los registros.</small>
+            <button type="button" class="btn btn-sm btn-outline-secondary" (click)="limpiarFiltros()">
+              Mostrar todos los cupones
+            </button>
           </td>
         </tr>
       </tbody>
     </table>
   </div>
+
 </div>
